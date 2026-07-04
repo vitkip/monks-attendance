@@ -6,7 +6,7 @@
     <title>ລາຍງານໜ້າທີ່ຮັບຜິດຊອບ — {{ $generatedAt->format('d/m/Y') }}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Lao:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Lao:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         /* ─── Reset & base ─────────────────────────────────── */
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -17,11 +17,11 @@
         }
 
         body {
-            font-family: 'Noto Serif Lao', serif;
+            font-family: 'Noto Sans Lao', sans-serif;
             font-size: 10.5pt;
-            color: #1A0A02;
+            color: #1e293b;
             line-height: 1.55;
-            background: #F5F0E8;
+            background: #f1f3f4;
         }
 
         /* ─── Screen wrapper ────────────────────────────────── */
@@ -33,8 +33,8 @@
             }
             .report-doc {
                 background: white;
-                box-shadow: 0 4px 32px rgba(0,0,0,0.14);
-                border-radius: 10px;
+                box-shadow: 0 1px 3px rgba(16,24,40,0.06), 0 12px 32px rgba(16,24,40,0.08);
+                border-radius: 16px;
                 padding: 48px 52px;
             }
         }
@@ -61,13 +61,14 @@
             align-items: center;
             gap: 12px;
             flex-wrap: wrap;
-            background: #1A0A02;
-            border-radius: 10px;
+            background: #ffffff;
+            box-shadow: 0 1px 3px rgba(16,24,40,0.06), 0 8px 24px rgba(16,24,40,0.06);
+            border-radius: 16px;
             padding: 14px 20px;
             margin-bottom: 20px;
         }
         .controls-bar label {
-            color: #C9A96A;
+            color: #9ca3af;
             font-size: 9pt;
             font-weight: 600;
             text-transform: uppercase;
@@ -75,10 +76,10 @@
         }
         .controls-bar select,
         .controls-bar input[type="date"] {
-            background: #2D1206;
-            border: 1px solid rgba(212,160,23,0.30);
-            color: #E8C97A;
-            border-radius: 6px;
+            background: #f8fafa;
+            border: 1px solid #e5e7eb;
+            color: #1e293b;
+            border-radius: 8px;
             padding: 6px 10px;
             font-family: inherit;
             font-size: 10pt;
@@ -86,25 +87,25 @@
         }
         .controls-bar select:focus,
         .controls-bar input[type="date"]:focus {
-            border-color: rgba(212,160,23,0.70);
+            border-color: rgba(33,97,67,0.50);
         }
         .btn-filter {
-            background: #2D1206;
-            border: 1px solid rgba(212,160,23,0.40);
-            color: #E8C97A;
-            border-radius: 6px;
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            color: #475569;
+            border-radius: 8px;
             padding: 7px 16px;
             font-family: inherit;
             font-size: 10pt;
             cursor: pointer;
             transition: background 0.15s;
         }
-        .btn-filter:hover { background: #3D1A08; }
+        .btn-filter:hover { background: #f9fafb; }
         .btn-print {
-            background: #D4A017;
+            background: #216143;
             border: none;
-            color: #1A0A02;
-            border-radius: 6px;
+            color: #ffffff;
+            border-radius: 10px;
             padding: 7px 20px;
             font-family: inherit;
             font-size: 10pt;
@@ -114,14 +115,15 @@
             display: flex;
             align-items: center;
             gap: 7px;
+            box-shadow: 0 4px 14px rgba(33,97,67,0.25);
             transition: background 0.15s;
         }
-        .btn-print:hover { background: #E8B520; }
+        .btn-print:hover { background: #1a4d36; }
         .btn-back {
-            background: transparent;
-            border: 1px solid rgba(212,160,23,0.25);
-            color: #9B7A5A;
-            border-radius: 6px;
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            color: #475569;
+            border-radius: 8px;
             padding: 7px 14px;
             font-family: inherit;
             font-size: 10pt;
@@ -131,15 +133,15 @@
             align-items: center;
             gap: 6px;
         }
-        .btn-back:hover { border-color: rgba(212,160,23,0.50); color: #C9A96A; }
+        .btn-back:hover { background: #f9fafb; border-color: #d1d5db; }
         .ctrl-sep {
-            color: rgba(212,160,23,0.30);
+            color: #e5e7eb;
             font-size: 16pt;
         }
 
         /* ─── Report header ─────────────────────────────────── */
         .rpt-header {
-            border-bottom: 2px solid #D4A017;
+            border-bottom: 2px solid rgba(33,97,67,0.25);
             padding-bottom: 18px;
             margin-bottom: 22px;
         }
@@ -158,13 +160,13 @@
             text-align: right;
             flex-shrink: 0;
             font-size: 9pt;
-            color: #9B7A5A;
+            color: #9ca3af;
             line-height: 1.8;
         }
         .rpt-label {
             font-size: 8pt;
             font-weight: 600;
-            color: #D4A017;
+            color: #216143;
             text-transform: uppercase;
             letter-spacing: 0.25em;
             margin-bottom: 3px;
@@ -172,22 +174,22 @@
         .rpt-title {
             font-size: 20pt;
             font-weight: 700;
-            color: #1A0A02;
+            color: #1e293b;
             line-height: 1.2;
         }
         .rpt-subtitle {
             font-size: 10pt;
-            color: #6B4A2A;
+            color: #475569;
             margin-top: 4px;
         }
         .rpt-range-badge {
             display: inline-block;
             margin-top: 8px;
             font-size: 9pt;
-            color: #6B4A2A;
-            background: rgba(212,160,23,0.10);
-            border: 1px solid rgba(212,160,23,0.30);
-            border-radius: 4px;
+            color: #216143;
+            background: #eaf4ed;
+            border: 1px solid rgba(33,97,67,0.25);
+            border-radius: 6px;
             padding: 3px 10px;
         }
 
@@ -199,10 +201,11 @@
             margin-bottom: 22px;
         }
         .stat-box {
-            border-radius: 8px;
+            border-radius: 14px;
             padding: 14px 16px;
-            border: 1px solid rgba(212,160,23,0.25);
-            background: #FFFDF7;
+            border: 1px solid #f3f4f6;
+            background: #ffffff;
+            box-shadow: 0 1px 2px rgba(16,24,40,0.04);
         }
         .stat-label {
             font-size: 8pt;
@@ -211,28 +214,28 @@
             letter-spacing: 0.2em;
             margin-bottom: 4px;
         }
-        .stat-sub { font-size: 9pt; color: #9B7A5A; margin-bottom: 6px; }
+        .stat-sub { font-size: 9pt; color: #9ca3af; margin-bottom: 6px; }
         .stat-num {
             font-size: 22pt;
             font-weight: 700;
             line-height: 1;
         }
-        .stat-unit { font-size: 9pt; color: #9B7A5A; margin-left: 4px; }
+        .stat-unit { font-size: 9pt; color: #9ca3af; margin-left: 4px; }
 
         /* ─── Notice ─────────────────────────────────────────── */
         .notice-bar {
             display: flex;
             align-items: flex-start;
             gap: 10px;
-            background: rgba(212,160,23,0.08);
-            border: 1px solid rgba(212,160,23,0.28);
-            border-radius: 8px;
+            background: #eaf4ed;
+            border: 1px solid rgba(33,97,67,0.20);
+            border-radius: 10px;
             padding: 10px 14px;
             margin-bottom: 28px;
             font-size: 9.5pt;
-            color: #6B4A2A;
+            color: #475569;
         }
-        .notice-icon { color: #D4A017; flex-shrink: 0; font-size: 13pt; line-height: 1.3; }
+        .notice-icon { color: #216143; flex-shrink: 0; font-size: 13pt; line-height: 1.3; }
 
         /* ─── Section header ────────────────────────────────── */
         .section-header {
@@ -243,7 +246,7 @@
         }
         .section-icon {
             width: 34px; height: 34px;
-            border-radius: 8px;
+            border-radius: 10px;
             display: flex; align-items: center; justify-content: center;
             font-size: 16pt; line-height: 1;
             flex-shrink: 0;
@@ -276,7 +279,7 @@
             display: flex;
             align-items: center;
             gap: 7px;
-            border-radius: 6px;
+            border-radius: 8px;
             padding: 5px 12px;
             flex-shrink: 0;
         }
@@ -305,12 +308,12 @@
         thead th {
             padding: 7px 8px;
             text-align: left;
-            border-bottom: 1px solid rgba(0,0,0,0.10);
+            border-bottom: 1px solid rgba(0,0,0,0.08);
         }
         tbody td {
             padding: 8px 8px;
             vertical-align: middle;
-            border-bottom: 1px solid rgba(0,0,0,0.06);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
         }
         tbody tr:last-child td { border-bottom: none; }
         tbody tr:hover { background: rgba(0,0,0,0.02); }
@@ -343,13 +346,13 @@
             font-size: 8.5pt;
             font-weight: 500;
         }
-        .badge-monk { background: rgba(74,122,26,0.12); color: #1A4A02; }
-        .badge-novice { background: rgba(212,160,23,0.12); color: #6B3A00; }
+        .badge-monk { background: rgba(249,115,22,0.12); color: #c2410c; }
+        .badge-novice { background: rgba(13,148,136,0.12); color: #0d9488; }
         .sign-line {
             display: block;
             width: 70%;
             margin: 0 auto;
-            border-bottom: 1px solid #D4A017;
+            border-bottom: 1px solid #cbd5e1;
             height: 22px;
         }
 
@@ -359,7 +362,7 @@
             display: flex;
             align-items: center;
             gap: 7px;
-            border-radius: 6px;
+            border-radius: 8px;
             padding: 5px 12px;
             flex-shrink: 0;
         }
@@ -372,7 +375,7 @@
         /* ─── Divider ────────────────────────────────────────── */
         .section-divider {
             height: 1px;
-            background: rgba(212,160,23,0.18);
+            background: #e5e7eb;
             margin: 30px 0;
         }
 
@@ -380,7 +383,7 @@
         .rpt-footer {
             margin-top: 36px;
             padding-top: 18px;
-            border-top: 1px solid rgba(212,160,23,0.25);
+            border-top: 1px solid #e5e7eb;
         }
         .signature-row {
             display: grid;
@@ -391,41 +394,41 @@
         .signature-box { text-align: center; }
         .sig-role {
             font-size: 9pt;
-            color: #6B4A2A;
+            color: #475569;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.1em;
             margin-bottom: 40px;
         }
         .sig-line {
-            border-bottom: 1px solid #D4A017;
+            border-bottom: 1px solid #cbd5e1;
             margin-bottom: 6px;
         }
-        .sig-label { font-size: 8.5pt; color: #9B7A5A; }
+        .sig-label { font-size: 8.5pt; color: #9ca3af; }
 
         .footer-meta {
             display: flex;
             justify-content: space-between;
             font-size: 8.5pt;
-            color: #9B7A5A;
+            color: #9ca3af;
         }
-        .footer-system { font-weight: 600; color: #D4A017; }
+        .footer-system { font-weight: 600; color: #216143; }
 
         /* ─── Empty state ────────────────────────────────────── */
         .empty-state {
             text-align: center;
             padding: 28px;
-            color: #9B7A5A;
+            color: #9ca3af;
             font-size: 10pt;
         }
 
         /* ─── Print hint (screen only) ──────────────────────── */
         .print-hint {
             font-size: 8.5pt;
-            color: #9B7A5A;
-            background: rgba(212,160,23,0.06);
-            border: 1px solid rgba(212,160,23,0.20);
-            border-radius: 6px;
+            color: #475569;
+            background: #eaf4ed;
+            border: 1px solid rgba(33,97,67,0.20);
+            border-radius: 8px;
             padding: 8px 14px;
             margin-top: 14px;
         }
@@ -435,13 +438,13 @@
 @php
     /* Day color palette — matches index page */
     $dayColors = [
-        1 => ['pill_bg'=>'#3D2E00','text'=>'#F5D060','dot'=>'#F5D060','line'=>'rgba(245,208,96,0.30)','thead_bg'=>'rgba(245,208,96,0.10)','thead_text'=>'#5A3D00','border_left'=>'#D4A017'],
-        2 => ['pill_bg'=>'#3D0A1A','text'=>'#F0A0B0','dot'=>'#F0A0B0','line'=>'rgba(240,160,176,0.30)','thead_bg'=>'rgba(240,160,176,0.10)','thead_text'=>'#6B0A22','border_left'=>'#D47080'],
-        3 => ['pill_bg'=>'#1A3A02','text'=>'#A8D87A','dot'=>'#A8D87A','line'=>'rgba(168,216,122,0.30)','thead_bg'=>'rgba(74,122,26,0.10)','thead_text'=>'#1A4A02','border_left'=>'#4A7A1A'],
-        4 => ['pill_bg'=>'#3D1A00','text'=>'#F5A060','dot'=>'#F5A060','line'=>'rgba(245,160,96,0.30)','thead_bg'=>'rgba(245,160,96,0.10)','thead_text'=>'#6B2E00','border_left'=>'#C07030'],
-        5 => ['pill_bg'=>'#0A1A3D','text'=>'#90BCEE','dot'=>'#90BCEE','line'=>'rgba(144,188,238,0.30)','thead_bg'=>'rgba(144,188,238,0.10)','thead_text'=>'#0A2A6B','border_left'=>'#4070C0'],
-        6 => ['pill_bg'=>'#2A0A3D','text'=>'#C090E0','dot'=>'#C090E0','line'=>'rgba(192,144,224,0.30)','thead_bg'=>'rgba(192,144,224,0.10)','thead_text'=>'#4A0A6B','border_left'=>'#7040B0'],
-        7 => ['pill_bg'=>'#3D0A0A','text'=>'#EE9090','dot'=>'#EE9090','line'=>'rgba(238,144,144,0.30)','thead_bg'=>'rgba(238,144,144,0.10)','thead_text'=>'#6B0A0A','border_left'=>'#C04040'],
+        1 => ['pill_bg'=>'#fef9e7','text'=>'#92720c','dot'=>'#eab308','line'=>'rgba(234,179,8,0.30)','thead_bg'=>'rgba(234,179,8,0.08)','thead_text'=>'#92720c','border_left'=>'#eab308'],
+        2 => ['pill_bg'=>'#fdf2f6','text'=>'#9d174d','dot'=>'#ec4899','line'=>'rgba(236,72,153,0.30)','thead_bg'=>'rgba(236,72,153,0.08)','thead_text'=>'#9d174d','border_left'=>'#ec4899'],
+        3 => ['pill_bg'=>'#eaf4ed','text'=>'#216143','dot'=>'#216143','line'=>'rgba(33,97,67,0.30)','thead_bg'=>'rgba(33,97,67,0.08)','thead_text'=>'#216143','border_left'=>'#216143'],
+        4 => ['pill_bg'=>'#fff7ed','text'=>'#9a3412','dot'=>'#f97316','line'=>'rgba(249,115,22,0.30)','thead_bg'=>'rgba(249,115,22,0.08)','thead_text'=>'#9a3412','border_left'=>'#f97316'],
+        5 => ['pill_bg'=>'#eff6ff','text'=>'#1e40af','dot'=>'#3b82f6','line'=>'rgba(59,130,246,0.30)','thead_bg'=>'rgba(59,130,246,0.08)','thead_text'=>'#1e40af','border_left'=>'#3b82f6'],
+        6 => ['pill_bg'=>'#f5f3ff','text'=>'#5b21b6','dot'=>'#8b5cf6','line'=>'rgba(139,92,246,0.30)','thead_bg'=>'rgba(139,92,246,0.08)','thead_text'=>'#5b21b6','border_left'=>'#8b5cf6'],
+        7 => ['pill_bg'=>'#fef2f2','text'=>'#991b1b','dot'=>'#ef4444','line'=>'rgba(239,68,68,0.30)','thead_bg'=>'rgba(239,68,68,0.08)','thead_text'=>'#991b1b','border_left'=>'#ef4444'],
     ];
     $typeLabel = match($type) {
         'weekly' => 'ໝຸນວຽນ (ປະຈຳອາທິດ)',
@@ -526,34 +529,34 @@
                     <div><strong>ສ້າງວັນທີ:</strong> {{ $generatedAt->format('d/m/Y') }}</div>
                     <div><strong>ເວລາ:</strong> {{ $generatedAt->format('H:i') }}</div>
                     <div><strong>ປະເພດ:</strong> {{ $typeLabel }}</div>
-                    <div style="margin-top:6px; font-size:8pt; color:#C4A882;">ໜ້າ <span class="page-num">1</span></div>
+                    <div style="margin-top:6px; font-size:8pt; color:#d1d5db;">ໜ້າ <span class="page-num">1</span></div>
                 </div>
             </div>
         </div>
 
         {{-- ── STATS ────────────────────────────────────────── --}}
         <div class="stats-row">
-            <div class="stat-box" style="border-left: 3px solid rgba(74,122,26,0.55);">
-                <div class="stat-label" style="color: #4A7A1A;">ໝຸນວຽນ</div>
+            <div class="stat-box" style="border-left: 3px solid rgba(33,97,67,0.5);">
+                <div class="stat-label" style="color: #216143;">ໝຸນວຽນ</div>
                 <div class="stat-sub">ໜ້າທີ່ປະຈຳອາທິດ</div>
                 <div>
-                    <span class="stat-num" style="color: #1A4A02;">{{ $totalWeekly }}</span>
+                    <span class="stat-num" style="color: #0a291b;">{{ $totalWeekly }}</span>
                     <span class="stat-unit">ລາຍການ</span>
                 </div>
             </div>
-            <div class="stat-box" style="border-left: 3px solid rgba(212,160,23,0.55);">
-                <div class="stat-label" style="color: #D4A017;">ສະເພາະວັນ</div>
+            <div class="stat-box" style="border-left: 3px solid rgba(249,115,22,0.5);">
+                <div class="stat-label" style="color: #ea580c;">ສະເພາະວັນ</div>
                 <div class="stat-sub">ໜ້າທີ່ວັນສະເພາະ</div>
                 <div>
-                    <span class="stat-num" style="color: #6B3A00;">{{ $totalOnce }}</span>
+                    <span class="stat-num" style="color: #c2410c;">{{ $totalOnce }}</span>
                     <span class="stat-unit">ລາຍການ</span>
                 </div>
             </div>
-            <div class="stat-box" style="border-left: 3px solid rgba(139,26,26,0.40);">
-                <div class="stat-label" style="color: #8B1A1A;">ພຣະສົງ/ສາມະເນນ</div>
+            <div class="stat-box" style="border-left: 3px solid rgba(13,148,136,0.45);">
+                <div class="stat-label" style="color: #0d9488;">ພຣະສົງ/ສາມະເນນ</div>
                 <div class="stat-sub">ຜູ້ທີ່ຖືກມອບໝາຍ</div>
                 <div>
-                    <span class="stat-num" style="color: #1A0A02;">{{ $totalMonks }}</span>
+                    <span class="stat-num" style="color: #1e293b;">{{ $totalMonks }}</span>
                     <span class="stat-unit">ຮູບ</span>
                 </div>
             </div>
@@ -572,13 +575,13 @@
             <div>
                 {{-- Section heading --}}
                 <div class="section-header">
-                    <div class="section-icon" style="background: #1A3A02; color: #A8D87A;">↺</div>
+                    <div class="section-icon" style="background: #eaf4ed; color: #216143;">↺</div>
                     <div>
-                        <div class="section-title" style="color: #1A4A02;">ໜ້າທີ່ໝຸນວຽນ</div>
-                        <div class="section-sub" style="color: #4A7A1A;">ປະຈຳທຸກໆອາທິດ</div>
+                        <div class="section-title" style="color: #1e293b;">ໜ້າທີ່ໝຸນວຽນ</div>
+                        <div class="section-sub" style="color: #216143;">ປະຈຳທຸກໆອາທິດ</div>
                     </div>
-                    <div class="section-line" style="background: linear-gradient(to right, rgba(74,122,26,0.30), transparent)"></div>
-                    <div class="section-count" style="background: rgba(74,122,26,0.10); color: #1A4A02;">
+                    <div class="section-line" style="background: linear-gradient(to right, rgba(33,97,67,0.30), transparent)"></div>
+                    <div class="section-count" style="background: rgba(33,97,67,0.10); color: #216143;">
                         {{ $weeklyGroups->flatten()->count() }} ລາຍ
                     </div>
                 </div>
@@ -612,7 +615,7 @@
                             <tbody>
                                 @foreach ($dayDuties as $i => $duty)
                                     <tr>
-                                        <td class="col-num" style="color: #9B7A5A; font-size: 8.5pt;">{{ $i + 1 }}</td>
+                                        <td class="col-num" style="color: #9ca3af; font-size: 8.5pt;">{{ $i + 1 }}</td>
                                         <td class="col-photo">
                                             @if ($duty->monk->photo)
                                                 <img src="{{ $duty->monk->photo_url }}"
@@ -631,7 +634,7 @@
                                                 {{ $duty->monk->type_label }}
                                             </span>
                                         </td>
-                                        <td class="col-pansa" style="color: #6B4A2A; font-size: 9pt;">
+                                        <td class="col-pansa" style="color: #6b7280; font-size: 9pt;">
                                             {{ $duty->monk->pansa ?? '—' }}
                                         </td>
                                         <td class="col-duty" style="font-weight: 600; color: {{ $dc['thead_text'] }};">
@@ -658,22 +661,22 @@
             <div>
                 {{-- Section heading --}}
                 <div class="section-header">
-                    <div class="section-icon" style="background: #2D1206; color: #E8C97A;">▦</div>
+                    <div class="section-icon" style="background: #fff7ed; color: #ea580c;">▦</div>
                     <div>
-                        <div class="section-title" style="color: #6B3A00;">ໜ້າທີ່ສະເພາະວັນ</div>
-                        <div class="section-sub" style="color: #D4A017;">ກຳນົດໃຫ້ສະເພາະວັນທີ</div>
+                        <div class="section-title" style="color: #1e293b;">ໜ້າທີ່ສະເພາະວັນ</div>
+                        <div class="section-sub" style="color: #ea580c;">ກຳນົດໃຫ້ສະເພາະວັນທີ</div>
                     </div>
-                    <div class="section-line" style="background: linear-gradient(to right, rgba(212,160,23,0.30), transparent)"></div>
-                    <div class="section-count" style="background: rgba(212,160,23,0.10); color: #6B3A00;">
+                    <div class="section-line" style="background: linear-gradient(to right, rgba(249,115,22,0.30), transparent)"></div>
+                    <div class="section-count" style="background: rgba(249,115,22,0.10); color: #ea580c;">
                         {{ $onceGroups->flatten()->count() }} ລາຍ
                     </div>
                 </div>
 
                 @php
                     $onceDateColors = [
-                        'today'   => ['pill_bg'=>'#D4A017','pill_text'=>'#1A0A02','dot'=>'#1A0A02','line'=>'rgba(212,160,23,0.50)','border_left'=>'#D4A017','thead_bg'=>'rgba(212,160,23,0.15)','thead_text'=>'#6B3A00'],
-                        'future'  => ['pill_bg'=>'#2D1206','pill_text'=>'#E8C97A','dot'=>'#E8C97A','line'=>'rgba(212,160,23,0.25)','border_left'=>'rgba(212,160,23,0.60)','thead_bg'=>'rgba(212,160,23,0.08)','thead_text'=>'#6B3A00'],
-                        'past'    => ['pill_bg'=>'rgba(26,10,2,0.10)','pill_text'=>'#9B7A5A','dot'=>'#9B7A5A','line'=>'rgba(155,122,90,0.20)','border_left'=>'rgba(155,122,90,0.40)','thead_bg'=>'rgba(155,122,90,0.08)','thead_text'=>'#6B4A2A'],
+                        'today'   => ['pill_bg'=>'#216143','pill_text'=>'#FFFFFF','dot'=>'#FFFFFF','line'=>'rgba(33,97,67,0.50)','border_left'=>'#216143','thead_bg'=>'rgba(33,97,67,0.10)','thead_text'=>'#216143'],
+                        'future'  => ['pill_bg'=>'#eaf4ed','pill_text'=>'#216143','dot'=>'#216143','line'=>'rgba(33,97,67,0.25)','border_left'=>'#90b0a1','thead_bg'=>'rgba(33,97,67,0.06)','thead_text'=>'#216143'],
+                        'past'    => ['pill_bg'=>'#f3f4f6','pill_text'=>'#6b7280','dot'=>'#9ca3af','line'=>'rgba(107,114,128,0.20)','border_left'=>'#9ca3af','thead_bg'=>'rgba(107,114,128,0.06)','thead_text'=>'#4b5563'],
                     ];
                 @endphp
 
@@ -718,7 +721,7 @@
                             <tbody>
                                 @foreach ($dateDuties as $i => $duty)
                                     <tr>
-                                        <td class="col-num" style="color: #9B7A5A; font-size: 8.5pt;">{{ $i + 1 }}</td>
+                                        <td class="col-num" style="color: #9ca3af; font-size: 8.5pt;">{{ $i + 1 }}</td>
                                         <td class="col-photo">
                                             @if ($duty->monk->photo)
                                                 <img src="{{ $duty->monk->photo_url }}"
@@ -737,7 +740,7 @@
                                                 {{ $duty->monk->type_label }}
                                             </span>
                                         </td>
-                                        <td class="col-pansa" style="color: #6B4A2A; font-size: 9pt;">
+                                        <td class="col-pansa" style="color: #6b7280; font-size: 9pt;">
                                             {{ $duty->monk->pansa ?? '—' }}
                                         </td>
                                         <td class="col-duty" style="font-weight: 600; color: {{ $oc['thead_text'] }};">
@@ -756,7 +759,7 @@
         @if ($weeklyGroups->isEmpty() && $onceGroups->isEmpty())
             <div class="empty-state">
                 <div style="font-size: 28pt; margin-bottom: 10px; opacity: 0.30;">☸</div>
-                <div style="font-weight: 600; color: #1A0A02; margin-bottom: 4px;">ບໍ່ມີຂໍ້ມູນໜ້າທີ່</div>
+                <div style="font-weight: 600; color: #1e293b; margin-bottom: 4px;">ບໍ່ມີຂໍ້ມູນໜ້າທີ່</div>
                 <div>ກະລຸນາປ່ຽນຕົວກອງ ຫຼື ເພີ່ມໜ້າທີ່ໃຫ້ກ່ອນ</div>
             </div>
         @endif

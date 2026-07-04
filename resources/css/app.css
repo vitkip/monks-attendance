@@ -4,5 +4,31 @@
 @source '../../storage/framework/views/*.php';
 
 @theme {
-    --font-sans: 'Noto Serif Lao', ui-serif, Georgia, serif;
+    --font-sans: 'Noto Sans Lao', ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Donezo-inspired brand tokens — single source of truth for the theme */
+@layer utilities {
+    .bg-brand-green { background-color: #216143; }
+    .text-brand-green { color: #216143; }
+    .border-brand-green { border-color: #216143; }
+    .bg-brand-green-dark { background-color: #0a291b; }
+    .bg-brand-green-mid { background-color: #1a4a35; }
+    .bg-brand-bright-green { background-color: #1aae6f; }
+    .text-brand-bright-green { color: #1aae6f; }
+    .bg-brand-light-green { background-color: #eaf4ed; }
+    .text-brand-light-green { color: #eaf4ed; }
+    .ring-brand-green\/30 { --tw-ring-color: rgb(33 97 67 / 0.3); }
+
+    .card-shadow { box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04); }
+
+    .sidebar-item-active {
+        background-color: #ffffff;
+        border-left: 3px solid #216143;
+        color: #216143;
+    }
+
+    .bg-brand-tracker {
+        background: linear-gradient(135deg, #062c1a 0%, #1aae6f 100%);
+    }
 }

@@ -10,9 +10,20 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
 </head>
-<body class="bg-[#1A0A02] font-sans min-h-screen flex items-center justify-center">
+<body class="bg-brand-tracker font-sans min-h-screen flex items-center justify-center relative overflow-hidden">
 
-    {{ $slot }}
+    {{-- Ambient background waves, echoing the tracker widget motif --}}
+    <div class="absolute inset-0 opacity-20 pointer-events-none">
+        <svg class="w-full h-full scale-150 -rotate-12" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0,200 Q100,50 200,200 T400,200" fill="none" opacity="0.3" stroke="white" stroke-width="20" />
+            <path d="M0,220 Q100,70 200,220 T400,220" fill="none" opacity="0.2" stroke="white" stroke-width="15" />
+            <path d="M0,240 Q100,90 200,240 T400,240" fill="none" opacity="0.1" stroke="white" stroke-width="10" />
+        </svg>
+    </div>
+
+    <div class="relative z-10 w-full">
+        {{ $slot }}
+    </div>
 
     @livewireScripts
 </body>
