@@ -81,6 +81,30 @@
                         <span>ຍອດຄ້າງຊຳລະ</span>
                     </a>
 
+                    <a href="{{ route('news.index') }}" @click="sidebarOpen = false" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors
+                          {{ request()->routeIs('news.*')
+        ? 'sidebar-item-active'
+        : 'text-gray-500 hover:bg-gray-100' }}">
+                        <svg class="w-[18px] h-[18px] flex-shrink-0" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor" stroke-width="1.75">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 12h6v-4H7v4z" />
+                        </svg>
+                        <span>ຂ່າວສານ</span>
+                    </a>
+
+                    <a href="{{ route('chants.index') }}" @click="sidebarOpen = false" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors
+                          {{ request()->routeIs('chants.*')
+        ? 'sidebar-item-active'
+        : 'text-gray-500 hover:bg-gray-100' }}">
+                        <svg class="w-[18px] h-[18px] flex-shrink-0" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor" stroke-width="1.75">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M12 6.253v13M12 6.253C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                        </svg>
+                        <span>ບົດສູດມົນ</span>
+                    </a>
+
                     {{-- Admin only --}}
                     @if(auth()->user()->isAdmin())
 
@@ -108,6 +132,30 @@
                                     d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                             <span>ອັດຕາຄ່າປັບ</span>
+                        </a>
+
+                        <a href="{{ route('news-categories.index') }}" @click="sidebarOpen = false" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors
+                              {{ request()->routeIs('news-categories.*')
+        ? 'sidebar-item-active'
+        : 'text-gray-500 hover:bg-gray-100' }}">
+                            <svg class="w-[18px] h-[18px] flex-shrink-0" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor" stroke-width="1.75">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M7 7h.01M7 3h5.586a1 1 0 01.707.293l6.414 6.414a1 1 0 010 1.414l-8.586 8.586a1 1 0 01-1.414 0l-6.414-6.414A1 1 0 013 12.586V7a4 4 0 014-4z" />
+                            </svg>
+                            <span>ໝວດໝູ່ຂ່າວ</span>
+                        </a>
+
+                        <a href="{{ route('chant-categories.index') }}" @click="sidebarOpen = false" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors
+                              {{ request()->routeIs('chant-categories.*')
+        ? 'sidebar-item-active'
+        : 'text-gray-500 hover:bg-gray-100' }}">
+                            <svg class="w-[18px] h-[18px] flex-shrink-0" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor" stroke-width="1.75">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M7 7h.01M7 3h5.586a1 1 0 01.707.293l6.414 6.414a1 1 0 010 1.414l-8.586 8.586a1 1 0 01-1.414 0l-6.414-6.414A1 1 0 013 12.586V7a4 4 0 014-4z" />
+                            </svg>
+                            <span>ໝວດໝູ່ບົດສູດມົນ</span>
                         </a>
 
                         <a href="{{ route('duty-schedules.index') }}" @click="sidebarOpen = false" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors

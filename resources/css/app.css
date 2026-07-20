@@ -1,25 +1,22 @@
 @import 'tailwindcss';
+@plugin '@tailwindcss/typography';
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 
 @theme {
     --font-sans: 'Noto Sans Lao', ui-sans-serif, system-ui, sans-serif;
+
+    /* Donezo-inspired brand tokens — registered as real theme colors so Tailwind
+       can generate every variant (hover:, focus:, peer-checked:, shadow-*, /opacity, ...) */
+    --color-brand-green: #216143;
+    --color-brand-green-dark: #0a291b;
+    --color-brand-green-mid: #1a4a35;
+    --color-brand-bright-green: #1aae6f;
+    --color-brand-light-green: #eaf4ed;
 }
 
-/* Donezo-inspired brand tokens — single source of truth for the theme */
 @layer utilities {
-    .bg-brand-green { background-color: #216143; }
-    .text-brand-green { color: #216143; }
-    .border-brand-green { border-color: #216143; }
-    .bg-brand-green-dark { background-color: #0a291b; }
-    .bg-brand-green-mid { background-color: #1a4a35; }
-    .bg-brand-bright-green { background-color: #1aae6f; }
-    .text-brand-bright-green { color: #1aae6f; }
-    .bg-brand-light-green { background-color: #eaf4ed; }
-    .text-brand-light-green { color: #eaf4ed; }
-    .ring-brand-green\/30 { --tw-ring-color: rgb(33 97 67 / 0.3); }
-
     .card-shadow { box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04); }
 
     .sidebar-item-active {
@@ -30,5 +27,14 @@
 
     .bg-brand-tracker {
         background: linear-gradient(135deg, #062c1a 0%, #1aae6f 100%);
+    }
+
+    .no-scrollbar {
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+
+    .no-scrollbar::-webkit-scrollbar {
+        display: none;
     }
 }

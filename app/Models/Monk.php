@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -9,7 +10,39 @@ class Monk extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'surname', 'photo', 'type', 'pansa', 'temple', 'status'];
+    protected $fillable = [
+        'name', 'surname', 'photo', 'type', 'pansa', 'temple', 'status',
+        'birth_date', 'ordination_date',
+    ];
+
+    protected $casts = [
+        'birth_date'      => 'date',
+        'ordination_date' => 'date',
+    ];
+
+    /**
+     * Number of vassa (rains retreats) completed since ordination.
+     * Approximated as full calendar years elapsed since ordination_date.
+     */
+    public static function calculatePansa($ordinationDate): int
+    {
+        if (! $ordinationDate) {
+            return 0;
+        }
+
+        $ordination = $ordinationDate instanceof Carbon ? $ordinationDate : Carbon::parse($ordinationDate);
+
+        if ($ordination->isFuture()) {
+            return 0;
+        }
+
+        return (int) $ordination->diffInYears(Carbon::now(), false);
+    }
+
+    public function getAgeAttribute(): ?int
+    {
+        return $this->birth_date ? (int) $this->birth_date->diffInYears(Carbon::now(), false) : null;
+    }
 
     public function absences()
     {

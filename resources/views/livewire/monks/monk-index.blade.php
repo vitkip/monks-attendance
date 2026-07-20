@@ -63,7 +63,7 @@
                             </span>
                         </div>
                         <p class="text-gray-400 text-xs mt-0.5 truncate">
-                            {{ $monk->temple ?? '—' }}&nbsp;·&nbsp;{{ $monk->pansa }} ພັນສາ
+                            {{ $monk->temple ?? '—' }}&nbsp;·&nbsp;{{ $monk->pansa }} ພັນສາ&nbsp;·&nbsp;ອາຍຸ {{ $monk->age ?? '—' }}
                         </p>
                     </div>
                 </div>
@@ -141,6 +141,7 @@
                     <th class="px-4 py-3.5 text-left text-[11px] font-medium text-gray-400 uppercase tracking-wide">ຊື່-ນາມສະກຸນ</th>
                     <th class="px-4 py-3.5 text-left text-[11px] font-medium text-gray-400 uppercase tracking-wide">ປະເພດ</th>
                     <th class="px-4 py-3.5 text-left text-[11px] font-medium text-gray-400 uppercase tracking-wide hidden lg:table-cell">ພັນສາ</th>
+                    <th class="px-4 py-3.5 text-left text-[11px] font-medium text-gray-400 uppercase tracking-wide hidden lg:table-cell">ອາຍຸ</th>
                     <th class="px-4 py-3.5 text-left text-[11px] font-medium text-gray-400 uppercase tracking-wide hidden lg:table-cell">ວັດ</th>
                     <th class="px-4 py-3.5 text-center text-[11px] font-medium text-gray-400 uppercase tracking-wide">ຂາດ</th>
                     <th class="px-4 py-3.5 text-right text-[11px] font-medium text-gray-400 uppercase tracking-wide">ຄ່າປັບ</th>
@@ -165,6 +166,7 @@
                             </span>
                         </td>
                         <td class="px-4 py-3.5 text-slate-600 hidden lg:table-cell">{{ $monk->pansa }} ພັນສາ</td>
+                        <td class="px-4 py-3.5 text-slate-600 hidden lg:table-cell">{{ $monk->age ?? '—' }}</td>
                         <td class="px-4 py-3.5 text-slate-600 hidden lg:table-cell">{{ $monk->temple ?? '—' }}</td>
                         <td class="px-4 py-3.5 text-center">
                             @if ($monk->absences_count > 0)
@@ -207,7 +209,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="9" class="px-4 py-16 text-center">
+                        <td colspan="10" class="px-4 py-16 text-center">
                             <div class="w-14 h-14 rounded-full bg-brand-light-green flex items-center justify-center mx-auto mb-4">
                                 <span class="text-2xl text-brand-green select-none">☸</span>
                             </div>
@@ -285,7 +287,7 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-[10px] font-medium text-gray-400 mb-1.5 uppercase tracking-widest">ປະເພດ</label>
-                        <select wire:model="type"
+                        <select wire:model.live="type"
                                 class="w-full bg-[#f8fafa] border border-gray-200 rounded-xl px-3 py-2.5 text-sm
                                        text-slate-800
                                        focus:outline-none focus:ring-2 focus:ring-brand-green/30 focus:border-transparent transition-shadow">
@@ -294,11 +296,43 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block text-[10px] font-medium text-gray-400 mb-1.5 uppercase tracking-widest">ພັນສາ</label>
-                        <input wire:model="pansa" type="number" min="0" placeholder="0"
-                               class="w-full bg-[#f8fafa] border border-gray-200 rounded-xl px-3 py-2.5 text-sm
+                        <label class="block text-[10px] font-medium text-gray-400 mb-1.5 uppercase tracking-widest">
+                            ວັນເດືອນປີເກີດ
+                        </label>
+                        <input wire:model.live="birth_date" type="date"
+                               class="w-full bg-[#f8fafa] border rounded-xl px-3 py-2.5 text-sm
                                       text-slate-800
-                                      focus:outline-none focus:ring-2 focus:ring-brand-green/30 focus:border-transparent transition-shadow">
+                                      focus:outline-none focus:ring-2 focus:border-transparent transition-shadow
+                                      @error('birth_date') border-red-300 focus:ring-red-200 @else border-gray-200 focus:ring-brand-green/30 @enderror">
+                        @error('birth_date') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-[10px] font-medium text-gray-400 mb-1.5 uppercase tracking-widest">
+                            ວັນເດືອນປີບວດ
+                        </label>
+                        <input wire:model.live="ordination_date" type="date"
+                               class="w-full bg-[#f8fafa] border rounded-xl px-3 py-2.5 text-sm
+                                      text-slate-800
+                                      focus:outline-none focus:ring-2 focus:border-transparent transition-shadow
+                                      @error('ordination_date') border-red-300 focus:ring-red-200 @else border-gray-200 focus:ring-brand-green/30 @enderror">
+                        @error('ordination_date') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                    </div>
+                    <div class="flex gap-2">
+                        <div class="flex-1 bg-brand-light-green rounded-xl px-3 py-2.5">
+                            <p class="text-[9px] font-medium text-brand-green/70 uppercase tracking-widest mb-0.5">ອາຍຸ</p>
+                            <p class="text-sm font-bold text-brand-green">
+                                {{ $birth_date ? \Carbon\Carbon::parse($birth_date)->diffInYears(now()) . ' ປີ' : '—' }}
+                            </p>
+                        </div>
+                        <div class="flex-1 bg-gray-100 rounded-xl px-3 py-2.5">
+                            <p class="text-[9px] font-medium text-gray-400 uppercase tracking-widest mb-0.5">ພັນສາ (ອັດຕະໂນມັດ)</p>
+                            <p class="text-sm font-bold text-slate-700">
+                                {{ \App\Models\Monk::calculatePansa($ordination_date ?: null) }}
+                            </p>
+                        </div>
                     </div>
                 </div>
 

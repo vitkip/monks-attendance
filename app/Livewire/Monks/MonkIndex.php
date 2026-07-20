@@ -21,26 +21,50 @@ class MonkIndex extends Component
     public string $name = '';
     public string $surname = '';
     public string $type = 'monk';
-    public int $pansa = 0;
+    public string $birth_date = '';
+    public string $ordination_date = '';
     public string $temple = '';
     public $photo = null;
 
     protected function rules(): array
     {
         return [
-            'name'    => 'required|string|max:100',
-            'surname' => 'required|string|max:100',
-            'type'    => 'required|in:monk,novice',
-            'pansa'   => 'required|integer|min:0',
+            'name'            => 'required|string|max:100',
+            'surname'         => 'required|string|max:100',
+            'type'            => 'required|in:monk,novice',
+            'birth_date'      => 'nullable|date|before:today',
+            'ordination_date' => [
+                'nullable',
+                'date',
+                'before_or_equal:today',
+                function ($attribute, $value, $fail) {
+                    if (! $value || ! $this->birth_date) {
+                        return;
+                    }
+
+                    $birth      = \Carbon\Carbon::parse($this->birth_date);
+                    $ordination = \Carbon\Carbon::parse($value);
+
+                    if ($ordination->lt($birth)) {
+                        $fail('ວັນບວດຕ້ອງບໍ່ຢູ່ກ່ອນວັນເກີດ');
+                        return;
+                    }
+
+                    if ($this->type === 'monk' && $birth->diffInYears($ordination) < 20) {
+                        $fail('ພຣະສົງຕ້ອງມີອາຍຸຢ່າງໜ້ອຍ 20 ປີຈຶ່ງຈະອຸປະສົມບົດເປັນພຣະໄດ້');
+                    }
+                },
+            ],
             'temple'  => 'nullable|string|max:150',
             'photo'   => $this->editId ? 'nullable|image|max:2048' : 'nullable|image|max:2048',
         ];
     }
 
     protected $messages = [
-        'name.required'    => 'ກະລຸນາປ້ອນຊື່',
-        'surname.required' => 'ກະລຸນາປ້ອນນາມສະກຸນ',
-        'pansa.required'   => 'ກະລຸນາປ້ອນພັນສາ',
+        'name.required'         => 'ກະລຸນາປ້ອນຊື່',
+        'surname.required'      => 'ກະລຸນາປ້ອນນາມສະກຸນ',
+        'birth_date.before'     => 'ວັນເດືອນປີເກີດຕ້ອງເປັນວັນທີ່ຜ່ານມາແລ້ວ',
+        'ordination_date.before_or_equal' => 'ວັນເດືອນປີບວດຕ້ອງບໍ່ຢູ່ໃນອະນາຄົດ',
     ];
 
     public function updatingSearch(): void
@@ -50,8 +74,7 @@ class MonkIndex extends Component
 
     public function openCreate(): void
     {
-        $this->reset(['name', 'surname', 'type', 'pansa', 'temple', 'photo', 'editId']);
-        $this->pansa = 0;
+        $this->reset(['name', 'surname', 'type', 'birth_date', 'ordination_date', 'temple', 'photo', 'editId']);
         $this->type = 'monk';
         $this->showModal = true;
     }
@@ -59,12 +82,13 @@ class MonkIndex extends Component
     public function openEdit(int $id): void
     {
         $monk = Monk::findOrFail($id);
-        $this->editId  = $id;
-        $this->name    = $monk->name;
-        $this->surname = $monk->surname;
-        $this->type    = $monk->type;
-        $this->pansa   = $monk->pansa;
-        $this->temple  = $monk->temple ?? '';
+        $this->editId          = $id;
+        $this->name            = $monk->name;
+        $this->surname         = $monk->surname;
+        $this->type            = $monk->type;
+        $this->birth_date      = $monk->birth_date?->format('Y-m-d') ?? '';
+        $this->ordination_date = $monk->ordination_date?->format('Y-m-d') ?? '';
+        $this->temple          = $monk->temple ?? '';
         $this->showModal = true;
     }
 
@@ -73,11 +97,13 @@ class MonkIndex extends Component
         $this->validate();
 
         $data = [
-            'name'    => $this->name,
-            'surname' => $this->surname,
-            'type'    => $this->type,
-            'pansa'   => $this->pansa,
-            'temple'  => $this->temple ?: null,
+            'name'            => $this->name,
+            'surname'         => $this->surname,
+            'type'            => $this->type,
+            'birth_date'      => $this->birth_date ?: null,
+            'ordination_date' => $this->ordination_date ?: null,
+            'pansa'           => Monk::calculatePansa($this->ordination_date ?: null),
+            'temple'          => $this->temple ?: null,
         ];
 
         if ($this->photo) {
@@ -93,7 +119,7 @@ class MonkIndex extends Component
         }
 
         $this->showModal = false;
-        $this->reset(['name', 'surname', 'type', 'pansa', 'temple', 'photo', 'editId']);
+        $this->reset(['name', 'surname', 'type', 'birth_date', 'ordination_date', 'temple', 'photo', 'editId']);
     }
 
     public function confirmDelete(int $id): void
