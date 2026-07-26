@@ -1,6 +1,6 @@
 <x-layouts.public :title="$chant->title">
 
-    <article class="max-w-3xl mx-auto px-5 sm:px-8 py-10 sm:py-14">
+    <article class="max-w-6xl mx-auto px-5 sm:px-8 py-10 sm:py-14">
 
         <a href="{{ route('chants.public.index') }}"
            class="inline-flex items-center gap-1.5 text-sm text-slate-400 hover:text-brand-green transition-colors mb-6">
@@ -10,12 +10,23 @@
             ບົດສູດມົນທັງໝົດ
         </a>
 
-        <div class="flex items-center gap-2 mb-3">
+        @php
+            $chantMinutes = max(1, (int) ceil(\Illuminate\Support\Str::wordCount(strip_tags($chant->content)) / 150));
+        @endphp
+
+        <div class="flex items-center gap-2 mb-3 flex-wrap">
             @if ($chant->category)
                 <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-blue-50 text-blue-600">
                     {{ $chant->category->name }}
                 </span>
             @endif
+            <span class="inline-flex items-center gap-1 text-xs text-gray-400">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 20 20" stroke-width="2" aria-hidden="true">
+                    <circle cx="10" cy="10" r="7"/>
+                    <path stroke-linecap="round" d="M10 6v4l3 2"/>
+                </svg>
+                {{ $chantMinutes }} ນາທີ
+            </span>
         </div>
 
         <h1 class="text-2xl sm:text-3xl font-bold text-slate-800 leading-snug mb-6">{{ $chant->title }}</h1>
@@ -30,11 +41,11 @@
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
                     @foreach ($related as $item)
                         <a href="{{ route('chants.public.show', $item->slug) }}"
-                           class="group bg-white rounded-2xl card-shadow border border-black/5 overflow-hidden flex flex-col p-4">
+                           class="group bg-white rounded-2xl card-shadow border border-black/5 overflow-hidden flex flex-col p-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green">
                             <span class="w-8 h-8 rounded-lg bg-brand-light-green flex items-center justify-center mb-2">
                                 <span class="text-sm text-brand-green">☸</span>
                             </span>
-                            <h4 class="font-bold text-slate-800 text-sm leading-snug group-hover:text-brand-green transition-colors">
+                            <h4 class="font-bold text-slate-800 text-sm leading-snug group-hover:text-brand-green transition-colors duration-300">
                                 {{ $item->title }}
                             </h4>
                         </a>

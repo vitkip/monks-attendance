@@ -1,52 +1,55 @@
 <x-layouts.public :title="'ພຣະສົງ ແລະ ສາມະເນນ'">
 
-    <div class="max-w-5xl mx-auto px-5 sm:px-8 py-10 sm:py-14">
+    {{-- Hero --}}
+    <section class="relative overflow-hidden bg-brand-green-dark">
+        <span class="absolute -right-6 -top-14 text-[240px] leading-none text-white/[0.04] select-none pointer-events-none" aria-hidden="true">☸</span>
 
-        {{-- Page header --}}
-        <div class="mb-8">
-            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">ລາຍຊື່</p>
-            <h1 class="text-2xl sm:text-3xl font-bold text-slate-800">ພຣະສົງ ແລະ ສາມະເນນ</h1>
-            <p class="text-gray-400 text-sm mt-1">ລາຍຊື່ພຣະສົງ ແລະ ສາມະເນນທັງໝົດພາຍໃນວັດ</p>
-        </div>
+        <div class="relative max-w-6xl mx-auto px-5 sm:px-8 pt-16 pb-10 sm:pt-20 sm:pb-12">
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest bg-white/10 text-brand-bright-green mb-4">
+                <span aria-hidden="true">☸</span> ທະບຽນວັດ
+            </span>
 
-        {{-- Stats cards --}}
-        <div class="grid grid-cols-2 gap-4 mb-8">
-            <div class="bg-brand-green text-white rounded-3xl card-shadow p-5">
-                <p class="text-[10px] font-medium text-white/70 uppercase tracking-widest mb-1">ພຣະສົງ</p>
-                <p class="text-xs text-white/70 mb-2">ຈຳນວນພຣະສົງທັງໝົດ</p>
-                <div class="flex items-baseline gap-1.5">
-                    <span class="text-xl sm:text-2xl font-bold tabular-nums leading-none">{{ $totalMonks }}</span>
-                    <span class="text-xs text-white/70">ອົງ</span>
+            <h1 class="text-white text-3xl sm:text-4xl font-bold leading-tight">ພຣະສົງ ແລະ ສາມະເນນ</h1>
+            <p class="text-white/60 text-sm sm:text-base mt-3 max-w-xl leading-relaxed">
+                ລາຍຊື່ພຣະສົງ ແລະ ສາມະເນນທັງໝົດພາຍໃນວັດ
+            </p>
+
+            <div class="flex flex-wrap items-center gap-3 mt-7">
+                <div class="flex items-baseline gap-1.5 bg-white/10 rounded-2xl px-4 py-2.5">
+                    <span class="text-lg font-bold text-white tabular-nums leading-none">{{ $totalMonks }}</span>
+                    <span class="text-xs text-white/60">ອົງ · ພຣະສົງ</span>
                 </div>
-            </div>
-            <div class="bg-white rounded-3xl card-shadow border border-gray-50 p-5">
-                <p class="text-[10px] font-medium text-orange-400 uppercase tracking-widest mb-1">ສາມະເນນ</p>
-                <p class="text-xs text-gray-400 mb-2">ຈຳນວນສາມະເນນທັງໝົດ</p>
-                <div class="flex items-baseline gap-1.5">
-                    <span class="text-xl sm:text-2xl font-bold text-slate-800 tabular-nums leading-none">{{ $totalNovices }}</span>
-                    <span class="text-xs text-gray-400">ອົງ</span>
+                <div class="flex items-baseline gap-1.5 bg-white/10 rounded-2xl px-4 py-2.5">
+                    <span class="text-lg font-bold text-brand-bright-green tabular-nums leading-none">{{ $totalNovices }}</span>
+                    <span class="text-xs text-white/60">ອົງ · ສາມະເນນ</span>
                 </div>
             </div>
         </div>
+    </section>
+
+    <div class="max-w-6xl mx-auto px-5 sm:px-8 py-10 sm:py-14">
 
         {{-- Filter tabs --}}
-        <div class="flex flex-wrap gap-2 mb-10">
-            <a href="{{ route('monks.public.index') }}"
-               class="px-3.5 py-1.5 rounded-full text-xs font-bold transition-colors
-                      {{ ! $type ? 'bg-brand-green text-white' : 'bg-white border border-gray-200 text-slate-600 hover:bg-gray-50' }}">
-                ທັງໝົດ
-            </a>
-            <a href="{{ route('monks.public.index', ['type' => 'monk']) }}"
-               class="px-3.5 py-1.5 rounded-full text-xs font-bold transition-colors
-                      {{ $type === 'monk' ? 'bg-brand-green text-white' : 'bg-white border border-gray-200 text-slate-600 hover:bg-gray-50' }}">
-                ພຣະສົງ
-            </a>
-            <a href="{{ route('monks.public.index', ['type' => 'novice']) }}"
-               class="px-3.5 py-1.5 rounded-full text-xs font-bold transition-colors
-                      {{ $type === 'novice' ? 'bg-brand-green text-white' : 'bg-white border border-gray-200 text-slate-600 hover:bg-gray-50' }}">
-                ສາມະເນນ
-            </a>
-        </div>
+        <nav aria-label="ປະເພດສະມາຊິກ"
+             class="sticky top-16 z-10 -mx-5 px-5 sm:mx-0 sm:px-0 py-3 mb-10 bg-[#faf8f2]/90 backdrop-blur-sm border-b border-black/5">
+            <div class="flex items-center gap-2 overflow-x-auto no-scrollbar sm:flex-wrap">
+                <a href="{{ route('monks.public.index') }}"
+                   class="shrink-0 px-3.5 py-1.5 rounded-full text-xs font-bold transition-colors duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green
+                          {{ ! $type ? 'bg-brand-green text-white' : 'bg-white border border-gray-200 text-slate-600 hover:bg-gray-50' }}">
+                    ທັງໝົດ
+                </a>
+                <a href="{{ route('monks.public.index', ['type' => 'monk']) }}"
+                   class="shrink-0 px-3.5 py-1.5 rounded-full text-xs font-bold transition-colors duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green
+                          {{ $type === 'monk' ? 'bg-brand-green text-white' : 'bg-white border border-gray-200 text-slate-600 hover:bg-gray-50' }}">
+                    ພຣະສົງ
+                </a>
+                <a href="{{ route('monks.public.index', ['type' => 'novice']) }}"
+                   class="shrink-0 px-3.5 py-1.5 rounded-full text-xs font-bold transition-colors duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green
+                          {{ $type === 'novice' ? 'bg-brand-green text-white' : 'bg-white border border-gray-200 text-slate-600 hover:bg-gray-50' }}">
+                    ສາມະເນນ
+                </a>
+            </div>
+        </nav>
 
         @if ($monkGroup->isEmpty() && $noviceGroup->isEmpty())
             {{-- Empty state --}}
@@ -76,9 +79,9 @@
                         </span>
                     </div>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                         @foreach ($monkGroup as $monk)
-                            <div class="bg-white rounded-2xl card-shadow border border-black/5 overflow-hidden p-4 flex items-start gap-3 hover:shadow-md transition-shadow">
+                            <div class="bg-white rounded-2xl card-shadow border border-black/5 overflow-hidden p-4 flex items-start gap-3 transition-shadow duration-300 hover:shadow-lg">
                                 <img src="{{ $monk->photo_url }}" alt="{{ $monk->full_name }}"
                                      class="w-12 h-12 rounded-full object-cover shrink-0 border border-gray-200">
                                 <div class="flex-1 min-w-0">
@@ -113,9 +116,9 @@
                         </span>
                     </div>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                         @foreach ($noviceGroup as $monk)
-                            <div class="bg-white rounded-2xl card-shadow border border-black/5 overflow-hidden p-4 flex items-start gap-3 hover:shadow-md transition-shadow">
+                            <div class="bg-white rounded-2xl card-shadow border border-black/5 overflow-hidden p-4 flex items-start gap-3 transition-shadow duration-300 hover:shadow-lg">
                                 <img src="{{ $monk->photo_url }}" alt="{{ $monk->full_name }}"
                                      class="w-12 h-12 rounded-full object-cover shrink-0 border border-gray-200">
                                 <div class="flex-1 min-w-0">

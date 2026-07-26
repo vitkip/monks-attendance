@@ -6,16 +6,27 @@
             <h1 class="text-2xl sm:text-3xl font-bold text-slate-800">ພຣະສົງ ແລະ ສາມະເນນ</h1>
             <p class="text-gray-400 text-sm mt-1">ຈັດການຂໍ້ມູນສະມາຊິກຂອງວັດທັງໝົດ</p>
         </div>
-        <button wire:click="openCreate"
-                class="w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-2.5
-                       bg-brand-green text-white rounded-2xl text-sm font-semibold
-                       shadow-lg shadow-brand-green/20 hover:bg-opacity-90
-                       transition flex-shrink-0">
-            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
-            </svg>
-            ເພີ່ມສະມາຊິກ
-        </button>
+        <div class="w-full sm:w-auto flex items-center gap-2.5">
+            <a href="{{ route('monks.public.index') }}" target="_blank" rel="noopener"
+               class="flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-2.5
+                      bg-white border border-gray-200 text-slate-600 rounded-2xl text-sm font-semibold
+                      hover:bg-gray-50 transition flex-shrink-0">
+                <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                </svg>
+                ເປີດໜ້າ Frontend
+            </a>
+            <button wire:click="openCreate"
+                    class="flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-2.5
+                           bg-brand-green text-white rounded-2xl text-sm font-semibold
+                           shadow-lg shadow-brand-green/20 hover:bg-opacity-90
+                           transition flex-shrink-0">
+                <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+                </svg>
+                ເພີ່ມສະມາຊິກ
+            </button>
+        </div>
     </div>
 
     {{-- Filters --}}
@@ -228,7 +239,7 @@
     {{-- Create / Edit Modal --}}
     @if ($showModal)
     <div class="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/50 backdrop-blur-sm">
-        <div class="bg-white w-full sm:max-w-lg flex flex-col max-h-[95dvh] sm:max-h-[90dvh]
+        <div class="bg-white w-full sm:max-w-5xl flex flex-col max-h-[95dvh] sm:max-h-[90dvh]
                     rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden">
 
             {{-- Drag handle (mobile only) --}}

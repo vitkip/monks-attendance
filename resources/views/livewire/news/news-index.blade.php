@@ -339,7 +339,7 @@
     {{-- Create / Edit Modal --}}
     @if ($showModal)
     <div class="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/50 backdrop-blur-sm">
-        <div class="bg-white w-full sm:max-w-lg flex flex-col max-h-[95dvh] sm:max-h-[90dvh]
+        <div class="bg-white w-full sm:max-w-5xl flex flex-col max-h-[95dvh] sm:max-h-[90dvh]
                     rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden">
 
             <div class="sm:hidden flex justify-center pt-3 pb-1 flex-shrink-0">

@@ -5,19 +5,33 @@
 @source '../../storage/framework/views/*.php';
 
 @theme {
-    --font-sans: 'Noto Sans Lao', ui-sans-serif, system-ui, sans-serif;
+    --font-sans: 'Phetsarath', ui-sans-serif, system-ui, sans-serif;
 
-    /* Donezo-inspired brand tokens — registered as real theme colors so Tailwind
-       can generate every variant (hover:, focus:, peer-checked:, shadow-*, /opacity, ...) */
-    --color-brand-green: #216143;
-    --color-brand-green-dark: #0a291b;
-    --color-brand-green-mid: #1a4a35;
-    --color-brand-bright-green: #1aae6f;
-    --color-brand-light-green: #eaf4ed;
+    /* Temple Management System (TMS) brand tokens — updated to saffron/orange-brown palette */
+    --color-brand-green: #8f4e00;
+    --color-brand-green-dark: #231a13;
+    --color-brand-green-mid: #ff9933;
+    --color-brand-bright-green: #ff9933;
+    --color-brand-light-green: #fff1e8;
+}
+
+@keyframes dawn-pulse {
+    0%, 100% { opacity: 0.55; }
+    50% { opacity: 1; }
 }
 
 @layer utilities {
     .card-shadow { box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04); }
+
+    .glow-dawn {
+        background: radial-gradient(closest-side, rgba(255, 153, 51, 0.38), rgba(255, 153, 51, 0) 70%);
+        filter: blur(4px);
+        animation: dawn-pulse 6s ease-in-out infinite;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .glow-dawn { animation: none; opacity: 0.8; }
+    }
 
     .sidebar-item-active {
         background-color: #ffffff;

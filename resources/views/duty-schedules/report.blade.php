@@ -6,7 +6,7 @@
     <title>ລາຍງານໜ້າທີ່ຮັບຜິດຊອບ — {{ $generatedAt->format('d/m/Y') }}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Lao:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Phetsarath:wght@400;700&display=swap" rel="stylesheet">
     <style>
         /* ─── Reset & base ─────────────────────────────────── */
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -17,7 +17,7 @@
         }
 
         body {
-            font-family: 'Noto Sans Lao', sans-serif;
+            font-family: 'Phetsarath', sans-serif;
             font-size: 10.5pt;
             color: #1e293b;
             line-height: 1.55;

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\HeroSlide;
 use App\Models\News;
 use App\Models\NewsCategory;
 use Illuminate\Http\Request;
@@ -11,6 +12,8 @@ class PublicNewsController extends Controller
     public function index(Request $request)
     {
         $categorySlug = $request->query('category');
+
+        $heroSlides = HeroSlide::active()->ordered()->get();
 
         $featured = $categorySlug ? null : News::published()->latest('published_at')->latest()->first();
 
@@ -27,7 +30,15 @@ class PublicNewsController extends Controller
 
         $categories = NewsCategory::orderBy('name')->get();
 
-        return view('public.news.index', compact('featured', 'news', 'categories', 'categorySlug'));
+        $latestNews = News::published()
+            ->when($featured, fn($q) => $q->where('id', '!=', $featured->id))
+            ->with('category')
+            ->latest('published_at')
+            ->latest()
+            ->limit(5)
+            ->get();
+
+        return view('public.news.index', compact('heroSlides', 'featured', 'news', 'categories', 'categorySlug', 'latestNews'));
     }
 
     public function show(string $slug)

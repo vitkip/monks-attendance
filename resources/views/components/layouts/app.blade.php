@@ -7,7 +7,7 @@
     <title>{{ config('app.name') }}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Lao:wght@300;400;500;600;700&display=swap"
+    <link href="https://fonts.googleapis.com/css2?family=Phetsarath:wght@400;700&display=swap"
         rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
@@ -81,57 +81,70 @@
                         <span>ຍອດຄ້າງຊຳລະ</span>
                     </a>
 
-                    <a href="{{ route('news.index') }}" @click="sidebarOpen = false" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors
-                          {{ request()->routeIs('news.*')
-        ? 'sidebar-item-active'
-        : 'text-gray-500 hover:bg-gray-100' }}">
-                        <svg class="w-[18px] h-[18px] flex-shrink-0" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor" stroke-width="1.75">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 12h6v-4H7v4z" />
-                        </svg>
-                        <span>ຂ່າວສານ</span>
-                    </a>
-
-                    <a href="{{ route('chants.index') }}" @click="sidebarOpen = false" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors
-                          {{ request()->routeIs('chants.*')
-        ? 'sidebar-item-active'
-        : 'text-gray-500 hover:bg-gray-100' }}">
-                        <svg class="w-[18px] h-[18px] flex-shrink-0" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor" stroke-width="1.75">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M12 6.253v13M12 6.253C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                        </svg>
-                        <span>ບົດສູດມົນ</span>
-                    </a>
-
                     {{-- Admin only --}}
                     @if(auth()->user()->isAdmin())
 
-                        <p class="text-[10px] uppercase font-bold text-gray-400 tracking-widest mb-3 mt-6 px-4">ຈັດການລະບົບ</p>
-
-                        <a href="{{ route('monks.index') }}" @click="sidebarOpen = false" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors
-                              {{ request()->routeIs('monks.*')
+                        <a href="{{ route('electricity-bills.index') }}" @click="sidebarOpen = false" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors
+                              {{ request()->routeIs('electricity-bills.*')
         ? 'sidebar-item-active'
         : 'text-gray-500 hover:bg-gray-100' }}">
                             <svg class="w-[18px] h-[18px] flex-shrink-0" fill="none" viewBox="0 0 24 24"
                                 stroke="currentColor" stroke-width="1.75">
                                 <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    d="M13 10V3L4 14h7v7l9-11h-7z" />
                             </svg>
-                            <span>ພຣະສົງ/ສາມະເນນ</span>
+                            <span>ແຈ້ງບິນຄ່າໄຟຟ້າ</span>
                         </a>
 
-                        <a href="{{ route('fine-rates.index') }}" @click="sidebarOpen = false" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors
-                              {{ request()->routeIs('fine-rates.*')
+                        <a href="{{ route('construction-projects.index') }}" @click="sidebarOpen = false" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors
+                              {{ request()->routeIs('construction-projects.*')
         ? 'sidebar-item-active'
         : 'text-gray-500 hover:bg-gray-100' }}">
                             <svg class="w-[18px] h-[18px] flex-shrink-0" fill="none" viewBox="0 0 24 24"
                                 stroke="currentColor" stroke-width="1.75">
                                 <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    d="M3 21h18M4 21V8l8-5 8 5v13M9 21v-6h6v6M9 12h.01M15 12h.01M9 9h.01M15 9h.01" />
                             </svg>
-                            <span>ອັດຕາຄ່າປັບ</span>
+                            <span>ໂຄງການກໍ່ສ້າງ</span>
+                        </a>
+
+                        <a href="{{ route('news.index') }}" @click="sidebarOpen = false" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors
+                              {{ request()->routeIs('news.*')
+        ? 'sidebar-item-active'
+        : 'text-gray-500 hover:bg-gray-100' }}">
+                            <svg class="w-[18px] h-[18px] flex-shrink-0" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor" stroke-width="1.75">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 12h6v-4H7v4z" />
+                            </svg>
+                            <span>ຂ່າວສານ</span>
+                        </a>
+
+                        <a href="{{ route('chants.index') }}" @click="sidebarOpen = false" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors
+                              {{ request()->routeIs('chants.*')
+        ? 'sidebar-item-active'
+        : 'text-gray-500 hover:bg-gray-100' }}">
+                            <svg class="w-[18px] h-[18px] flex-shrink-0" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor" stroke-width="1.75">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M12 6.253v13M12 6.253C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                            </svg>
+                            <span>ບົດສູດມົນ</span>
+                        </a>
+
+                        {{-- Content management: hero slides, news & chant categories --}}
+                        <p class="text-[10px] uppercase font-bold text-gray-400 tracking-widest mb-3 mt-6 px-4">ຈັດການເນື້ອຫາ</p>
+
+                        <a href="{{ route('hero-slides.index') }}" @click="sidebarOpen = false" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors
+                              {{ request()->routeIs('hero-slides.*')
+        ? 'sidebar-item-active'
+        : 'text-gray-500 hover:bg-gray-100' }}">
+                            <svg class="w-[18px] h-[18px] flex-shrink-0" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor" stroke-width="1.75">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14M4 8h16M4 4h16a1 1 0 011 1v14a1 1 0 01-1 1H4a1 1 0 01-1-1V5a1 1 0 011-1z" />
+                            </svg>
+                            <span>ສະໄລ້ Hero</span>
                         </a>
 
                         <a href="{{ route('news-categories.index') }}" @click="sidebarOpen = false" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors
@@ -158,6 +171,21 @@
                             <span>ໝວດໝູ່ບົດສູດມົນ</span>
                         </a>
 
+                        {{-- Monk management: monk records & duty schedules --}}
+                        <p class="text-[10px] uppercase font-bold text-gray-400 tracking-widest mb-3 mt-6 px-4">ຈັດການພຣະສົງ</p>
+
+                        <a href="{{ route('monks.index') }}" @click="sidebarOpen = false" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors
+                              {{ request()->routeIs('monks.*')
+        ? 'sidebar-item-active'
+        : 'text-gray-500 hover:bg-gray-100' }}">
+                            <svg class="w-[18px] h-[18px] flex-shrink-0" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor" stroke-width="1.75">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                            <span>ພຣະສົງ/ສາມະເນນ</span>
+                        </a>
+
                         <a href="{{ route('duty-schedules.index') }}" @click="sidebarOpen = false" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors
                               {{ request()->routeIs('duty-schedules.*')
         ? 'sidebar-item-active'
@@ -168,6 +196,21 @@
                                     d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
                             </svg>
                             <span>ໜ້າທີ່ປະຈຳວັນ</span>
+                        </a>
+
+                        {{-- System: fines, users, settings --}}
+                        <p class="text-[10px] uppercase font-bold text-gray-400 tracking-widest mb-3 mt-6 px-4">ລະບົບ</p>
+
+                        <a href="{{ route('fine-rates.index') }}" @click="sidebarOpen = false" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors
+                              {{ request()->routeIs('fine-rates.*')
+        ? 'sidebar-item-active'
+        : 'text-gray-500 hover:bg-gray-100' }}">
+                            <svg class="w-[18px] h-[18px] flex-shrink-0" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor" stroke-width="1.75">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span>ອັດຕາຄ່າປັບ</span>
                         </a>
 
                         <a href="{{ route('users.index') }}" @click="sidebarOpen = false" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors
