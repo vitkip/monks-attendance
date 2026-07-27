@@ -14,9 +14,14 @@ git reset --hard origin/main
 echo "==> composer install"
 composer install --no-dev --optimize-autoloader --no-interaction
 
+# Clear stale caches from the previous deploy before anything below (e.g. a
+# migration) has a chance to fail and leave old cached routes/config serving
+# the new code for the rest of the request lifecycle.
+echo "==> clear stale caches"
+php artisan optimize:clear
+
 echo "==> artisan"
 php artisan migrate --force
-php artisan config:clear
 php artisan config:cache
 php artisan route:cache
 php artisan view:cache
