@@ -335,7 +335,7 @@
                         <div class="flex-1 bg-brand-light-green rounded-xl px-3 py-2.5">
                             <p class="text-[9px] font-medium text-brand-green/70 uppercase tracking-widest mb-0.5">ອາຍຸ</p>
                             <p class="text-sm font-bold text-brand-green">
-                                {{ $birth_date ? \Carbon\Carbon::parse($birth_date)->diffInYears(now()) . ' ປີ' : '—' }}
+                                {{ $birth_date ? (int) \Carbon\Carbon::parse($birth_date)->diffInYears(now()) . ' ປີ' : '—' }}
                             </p>
                         </div>
                         <div class="flex-1 bg-gray-100 rounded-xl px-3 py-2.5">
