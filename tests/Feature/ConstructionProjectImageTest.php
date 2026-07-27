@@ -71,7 +71,7 @@ class ConstructionProjectImageTest extends TestCase
         $path = UploadedFile::fake()->image('sala.jpg')->store('construction-projects', 'public');
         $project = ConstructionProject::create(['name' => 'ສາລາໃໝ່', 'status' => 'ongoing', 'image' => $path]);
 
-        $index = $this->get('/public/construction-projects');
+        $index = $this->get(route('construction-projects.public.index'));
         $index->assertStatus(200);
         $index->assertSee(Storage::disk('public')->url($path), false);
 

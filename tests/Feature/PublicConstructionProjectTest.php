@@ -17,7 +17,7 @@ class PublicConstructionProjectTest extends TestCase
         ]);
         $project->transactions()->create(['type' => 'income', 'amount' => 300000, 'transaction_date' => now()]);
 
-        $response = $this->get('/public/construction-projects');
+        $response = $this->get(route('construction-projects.public.index'));
 
         $response->assertStatus(200);
         $response->assertSee('ໂຄງການທີ່ກຳລັງລະດົມທຶນ');
@@ -30,7 +30,7 @@ class PublicConstructionProjectTest extends TestCase
         ConstructionProject::create(['name' => 'ໂຄງການ ກຳລັງ', 'status' => 'ongoing']);
         ConstructionProject::create(['name' => 'ໂຄງການ ສຳເລັດ', 'status' => 'completed']);
 
-        $response = $this->get('/public/construction-projects?status=completed');
+        $response = $this->get(route('construction-projects.public.index', ['status' => 'completed']));
         $response->assertStatus(200);
         $response->assertSee('ໂຄງການ ສຳເລັດ');
         $response->assertDontSee('ໂຄງການ ກຳລັງ');
