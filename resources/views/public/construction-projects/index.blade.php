@@ -1,4 +1,4 @@
-<x-layouts.public :title="'ໂຄງການກໍ່ສ້າງ'">
+<x-layouts.public :title="'ໂຄງການກໍ່ສ້າງ'" :description="'ຕິດຕາມໂຄງການກໍ່ສ້າງ ແລະ ຄວາມຄືບໜ້າພາຍໃນວັດປ່າໜອງບົວທອງໃຕ້'">
 
     {{-- Hero --}}
     <section class="relative overflow-hidden bg-brand-green-dark">

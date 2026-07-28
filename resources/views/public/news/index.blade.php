@@ -1,4 +1,4 @@
-<x-layouts.public :title="'ຂ່າວສານ ແລະ ປະກາດ'">
+<x-layouts.public :title="'ຂ່າວສານ ແລະ ປະກາດ'" :description="'ຕິດຕາມຂ່າວສານ, ປະກາດ, ແລະ ຄວາມເຄື່ອນໄຫວຫລ້າສຸດຂອງວັດປ່າໜອງບົວທອງໃຕ້'">
 
     {{-- Hero --}}
     @if ($heroSlides->isNotEmpty())

@@ -1,4 +1,4 @@
-<x-layouts.public :title="$project->name">
+<x-layouts.public :title="$project->name" :description="\Illuminate\Support\Str::limit(strip_tags($project->description), 150)" :image="$project->image_url">
 
     <div class="max-w-6xl mx-auto px-5 sm:px-8 py-10 sm:py-14">
 

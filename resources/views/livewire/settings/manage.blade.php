@@ -4,7 +4,7 @@
     <div>
         <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">ຕັ້ງຄ່າ</p>
         <h1 class="text-2xl sm:text-3xl font-bold text-slate-800">ຕັ້ງຄ່າລະບົບ</h1>
-        <p class="text-gray-400 text-sm mt-1">ອັບໂຫລດ logo ສຳລັບໜ້າຫລັກ</p>
+        <p class="text-gray-400 text-sm mt-1">ອັບໂຫລດ logo ແລະ ຂໍ້ມູນຕິດຕໍ່ສຳລັບໜ້າຫລັກ</p>
     </div>
 
     {{-- Logo Card --}}
@@ -89,6 +89,64 @@
 
             </form>
 
+        </div>
+    </div>
+
+    {{-- Contact Info Card --}}
+    <div class="bg-white rounded-3xl card-shadow overflow-hidden">
+
+        <div class="px-6 py-4 border-b border-gray-100 bg-[#f8fafa]">
+            <h2 class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">ຂໍ້ມູນຕິດຕໍ່</h2>
+        </div>
+
+        <div class="px-6 py-6">
+            <form wire:submit="saveContact" class="space-y-4">
+
+                <div>
+                    <label class="block text-[10px] font-medium text-gray-400 uppercase tracking-widest mb-2">WhatsApp</label>
+                    <input type="text" wire:model="contactWhatsapp" placeholder="ຕົວຢ່າງ: 8562012345678"
+                        class="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-[#f8fafa] text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-green/30 focus:border-brand-green">
+                    @error('contactWhatsapp')
+                        <p class="mt-1.5 text-red-500 text-xs">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div>
+                    <label class="block text-[10px] font-medium text-gray-400 uppercase tracking-widest mb-2">Facebook</label>
+                    <input type="url" wire:model="contactFacebook" placeholder="https://facebook.com/..."
+                        class="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-[#f8fafa] text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-green/30 focus:border-brand-green">
+                    @error('contactFacebook')
+                        <p class="mt-1.5 text-red-500 text-xs">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div>
+                    <label class="block text-[10px] font-medium text-gray-400 uppercase tracking-widest mb-2">ອີເມວ</label>
+                    <input type="email" wire:model="contactEmail" placeholder="example@email.com"
+                        class="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-[#f8fafa] text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-green/30 focus:border-brand-green">
+                    @error('contactEmail')
+                        <p class="mt-1.5 text-red-500 text-xs">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div>
+                    <label class="block text-[10px] font-medium text-gray-400 uppercase tracking-widest mb-2">YouTube</label>
+                    <input type="url" wire:model="contactYoutube" placeholder="https://youtube.com/..."
+                        class="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-[#f8fafa] text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-green/30 focus:border-brand-green">
+                    @error('contactYoutube')
+                        <p class="mt-1.5 text-red-500 text-xs">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div class="flex justify-end">
+                    <button type="submit"
+                        class="px-5 py-2.5 bg-brand-green hover:bg-opacity-90 text-white text-sm font-semibold rounded-2xl transition shadow-lg shadow-brand-green/20">
+                        <span wire:loading.remove wire:target="saveContact">ບັນທຶກ</span>
+                        <span wire:loading wire:target="saveContact">ກຳລັງບັນທຶກ...</span>
+                    </button>
+                </div>
+
+            </form>
         </div>
     </div>
 

@@ -1,4 +1,4 @@
-<x-layouts.public :title="'ບົດສູດມົນ'">
+<x-layouts.public :title="'ບົດສູດມົນ'" :description="'ລວມບົດສູດມົນຕ່າງໆ ຂອງວັດປ່າໜອງບົວທອງໃຕ້'">
 
     {{-- Hero --}}
     <section class="relative overflow-hidden bg-brand-green-dark">

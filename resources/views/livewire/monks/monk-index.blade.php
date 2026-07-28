@@ -49,6 +49,7 @@
             <option value="">ທຸກປະເພດ</option>
             <option value="monk">ພຣະສົງ</option>
             <option value="novice">ສາມະເນນ</option>
+            <option value="nun">ແມ່ຂາວ</option>
         </select>
     </div>
 
@@ -67,9 +68,12 @@
                         <div class="flex items-center gap-2 flex-wrap">
                             <span class="font-bold text-slate-800 text-sm leading-tight">{{ $monk->full_name }}</span>
                             <span class="px-2.5 py-1 rounded-full text-xs font-bold flex-shrink-0
-                                {{ $monk->type === 'monk'
-                                    ? 'bg-orange-50 text-orange-600'
-                                    : 'bg-teal-50 text-teal-600' }}">
+                                {{ match ($monk->type) {
+                                    'monk'   => 'bg-orange-50 text-orange-600',
+                                    'novice' => 'bg-teal-50 text-teal-600',
+                                    'nun'    => 'bg-purple-50 text-purple-600',
+                                    default  => 'bg-gray-50 text-gray-600',
+                                } }}">
                                 {{ $monk->type_label }}
                             </span>
                         </div>
@@ -170,9 +174,12 @@
                         <td class="px-4 py-3.5 font-bold text-slate-800">{{ $monk->full_name }}</td>
                         <td class="px-4 py-3.5">
                             <span class="px-2.5 py-1 rounded-full text-xs font-bold
-                                {{ $monk->type === 'monk'
-                                    ? 'bg-orange-50 text-orange-600'
-                                    : 'bg-teal-50 text-teal-600' }}">
+                                {{ match ($monk->type) {
+                                    'monk'   => 'bg-orange-50 text-orange-600',
+                                    'novice' => 'bg-teal-50 text-teal-600',
+                                    'nun'    => 'bg-purple-50 text-purple-600',
+                                    default  => 'bg-gray-50 text-gray-600',
+                                } }}">
                                 {{ $monk->type_label }}
                             </span>
                         </td>
@@ -304,6 +311,7 @@
                                        focus:outline-none focus:ring-2 focus:ring-brand-green/30 focus:border-transparent transition-shadow">
                             <option value="monk">ພຣະສົງ</option>
                             <option value="novice">ສາມະເນນ</option>
+                            <option value="nun">ແມ່ຂາວ</option>
                         </select>
                     </div>
                     <div>

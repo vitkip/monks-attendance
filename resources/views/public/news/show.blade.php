@@ -1,4 +1,4 @@
-<x-layouts.public :title="$article->title">
+<x-layouts.public :title="$article->title" :description="$article->excerpt_or_summary" :image="$article->image_url">
 
     {{-- Reading progress bar --}}
     <div id="reading-progress" class="fixed top-0 left-0 h-1 bg-brand-bright-green z-30 transition-[width] duration-150 ease-out" style="width:0%" aria-hidden="true"></div>

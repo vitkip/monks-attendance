@@ -19,10 +19,12 @@ class PublicMonkController extends Controller
 
         $monkGroup = $monks->where('type', 'monk')->values();
         $noviceGroup = $monks->where('type', 'novice')->values();
+        $nunGroup = $monks->where('type', 'nun')->values();
 
         $totalMonks = Monk::where('status', 1)->where('type', 'monk')->count();
         $totalNovices = Monk::where('status', 1)->where('type', 'novice')->count();
+        $totalNuns = Monk::where('status', 1)->where('type', 'nun')->count();
 
-        return view('public.monks.index', compact('monkGroup', 'noviceGroup', 'totalMonks', 'totalNovices', 'type'));
+        return view('public.monks.index', compact('monkGroup', 'noviceGroup', 'nunGroup', 'totalMonks', 'totalNovices', 'totalNuns', 'type'));
     }
 }

@@ -13,9 +13,18 @@ class Manage extends Component
     public $logo;
     public ?string $currentLogo = null;
 
+    public ?string $contactWhatsapp = null;
+    public ?string $contactFacebook = null;
+    public ?string $contactEmail = null;
+    public ?string $contactYoutube = null;
+
     public function mount(): void
     {
         $this->currentLogo = Setting::get('logo');
+        $this->contactWhatsapp = Setting::get('contact_whatsapp');
+        $this->contactFacebook = Setting::get('contact_facebook');
+        $this->contactEmail = Setting::get('contact_email');
+        $this->contactYoutube = Setting::get('contact_youtube');
     }
 
     public function save(): void
@@ -35,6 +44,28 @@ class Manage extends Component
         }
 
         session()->flash('success', 'ບັນທຶກການຕັ້ງຄ່າສຳເລັດ');
+    }
+
+    public function saveContact(): void
+    {
+        $validated = $this->validate([
+            'contactWhatsapp' => 'nullable|string|max:20',
+            'contactFacebook' => 'nullable|url|max:255',
+            'contactEmail' => 'nullable|email|max:255',
+            'contactYoutube' => 'nullable|url|max:255',
+        ], [
+            'contactWhatsapp.max' => 'ເບີ WhatsApp ຍາວເກີນໄປ',
+            'contactFacebook.url' => 'ລິ້ງ Facebook ບໍ່ຖືກຕ້ອງ',
+            'contactEmail.email' => 'ອີເມວບໍ່ຖືກຕ້ອງ',
+            'contactYoutube.url' => 'ລິ້ງ YouTube ບໍ່ຖືກຕ້ອງ',
+        ]);
+
+        Setting::set('contact_whatsapp', $validated['contactWhatsapp']);
+        Setting::set('contact_facebook', $validated['contactFacebook']);
+        Setting::set('contact_email', $validated['contactEmail']);
+        Setting::set('contact_youtube', $validated['contactYoutube']);
+
+        session()->flash('success', 'ບັນທຶກຂໍ້ມູນຕິດຕໍ່ສຳເລັດ');
     }
 
     public function removeLogo(): void

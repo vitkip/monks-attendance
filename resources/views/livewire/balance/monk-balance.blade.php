@@ -63,6 +63,7 @@
                 <option value="">ທຸກປະເພດ</option>
                 <option value="monk">ພຣະສົງ</option>
                 <option value="novice">ສາມະເນນ</option>
+                <option value="nun">ແມ່ຂາວ</option>
             </select>
 
             {{-- Only show debt toggle --}}
@@ -98,7 +99,12 @@
                         <div class="flex items-start gap-2 flex-wrap">
                             <span class="font-semibold text-slate-800 text-base leading-tight">{{ $monk->full_name }}</span>
                             <span class="shrink-0 mt-0.5 px-2.5 py-1 rounded-full text-xs font-bold
-                                {{ $monk->type === 'monk' ? 'bg-orange-50 text-orange-600' : 'bg-teal-50 text-teal-600' }}">
+                                {{ match ($monk->type) {
+                                    'monk'   => 'bg-orange-50 text-orange-600',
+                                    'novice' => 'bg-teal-50 text-teal-600',
+                                    'nun'    => 'bg-purple-50 text-purple-600',
+                                    default  => 'bg-gray-50 text-gray-600',
+                                } }}">
                                 {{ $monk->type_label }}
                             </span>
                         </div>

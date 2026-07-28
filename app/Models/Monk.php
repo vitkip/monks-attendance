@@ -76,7 +76,12 @@ class Monk extends Model
 
     public function getTypeLabelAttribute(): string
     {
-        return $this->type === 'monk' ? 'ພຣະສົງ' : 'ສາມະເນນ';
+        return match ($this->type) {
+            'monk'   => 'ພຣະສົງ',
+            'novice' => 'ສາມະເນນ',
+            'nun'    => 'ແມ່ຂາວ',
+            default  => $this->type,
+        };
     }
 
     public function getPhotoUrlAttribute(): string

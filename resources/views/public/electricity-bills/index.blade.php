@@ -1,4 +1,4 @@
-<x-layouts.public :title="'ລາຍຈ່າຍຄ່າໄຟຟ້າ'">
+<x-layouts.public :title="'ລາຍຈ່າຍຄ່າໄຟຟ້າ'" :description="'ລາຍງານຄ່າໄຟຟ້າຂອງວັດປ່າໜອງບົວທອງໃຕ້ ແບບໂປ່ງໃສ'">
 
     @php
         $maxMonthly = $monthly->max() ?: 0;

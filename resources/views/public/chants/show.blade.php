@@ -1,4 +1,4 @@
-<x-layouts.public :title="$chant->title">
+<x-layouts.public :title="$chant->title" :description="\Illuminate\Support\Str::limit(strip_tags($chant->content), 150)">
 
     <article class="max-w-6xl mx-auto px-5 sm:px-8 py-10 sm:py-14">
 

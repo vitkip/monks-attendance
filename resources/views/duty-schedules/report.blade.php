@@ -348,6 +348,7 @@
         }
         .badge-monk { background: rgba(249,115,22,0.12); color: #c2410c; }
         .badge-novice { background: rgba(13,148,136,0.12); color: #0d9488; }
+        .badge-nun { background: rgba(168,85,247,0.12); color: #9333ea; }
         .sign-line {
             display: block;
             width: 70%;
@@ -630,7 +631,7 @@
                                             <div class="monk-name">{{ $duty->monk->full_name }}</div>
                                         </td>
                                         <td class="col-type">
-                                            <span class="badge {{ $duty->monk->type === 'monk' ? 'badge-monk' : 'badge-novice' }}">
+                                            <span class="badge {{ match ($duty->monk->type) { 'monk' => 'badge-monk', 'nun' => 'badge-nun', default => 'badge-novice' } }}">
                                                 {{ $duty->monk->type_label }}
                                             </span>
                                         </td>
@@ -736,7 +737,7 @@
                                             <div class="monk-name">{{ $duty->monk->full_name }}</div>
                                         </td>
                                         <td class="col-type">
-                                            <span class="badge {{ $duty->monk->type === 'monk' ? 'badge-monk' : 'badge-novice' }}">
+                                            <span class="badge {{ match ($duty->monk->type) { 'monk' => 'badge-monk', 'nun' => 'badge-nun', default => 'badge-novice' } }}">
                                                 {{ $duty->monk->type_label }}
                                             </span>
                                         </td>

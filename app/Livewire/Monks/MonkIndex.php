@@ -31,7 +31,7 @@ class MonkIndex extends Component
         return [
             'name'            => 'required|string|max:100',
             'surname'         => 'required|string|max:100',
-            'type'            => 'required|in:monk,novice',
+            'type'            => 'required|in:monk,novice,nun',
             'birth_date'      => 'nullable|date|before:today',
             'ordination_date' => [
                 'nullable',

@@ -1,4 +1,4 @@
-<x-layouts.public :title="'ພຣະສົງ ແລະ ສາມະເນນ'">
+<x-layouts.public :title="'ພຣະສົງ ແລະ ສາມະເນນ'" :description="'ຂໍ້ມູນພຣະສົງ ແລະ ສາມະເນນ ພາຍໃນວັດປ່າໜອງບົວທອງໃຕ້'">
 
     {{-- Hero --}}
     <section class="relative overflow-hidden bg-brand-green-dark">
@@ -22,6 +22,10 @@
                 <div class="flex items-baseline gap-1.5 bg-white/10 rounded-2xl px-4 py-2.5">
                     <span class="text-lg font-bold text-brand-bright-green tabular-nums leading-none">{{ $totalNovices }}</span>
                     <span class="text-xs text-white/60">ອົງ · ສາມະເນນ</span>
+                </div>
+                <div class="flex items-baseline gap-1.5 bg-white/10 rounded-2xl px-4 py-2.5">
+                    <span class="text-lg font-bold text-purple-300 tabular-nums leading-none">{{ $totalNuns }}</span>
+                    <span class="text-xs text-white/60">ຄົນ · ແມ່ຂາວ</span>
                 </div>
             </div>
         </div>
@@ -48,10 +52,15 @@
                           {{ $type === 'novice' ? 'bg-brand-green text-white' : 'bg-white border border-gray-200 text-slate-600 hover:bg-gray-50' }}">
                     ສາມະເນນ
                 </a>
+                <a href="{{ route('monks.public.index', ['type' => 'nun']) }}"
+                   class="shrink-0 px-3.5 py-1.5 rounded-full text-xs font-bold transition-colors duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green
+                          {{ $type === 'nun' ? 'bg-brand-green text-white' : 'bg-white border border-gray-200 text-slate-600 hover:bg-gray-50' }}">
+                    ແມ່ຂາວ
+                </a>
             </div>
         </nav>
 
-        @if ($monkGroup->isEmpty() && $noviceGroup->isEmpty())
+        @if ($monkGroup->isEmpty() && $noviceGroup->isEmpty() && $nunGroup->isEmpty())
             {{-- Empty state --}}
             <div class="flex flex-col items-center justify-center text-center py-24">
                 <span class="text-5xl text-brand-green/30 mb-4">☸</span>
@@ -99,7 +108,7 @@
 
             {{-- ─── NOVICES SECTION ──────────────────── --}}
             @if ($noviceGroup->isNotEmpty())
-                <div>
+                <div class="mb-10">
                     <div class="flex items-center gap-3 mb-5">
                         <div class="flex items-center gap-2.5 shrink-0">
                             <div class="w-8 h-8 rounded-lg bg-orange-50 flex items-center justify-center">
@@ -125,6 +134,43 @@
                                     <p class="font-semibold text-slate-800 text-sm leading-snug">{{ $monk->full_name }}</p>
                                     <p class="text-[11px] text-gray-400 mt-0.5">{{ $monk->temple ?: 'ບໍ່ລະບຸວັດ' }}</p>
                                     <span class="inline-flex items-center mt-2 px-2.5 py-1 rounded-full text-[11px] font-medium bg-orange-50 text-orange-600">
+                                        ພັນສາ {{ $monk->pansa }}
+                                    </span>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
+
+            {{-- ─── NUNS SECTION ──────────────────── --}}
+            @if ($nunGroup->isNotEmpty())
+                <div>
+                    <div class="flex items-center gap-3 mb-5">
+                        <div class="flex items-center gap-2.5 shrink-0">
+                            <div class="w-8 h-8 rounded-lg bg-purple-50 flex items-center justify-center">
+                                <span class="text-purple-500 text-sm">☸</span>
+                            </div>
+                            <div>
+                                <p class="text-sm font-bold text-slate-800 leading-none">ແມ່ຂາວ</p>
+                                <p class="text-[10px] text-gray-400 mt-0.5">Nuns</p>
+                            </div>
+                        </div>
+                        <div class="flex-1 h-px bg-gray-200"></div>
+                        <span class="text-[11px] text-gray-400 font-medium px-2 py-1 bg-gray-100 rounded-full">
+                            {{ $nunGroup->count() }} ຄົນ
+                        </span>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                        @foreach ($nunGroup as $monk)
+                            <div class="bg-white rounded-2xl card-shadow border border-black/5 overflow-hidden p-4 flex items-start gap-3 transition-shadow duration-300 hover:shadow-lg">
+                                <img src="{{ $monk->photo_url }}" alt="{{ $monk->full_name }}"
+                                     class="w-12 h-12 rounded-full object-cover shrink-0 border border-gray-200">
+                                <div class="flex-1 min-w-0">
+                                    <p class="font-semibold text-slate-800 text-sm leading-snug">{{ $monk->full_name }}</p>
+                                    <p class="text-[11px] text-gray-400 mt-0.5">{{ $monk->temple ?: 'ບໍ່ລະບຸວັດ' }}</p>
+                                    <span class="inline-flex items-center mt-2 px-2.5 py-1 rounded-full text-[11px] font-medium bg-purple-50 text-purple-600">
                                         ພັນສາ {{ $monk->pansa }}
                                     </span>
                                 </div>
