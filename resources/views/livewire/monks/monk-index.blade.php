@@ -29,6 +29,42 @@
         </div>
     </div>
 
+    {{-- Summary counts --}}
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-6">
+        <div class="bg-brand-green text-white rounded-2xl card-shadow p-4">
+            <div class="flex items-center gap-1.5 mb-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-white"></span>
+                <span class="text-[10px] font-medium text-white/70 uppercase tracking-widest">ທັງໝົດ</span>
+            </div>
+            <p class="text-2xl font-bold tabular-nums leading-none">{{ $totalCount }}</p>
+            <p class="text-[11px] text-white/60 mt-1.5">ຄົນ</p>
+        </div>
+        <div class="bg-white rounded-2xl card-shadow p-4">
+            <div class="flex items-center gap-1.5 mb-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-orange-400"></span>
+                <span class="text-[10px] font-medium text-gray-400 uppercase tracking-widest">ພຣະສົງ</span>
+            </div>
+            <p class="text-2xl font-bold text-slate-800 tabular-nums leading-none">{{ $monkCount }}</p>
+            <p class="text-[11px] text-gray-300 mt-1.5">ຄົນ</p>
+        </div>
+        <div class="bg-white rounded-2xl card-shadow p-4">
+            <div class="flex items-center gap-1.5 mb-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-teal-400"></span>
+                <span class="text-[10px] font-medium text-gray-400 uppercase tracking-widest">ສາມະເນນ</span>
+            </div>
+            <p class="text-2xl font-bold text-slate-800 tabular-nums leading-none">{{ $noviceCount }}</p>
+            <p class="text-[11px] text-gray-300 mt-1.5">ຄົນ</p>
+        </div>
+        <div class="bg-white rounded-2xl card-shadow p-4">
+            <div class="flex items-center gap-1.5 mb-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-purple-400"></span>
+                <span class="text-[10px] font-medium text-gray-400 uppercase tracking-widest">ແມ່ຂາວ</span>
+            </div>
+            <p class="text-2xl font-bold text-slate-800 tabular-nums leading-none">{{ $nunCount }}</p>
+            <p class="text-[11px] text-gray-300 mt-1.5">ຄົນ</p>
+        </div>
+    </div>
+
     {{-- Filters --}}
     <div class="bg-white card-shadow rounded-2xl p-4 mb-6 flex flex-col sm:flex-row gap-3">
         <div class="flex-1 relative">
@@ -277,6 +313,47 @@
             <form wire:submit="save"
                   class="flex-1 overflow-y-auto px-6 py-5 space-y-4">
 
+                {{-- Photo picker --}}
+                <div class="flex flex-col items-center gap-2 pb-1">
+                    <label for="monk-photo-input" class="relative cursor-pointer group flex-shrink-0">
+                        <div class="w-24 h-24 rounded-full overflow-hidden bg-[#f8fafa] ring-4 ring-[#f8fafa]
+                                    flex items-center justify-center relative">
+                            @if ($photo)
+                                <img src="{{ $photo->temporaryUrl() }}" alt="ຮູບຕົວຢ່າງ" class="w-full h-full object-cover">
+                            @elseif ($existingPhotoUrl)
+                                <img src="{{ $existingPhotoUrl }}" alt="ຮູບຕົວຢ່າງ" class="w-full h-full object-cover">
+                            @else
+                                <svg class="w-9 h-9 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14c-4.418 0-8 2.239-8 5v1h16v-1c0-2.761-3.582-5-8-5z"/>
+                                </svg>
+                            @endif
+                            <div wire:loading wire:target="photo"
+                                 class="absolute inset-0 bg-black/40 flex items-center justify-center">
+                                <svg class="w-5 h-5 text-white animate-spin" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <span class="absolute bottom-0 right-0 w-7 h-7 rounded-full bg-brand-green text-white
+                                     flex items-center justify-center ring-2 ring-white
+                                     group-hover:bg-opacity-90 transition">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 17a3.5 3.5 0 100-7 3.5 3.5 0 000 7z"/>
+                            </svg>
+                        </span>
+                        <input id="monk-photo-input" wire:model="photo" type="file" accept="image/*" class="hidden">
+                    </label>
+                    <p class="text-[11px] text-gray-400">ກົດຮູບເພື່ອເລືອກ/ປ່ຽນຮູບພາບ</p>
+                    @error('photo') <p class="text-red-500 text-xs">{{ $message }}</p> @enderror
+                </div>
+
+                {{-- Section: ຂໍ້ມູນສ່ວນຕົວ --}}
+                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest pt-1 border-t border-gray-100">
+                    ຂໍ້ມູນສ່ວນຕົວ
+                </p>
+
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-[10px] font-medium text-gray-400 mb-1.5 uppercase tracking-widest">
@@ -302,18 +379,39 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-[10px] font-medium text-gray-400 mb-1.5 uppercase tracking-widest">ປະເພດ</label>
-                        <select wire:model.live="type"
-                                class="w-full bg-[#f8fafa] border border-gray-200 rounded-xl px-3 py-2.5 text-sm
-                                       text-slate-800
-                                       focus:outline-none focus:ring-2 focus:ring-brand-green/30 focus:border-transparent transition-shadow">
-                            <option value="monk">ພຣະສົງ</option>
-                            <option value="novice">ສາມະເນນ</option>
-                            <option value="nun">ແມ່ຂາວ</option>
-                        </select>
+                @php
+                    $typeOptions = [
+                        'monk'   => 'ພຣະສົງ',
+                        'novice' => 'ສາມະເນນ',
+                        'nun'    => 'ແມ່ຂາວ',
+                    ];
+                    $typeActiveClasses = [
+                        'monk'   => 'bg-orange-50 text-orange-600 border-orange-200',
+                        'novice' => 'bg-teal-50 text-teal-600 border-teal-200',
+                        'nun'    => 'bg-purple-50 text-purple-600 border-purple-200',
+                    ];
+                @endphp
+                <div>
+                    <label class="block text-[10px] font-medium text-gray-400 mb-1.5 uppercase tracking-widest">ປະເພດ</label>
+                    <div class="grid grid-cols-3 gap-2">
+                        @foreach ($typeOptions as $value => $label)
+                            <button type="button" wire:click="$set('type', '{{ $value }}')"
+                                    class="px-3 py-2.5 rounded-xl text-sm font-semibold border transition-all
+                                        {{ $type === $value
+                                            ? $typeActiveClasses[$value]
+                                            : 'bg-[#f8fafa] text-gray-400 border-gray-200 hover:bg-gray-100 hover:text-slate-600' }}">
+                                {{ $label }}
+                            </button>
+                        @endforeach
                     </div>
+                </div>
+
+                {{-- Section: ວັນທີ --}}
+                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest pt-3 border-t border-gray-100">
+                    ວັນທີ
+                </p>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-[10px] font-medium text-gray-400 mb-1.5 uppercase tracking-widest">
                             ວັນເດືອນປີເກີດ
@@ -325,9 +423,6 @@
                                       @error('birth_date') border-red-300 focus:ring-red-200 @else border-gray-200 focus:ring-brand-green/30 @enderror">
                         @error('birth_date') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
-                </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-[10px] font-medium text-gray-400 mb-1.5 uppercase tracking-widest">
                             ວັນເດືອນປີບວດ
@@ -339,38 +434,33 @@
                                       @error('ordination_date') border-red-300 focus:ring-red-200 @else border-gray-200 focus:ring-brand-green/30 @enderror">
                         @error('ordination_date') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
-                    <div class="flex gap-2">
-                        <div class="flex-1 bg-brand-light-green rounded-xl px-3 py-2.5">
-                            <p class="text-[9px] font-medium text-brand-green/70 uppercase tracking-widest mb-0.5">ອາຍຸ</p>
-                            <p class="text-sm font-bold text-brand-green">
-                                {{ $birth_date ? (int) \Carbon\Carbon::parse($birth_date)->diffInYears(now()) . ' ປີ' : '—' }}
-                            </p>
-                        </div>
-                        <div class="flex-1 bg-gray-100 rounded-xl px-3 py-2.5">
-                            <p class="text-[9px] font-medium text-gray-400 uppercase tracking-widest mb-0.5">ພັນສາ (ອັດຕະໂນມັດ)</p>
-                            <p class="text-sm font-bold text-slate-700">
-                                {{ \App\Models\Monk::calculatePansa($ordination_date ?: null) }}
-                            </p>
-                        </div>
+                </div>
+
+                <div class="flex gap-2">
+                    <div class="flex-1 bg-brand-light-green rounded-xl px-3 py-2.5">
+                        <p class="text-[9px] font-medium text-brand-green/70 uppercase tracking-widest mb-0.5">ອາຍຸ</p>
+                        <p class="text-sm font-bold text-brand-green">
+                            {{ $birth_date ? (int) \Carbon\Carbon::parse($birth_date)->diffInYears(now()) . ' ປີ' : '—' }}
+                        </p>
+                    </div>
+                    <div class="flex-1 bg-gray-100 rounded-xl px-3 py-2.5">
+                        <p class="text-[9px] font-medium text-gray-400 uppercase tracking-widest mb-0.5">ພັນສາ (ອັດຕະໂນມັດ)</p>
+                        <p class="text-sm font-bold text-slate-700">
+                            {{ \App\Models\Monk::calculatePansa($ordination_date ?: null) }}
+                        </p>
                     </div>
                 </div>
 
+                {{-- Section: ວັດ --}}
+                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest pt-3 border-t border-gray-100">
+                    ວັດ
+                </p>
+
                 <div>
-                    <label class="block text-[10px] font-medium text-gray-400 mb-1.5 uppercase tracking-widest">ວັດ</label>
                     <input wire:model="temple" type="text" placeholder="ຊື່ວັດ"
                            class="w-full bg-[#f8fafa] border border-gray-200 rounded-xl px-3 py-2.5 text-sm
                                   text-slate-800 placeholder:text-gray-400
                                   focus:outline-none focus:ring-2 focus:ring-brand-green/30 focus:border-transparent transition-shadow">
-                </div>
-
-                <div>
-                    <label class="block text-[10px] font-medium text-gray-400 mb-1.5 uppercase tracking-widest">ຮູບພາບ</label>
-                    <input wire:model="photo" type="file" accept="image/*"
-                           class="w-full bg-[#f8fafa] border border-gray-200 rounded-xl px-3 py-2.5 text-sm
-                                  text-slate-600
-                                  file:mr-3 file:py-1 file:px-3 file:rounded-lg file:border-0
-                                  file:text-xs file:font-semibold file:bg-brand-green file:text-white file:cursor-pointer">
-                    @error('photo') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                 </div>
 
                 {{-- Sticky footer actions --}}
@@ -380,10 +470,16 @@
                                    hover:bg-gray-50 transition-colors">
                         ຍົກເລີກ
                     </button>
-                    <button type="submit"
+                    <button type="submit" wire:loading.attr="disabled" wire:target="save,photo"
                             class="px-5 py-2.5 bg-brand-green text-white rounded-2xl text-sm font-semibold
-                                   shadow-lg shadow-brand-green/20 hover:bg-opacity-90 transition">
-                        ບັນທຶກ
+                                   shadow-lg shadow-brand-green/20 hover:bg-opacity-90 transition
+                                   disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-2">
+                        <svg wire:loading wire:target="save" class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                        </svg>
+                        <span wire:loading.remove wire:target="save">ບັນທຶກ</span>
+                        <span wire:loading wire:target="save">ກຳລັງບັນທຶກ...</span>
                     </button>
                 </div>
             </form>

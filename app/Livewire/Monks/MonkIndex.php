@@ -25,6 +25,7 @@ class MonkIndex extends Component
     public string $ordination_date = '';
     public string $temple = '';
     public $photo = null;
+    public string $existingPhotoUrl = '';
 
     protected function rules(): array
     {
@@ -74,7 +75,7 @@ class MonkIndex extends Component
 
     public function openCreate(): void
     {
-        $this->reset(['name', 'surname', 'type', 'birth_date', 'ordination_date', 'temple', 'photo', 'editId']);
+        $this->reset(['name', 'surname', 'type', 'birth_date', 'ordination_date', 'temple', 'photo', 'editId', 'existingPhotoUrl']);
         $this->type = 'monk';
         $this->showModal = true;
     }
@@ -89,6 +90,8 @@ class MonkIndex extends Component
         $this->birth_date      = $monk->birth_date?->format('Y-m-d') ?? '';
         $this->ordination_date = $monk->ordination_date?->format('Y-m-d') ?? '';
         $this->temple          = $monk->temple ?? '';
+        $this->existingPhotoUrl = $monk->photo_url;
+        $this->photo = null;
         $this->showModal = true;
     }
 
@@ -119,7 +122,7 @@ class MonkIndex extends Component
         }
 
         $this->showModal = false;
-        $this->reset(['name', 'surname', 'type', 'birth_date', 'ordination_date', 'temple', 'photo', 'editId']);
+        $this->reset(['name', 'surname', 'type', 'birth_date', 'ordination_date', 'temple', 'photo', 'editId', 'existingPhotoUrl']);
     }
 
     public function confirmDelete(int $id): void
@@ -155,6 +158,13 @@ class MonkIndex extends Component
             ->latest()
             ->paginate(10);
 
-        return view('livewire.monks.monk-index', compact('monks'));
+        $totalCount  = Monk::where('status', 1)->count();
+        $monkCount   = Monk::where('status', 1)->where('type', 'monk')->count();
+        $noviceCount = Monk::where('status', 1)->where('type', 'novice')->count();
+        $nunCount    = Monk::where('status', 1)->where('type', 'nun')->count();
+
+        return view('livewire.monks.monk-index', compact(
+            'monks', 'totalCount', 'monkCount', 'noviceCount', 'nunCount'
+        ));
     }
 }
