@@ -52,7 +52,7 @@
 
     {{-- Notice banner --}}
     <div class="flex items-start gap-3 bg-brand-light-green rounded-2xl px-4 py-3 mb-6">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="none" stroke="#216143" stroke-width="1.75" class="w-4 h-4 mt-0.5 shrink-0">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="none" stroke="#8f4e00" stroke-width="1.75" class="w-4 h-4 mt-0.5 shrink-0">
             <circle cx="10" cy="10" r="8"/>
             <path stroke-linecap="round" d="M10 6v4.5M10 13.5v.5"/>
         </svg>
@@ -94,7 +94,7 @@
         {{-- Empty state --}}
         <div class="bg-white rounded-3xl card-shadow flex flex-col items-center justify-center py-16 text-center">
             <div class="w-14 h-14 rounded-full bg-brand-light-green flex items-center justify-center mb-4">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#216143" stroke-width="1.5" class="w-7 h-7">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#8f4e00" stroke-width="1.5" class="w-7 h-7">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
                 </svg>
             </div>
@@ -110,7 +110,7 @@
                 <div class="flex items-center gap-3 mb-5">
                     <div class="flex items-center gap-2.5 shrink-0">
                         <div class="w-8 h-8 rounded-lg bg-brand-light-green flex items-center justify-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="none" stroke="#216143" stroke-width="1.75" class="w-4 h-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="none" stroke="#8f4e00" stroke-width="1.75" class="w-4 h-4">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M10 4v3M10 13v3M4 10h3M13 10h3M5.636 5.636l2.121 2.121M12.243 12.243l2.121 2.121M12.243 7.757l2.121-2.121M5.636 14.364l2.121-2.121"/>
                             </svg>
                         </div>
@@ -154,7 +154,7 @@
                             {{-- Cards grid --}}
                             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 pl-2">
                                 @foreach ($dayDuties as $duty)
-                                    <div class="bg-white rounded-2xl card-shadow overflow-hidden hover:shadow-md transition-shadow">
+                                    <div class="bg-white rounded-2xl card-interactive overflow-hidden">
                                         <div class="p-4">
                                             <div class="flex items-start gap-3">
                                                 <img src="{{ $duty->monk->photo_url }}" alt="{{ $duty->monk->full_name }}"
@@ -275,7 +275,7 @@
                             {{-- Cards grid --}}
                             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 pl-2 {{ $isPast ? 'opacity-60' : '' }}">
                                 @foreach ($dateDuties as $duty)
-                                    <div class="bg-white rounded-2xl card-shadow overflow-hidden hover:shadow-md transition-shadow">
+                                    <div class="bg-white rounded-2xl card-interactive overflow-hidden">
                                         <div class="p-4">
                                             <div class="flex items-start gap-3">
                                                 <img src="{{ $duty->monk->photo_url }}" alt="{{ $duty->monk->full_name }}"

@@ -72,7 +72,7 @@
     @if ($absenceGroups->isEmpty())
         <div class="bg-white rounded-3xl card-shadow flex flex-col items-center justify-center py-16 text-center">
             <div class="w-14 h-14 rounded-full bg-brand-light-green flex items-center justify-center mb-4">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#216143" stroke-width="1.5" class="w-7 h-7">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#8f4e00" stroke-width="1.5" class="w-7 h-7">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
                 </svg>
             </div>
@@ -141,7 +141,7 @@
                                 <div class="px-4 pt-4 pb-3 flex items-start justify-between gap-3">
                                     <div class="flex-1 min-w-0">
                                         <p class="font-bold text-slate-800 text-base truncate">{{ $absence->monk->full_name }}</p>
-                                        <span class="inline-block mt-1 px-2 py-0.5 rounded-full text-[10px] font-bold
+                                        <span class="inline-block mt-1 px-2.5 py-1 rounded-full text-xs font-bold
                                             {{ match ($absence->monk->type) {
                                                 'monk'   => 'bg-orange-50 text-orange-600',
                                                 'novice' => 'bg-teal-50 text-teal-600',
@@ -234,7 +234,7 @@
                                         <td class="px-4 py-3.5 text-xs text-gray-300 tabular-nums">{{ $absence->id }}</td>
                                         <td class="px-4 py-3.5">
                                             <p class="font-bold text-slate-800">{{ $absence->monk->full_name }}</p>
-                                            <span class="inline-block mt-1 px-2 py-0.5 rounded-full text-[10px] font-bold
+                                            <span class="inline-block mt-1 px-2.5 py-1 rounded-full text-xs font-bold
                                                 {{ match ($absence->monk->type) {
                                                     'monk'   => 'bg-orange-50 text-orange-600',
                                                     'novice' => 'bg-teal-50 text-teal-600',

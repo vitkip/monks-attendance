@@ -173,18 +173,32 @@
 
     {{-- ══ Create / Edit Modal ══ --}}
     @if($showModal)
-    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
-         x-data x-on:keydown.escape.window="$wire.set('showModal', false)">
-        <div class="absolute inset-0" wire:click="$set('showModal', false)"></div>
-        <div class="relative bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden">
+    <div class="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/50 backdrop-blur-sm"
+         x-data x-on:keydown.escape.window="$wire.set('showModal', false)"
+         wire:click.self="$set('showModal', false)">
+        <div class="bg-white w-full sm:max-w-md rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden max-h-[95dvh] sm:max-h-[90vh] flex flex-col">
 
-            <div class="px-6 py-5 border-b border-gray-100">
-                <h3 class="text-lg font-bold text-slate-800">
-                    {{ $editId ? 'ແກ້ໄຂຜູ້ໃຊ້' : 'ເພີ່ມຜູ້ໃຊ້ໃໝ່' }}
-                </h3>
+            <div class="px-6 py-4 flex items-center justify-between shrink-0 border-b border-gray-100">
+                <div>
+                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                        {{ $editId ? 'ແກ້ໄຂຂໍ້ມູນ' : 'ເພີ່ມໃໝ່' }}
+                    </p>
+                    <h2 class="text-lg font-bold text-slate-800 mt-0.5">ຜູ້ໃຊ້ງານ</h2>
+                </div>
+                <button wire:click="$set('showModal', false)"
+                        class="w-9 h-9 flex items-center justify-center rounded-lg text-gray-400 hover:text-slate-700 hover:bg-gray-100 transition-colors touch-manipulation">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 6l8 8M14 6l-8 8"/>
+                    </svg>
+                </button>
             </div>
 
-            <form wire:submit="save" class="px-6 py-5 space-y-4">
+            {{-- Drag handle (mobile only) --}}
+            <div class="sm:hidden flex justify-center pt-3 shrink-0">
+                <div class="w-10 h-1 rounded-full bg-gray-200"></div>
+            </div>
+
+            <form wire:submit="save" class="px-6 py-5 space-y-4 overflow-y-auto">
 
                 {{-- Name --}}
                 <div>
@@ -262,10 +276,14 @@
 
     {{-- ══ Delete Confirm Modal ══ --}}
     @if($showDeleteModal)
-    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
-         x-data x-on:keydown.escape.window="$wire.set('showDeleteModal', false)">
-        <div class="absolute inset-0" wire:click="$set('showDeleteModal', false)"></div>
-        <div class="relative bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden">
+    <div class="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/50 backdrop-blur-sm"
+         x-data x-on:keydown.escape.window="$wire.set('showDeleteModal', false)"
+         wire:click.self="$set('showDeleteModal', false)">
+        <div class="bg-white w-full sm:max-w-sm rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden">
+            {{-- Drag handle (mobile only) --}}
+            <div class="sm:hidden flex justify-center pt-3">
+                <div class="w-10 h-1 rounded-full bg-gray-200"></div>
+            </div>
             <div class="px-6 py-6 text-center">
                 <div class="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-4">
                     <svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">

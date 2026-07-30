@@ -207,7 +207,7 @@
             <div class="bg-white rounded-3xl card-shadow flex flex-col items-center justify-center py-20 text-center">
                 @if($onlyDebt)
                     <div class="w-16 h-16 rounded-full bg-brand-light-green flex items-center justify-center mb-4">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#216143" stroke-width="1.5" class="w-8 h-8">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#8f4e00" stroke-width="1.5" class="w-8 h-8">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
                     </div>
@@ -215,7 +215,7 @@
                     <p class="text-gray-400 text-sm">ພຣະສົງທຸກອົງຊຳລະຄ່າປັບຄົບຖ້ວນແລ້ວ</p>
                 @else
                     <div class="w-16 h-16 rounded-full bg-brand-light-green flex items-center justify-center mb-4">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#216143" stroke-width="1.5" class="w-8 h-8">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#8f4e00" stroke-width="1.5" class="w-8 h-8">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
                         </svg>
                     </div>

@@ -23,6 +23,19 @@
 @layer utilities {
     .card-shadow { box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04); }
 
+    /* Shared hover feedback for clickable/scannable cards in grid layouts */
+    .card-interactive {
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+        transition: box-shadow 200ms ease, transform 200ms ease;
+    }
+    .card-interactive:hover {
+        box-shadow: 0 10px 24px rgba(143, 78, 0, 0.10);
+        transform: translateY(-2px);
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .card-interactive, .card-interactive:hover { transition: none; transform: none; }
+    }
+
     .glow-dawn {
         background: radial-gradient(closest-side, rgba(255, 153, 51, 0.38), rgba(255, 153, 51, 0) 70%);
         filter: blur(4px);
@@ -34,9 +47,9 @@
     }
 
     .sidebar-item-active {
-        background-color: #ffffff;
-        border-left: 3px solid #216143;
-        color: #216143;
+        background-color: #fff1e8;
+        border-left: 3px solid #8f4e00;
+        color: #8f4e00;
     }
 
     .bg-brand-tracker {

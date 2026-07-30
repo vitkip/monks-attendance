@@ -19,7 +19,7 @@
     {{-- Cards grid --}}
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         @forelse ($categories as $category)
-            <div class="bg-white rounded-2xl card-shadow border border-gray-50 flex flex-col overflow-hidden transition-all duration-200 hover:shadow-lg">
+            <div class="bg-white rounded-2xl card-interactive border border-gray-50 flex flex-col overflow-hidden">
 
                 <div class="p-5 flex-1">
                     <p class="text-[10px] font-medium text-gray-400 uppercase tracking-widest mb-2">ໝວດໝູ່ຂ່າວ</p>
