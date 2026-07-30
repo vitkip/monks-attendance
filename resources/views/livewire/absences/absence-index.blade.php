@@ -76,17 +76,28 @@
                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
                 </svg>
             </div>
-            <p class="font-bold text-slate-800 mb-1">ຍັງບໍ່ມີຂໍ້ມູນການຂາດ</p>
-            <p class="text-gray-400 text-sm">ກົດ "ບັນທຶກ" ເພື່ອເພີ່ມຂໍ້ມູນ</p>
+            @if ($search !== '' || $filterMonth !== '' || $filterPaid !== '')
+                <p class="font-bold text-slate-800 mb-1">ບໍ່ພົບຂໍ້ມູນທີ່ຄົ້ນຫາ</p>
+                <p class="text-gray-400 text-sm mb-4">ລອງປ່ຽນຄຳຄົ້ນຫາ ຫຼື ຕົວກອງອື່ນ</p>
+                <button wire:click="$set('search', ''); $set('filterMonth', ''); $set('filterPaid', '')"
+                        class="text-sm font-semibold text-brand-green hover:underline touch-manipulation">
+                    ລ້າງຕົວກອງທັງໝົດ
+                </button>
+            @else
+                <p class="font-bold text-slate-800 mb-1">ຍັງບໍ່ມີຂໍ້ມູນການຂາດ</p>
+                <p class="text-gray-400 text-sm">ກົດ "ບັນທຶກ" ເພື່ອເພີ່ມຂໍ້ມູນ</p>
+            @endif
         </div>
     @else
         <div class="space-y-6">
             @foreach ($absenceGroups as $dateKey => $dateAbsences)
                 @php
                     $dateCarbon = \Carbon\Carbon::parse($dateKey);
-                    $isToday    = $dateCarbon->isToday();
-                    $isTomorrow = $dateCarbon->isTomorrow();
-                    $isFuture   = $dateCarbon->isFuture();
+                    $isToday      = $dateCarbon->isToday();
+                    $isTomorrow   = $dateCarbon->isTomorrow();
+                    $isFuture     = $dateCarbon->isFuture();
+                    $isPast       = !$isToday && !$isFuture;
+                    $daysOverdue  = $isPast ? $dateCarbon->diffInDays(now()) : null;
                 @endphp
                 <div>
                     {{-- Date pill header --}}
@@ -116,8 +127,8 @@
                             </div>
                         @endif
                         <div class="flex-1 h-px bg-gray-200"></div>
-                        <span class="text-[11px] text-gray-400 font-medium px-2 py-1 bg-gray-100 rounded-full">
-                            {{ $dateAbsences->count() }} ອົງ
+                        <span class="text-[11px] text-gray-400 font-medium px-2 py-1 bg-gray-100 rounded-full whitespace-nowrap">
+                            {{ $dateAbsences->count() }} ອົງ · {{ number_format($dateAbsences->sum('fine_amount')) }} ກີບ
                         </span>
                     </div>
 
@@ -130,7 +141,15 @@
                                 <div class="px-4 pt-4 pb-3 flex items-start justify-between gap-3">
                                     <div class="flex-1 min-w-0">
                                         <p class="font-bold text-slate-800 text-base truncate">{{ $absence->monk->full_name }}</p>
-                                        <p class="text-xs text-gray-400 mt-0.5">{{ $absence->monk->type_label }}</p>
+                                        <span class="inline-block mt-1 px-2 py-0.5 rounded-full text-[10px] font-bold
+                                            {{ match ($absence->monk->type) {
+                                                'monk'   => 'bg-orange-50 text-orange-600',
+                                                'novice' => 'bg-teal-50 text-teal-600',
+                                                'nun'    => 'bg-purple-50 text-purple-600',
+                                                default  => 'bg-gray-50 text-gray-600',
+                                            } }}">
+                                            {{ $absence->monk->type_label }}
+                                        </span>
                                     </div>
                                     <div class="text-right shrink-0">
                                         <p class="text-[11px] text-gray-400">{{ $absence->fineRate->name }}</p>
@@ -139,9 +158,14 @@
 
                                 {{-- Middle row: reason + fine amount --}}
                                 <div class="px-4 pb-3 pt-3 flex items-center justify-between gap-3 border-t border-gray-100">
-                                    <p class="text-sm text-slate-600 flex-1 min-w-0 truncate">
-                                        {{ $absence->reason ?: 'ບໍ່ລະບຸເຫດຜົນ' }}
-                                    </p>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-sm text-slate-600 truncate">
+                                            {{ $absence->reason ?: 'ບໍ່ລະບຸເຫດຜົນ' }}
+                                        </p>
+                                        @if (!$absence->is_paid && $isPast)
+                                            <p class="text-[10px] font-bold text-red-500 mt-1">ຄ້າງຈ່າຍ {{ $daysOverdue }} ວັນ</p>
+                                        @endif
+                                    </div>
                                     <div class="flex items-center gap-1.5 shrink-0">
                                         <span class="inline-flex items-center justify-center w-4 h-4 rounded-full border border-red-300 text-red-500 text-[8px] font-bold leading-none select-none">₭</span>
                                         <span class="font-bold text-red-500 tabular-nums text-sm">{{ number_format($absence->fine_amount) }}</span>
@@ -170,6 +194,7 @@
                                     @endif
                                     <div class="w-px self-stretch bg-gray-100"></div>
                                     <button wire:click="openEdit({{ $absence->id }})"
+                                            aria-label="ແກ້ໄຂ"
                                             class="w-12 flex items-center justify-center text-slate-500 hover:bg-gray-50 transition-colors touch-manipulation">
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.75" class="w-4 h-4">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M13.586 3.586a2 2 0 112.828 2.828l-8 8a1 1 0 01-.464.263l-3 .75a.5.5 0 01-.607-.607l.75-3a1 1 0 01.263-.464l8-8z"/>
@@ -178,6 +203,7 @@
                                     <div class="w-px self-stretch bg-gray-100"></div>
                                     <button wire:click="delete({{ $absence->id }})"
                                             wire:confirm="ຢືນຢັນການລຶບຂໍ້ມູນນີ້?"
+                                            aria-label="ລຶບ"
                                             class="w-12 flex items-center justify-center text-red-500 hover:bg-red-50 transition-colors touch-manipulation">
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.75" class="w-4 h-4">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M9 3h2M3 6h14m-2 0V17a1 1 0 01-1 1H6a1 1 0 01-1-1V6h10zm-6 4v5m4-5v5"/>
@@ -208,13 +234,24 @@
                                         <td class="px-4 py-3.5 text-xs text-gray-300 tabular-nums">{{ $absence->id }}</td>
                                         <td class="px-4 py-3.5">
                                             <p class="font-bold text-slate-800">{{ $absence->monk->full_name }}</p>
-                                            <p class="text-xs text-gray-400 mt-0.5">{{ $absence->monk->type_label }}</p>
+                                            <span class="inline-block mt-1 px-2 py-0.5 rounded-full text-[10px] font-bold
+                                                {{ match ($absence->monk->type) {
+                                                    'monk'   => 'bg-orange-50 text-orange-600',
+                                                    'novice' => 'bg-teal-50 text-teal-600',
+                                                    'nun'    => 'bg-purple-50 text-purple-600',
+                                                    default  => 'bg-gray-50 text-gray-600',
+                                                } }}">
+                                                {{ $absence->monk->type_label }}
+                                            </span>
                                         </td>
                                         <td class="px-4 py-3.5 text-gray-500">{{ $absence->reason ?? '—' }}</td>
                                         <td class="px-4 py-3.5 text-gray-500">{{ $absence->fineRate->name }}</td>
                                         <td class="px-4 py-3.5 text-right whitespace-nowrap">
                                             <span class="font-bold text-red-500 tabular-nums">{{ number_format($absence->fine_amount) }}</span>
                                             <span class="text-xs text-gray-400 ml-0.5">ກີບ</span>
+                                            @if (!$absence->is_paid && $isPast)
+                                                <p class="text-[10px] font-bold text-red-500 mt-0.5">ຄ້າງ {{ $daysOverdue }} ວັນ</p>
+                                            @endif
                                         </td>
                                         <td class="px-4 py-3.5 text-center">
                                             @if ($absence->is_paid)
@@ -239,6 +276,7 @@
                                         <td class="px-4 py-3.5">
                                             <div class="flex items-center justify-center gap-1">
                                                 <button wire:click="openEdit({{ $absence->id }})"
+                                                        title="ແກ້ໄຂ" aria-label="ແກ້ໄຂ"
                                                         class="w-8 h-8 flex items-center justify-center rounded-lg text-slate-500 hover:bg-gray-100 transition-colors touch-manipulation">
                                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.75" class="w-4 h-4">
                                                         <path stroke-linecap="round" stroke-linejoin="round" d="M13.586 3.586a2 2 0 112.828 2.828l-8 8a1 1 0 01-.464.263l-3 .75a.5.5 0 01-.607-.607l.75-3a1 1 0 01.263-.464l8-8z"/>
@@ -246,6 +284,7 @@
                                                 </button>
                                                 <button wire:click="delete({{ $absence->id }})"
                                                         wire:confirm="ຢືນຢັນການລຶບຂໍ້ມູນນີ້?"
+                                                        title="ລຶບ" aria-label="ລຶບ"
                                                         class="w-8 h-8 flex items-center justify-center rounded-lg text-red-500 hover:bg-red-50 transition-colors touch-manipulation">
                                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.75" class="w-4 h-4">
                                                         <path stroke-linecap="round" stroke-linejoin="round" d="M9 3h2M3 6h14m-2 0V17a1 1 0 01-1 1H6a1 1 0 01-1-1V6h10zm-6 4v5m4-5v5"/>
@@ -325,60 +364,88 @@
                                         class="text-red-500 hover:underline touch-manipulation">ລ້າງ</button>
                             </div>
                         </div>
-                        <div class="max-h-64 overflow-y-auto bg-[#f8fafa] border rounded-xl divide-y divide-gray-100
-                                    @error('monk_ids') border-red-300 @else border-gray-200 @enderror">
-
-                            {{-- Once (specific-date) duty groups --}}
-                            @foreach ($onceMonkGroups as $dateKey => $duties)
-                                <div class="px-3 py-1.5 bg-orange-50 text-[10px] font-bold text-orange-600 uppercase tracking-wide sticky top-0">
-                                    {{ \Carbon\Carbon::parse($dateKey)->format('d/m/Y') }} · ສະເພາະວັນ
+                        <div x-data="{ monkSearch: '' }">
+                            <div class="relative mb-2">
+                                <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.75" class="w-4 h-4 text-gray-400">
+                                        <circle cx="8.5" cy="8.5" r="5.5"/>
+                                        <path stroke-linecap="round" d="M14 14l3 3"/>
+                                    </svg>
                                 </div>
-                                @foreach ($duties as $duty)
-                                    <label class="flex items-center gap-3 px-3 py-2.5 cursor-pointer hover:bg-gray-100 transition-colors touch-manipulation">
-                                        <input type="checkbox" wire:model="monk_ids" value="{{ $duty->monk->id }}"
-                                               wire:key="monk-once-{{ $duty->id }}"
-                                               class="w-4 h-4 rounded border-gray-300 text-brand-green focus:ring-brand-green/30 shrink-0">
-                                        <span class="text-sm text-slate-800">{{ $duty->monk->full_name }}</span>
-                                        <span class="text-[10px] text-gray-400 ml-auto shrink-0 truncate max-w-[35%]">{{ $duty->duty_name }}</span>
-                                    </label>
-                                @endforeach
-                            @endforeach
+                                <input type="text" x-model="monkSearch"
+                                       placeholder="ຄົ້ນຫາໃນລາຍຊື່ນີ້..."
+                                       class="w-full bg-white border border-gray-200 rounded-xl pl-9 pr-3 py-2 text-sm text-slate-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-green/30 focus:border-transparent transition-shadow">
+                            </div>
+                            <div class="max-h-64 overflow-y-auto bg-[#f8fafa] border rounded-xl divide-y divide-gray-100
+                                        @error('monk_ids') border-red-300 @else border-gray-200 @enderror">
 
-                            {{-- Weekly (recurring) duty groups --}}
-                            @foreach ($weeklyMonkGroups as $dayNum => $duties)
-                                <div class="px-3 py-1.5 bg-brand-light-green text-[10px] font-bold text-brand-green uppercase tracking-wide sticky top-0">
-                                    {{ $dayNames[$dayNum] }} · ໝຸນວຽນ
-                                </div>
-                                @foreach ($duties as $duty)
-                                    <label class="flex items-center gap-3 px-3 py-2.5 cursor-pointer hover:bg-gray-100 transition-colors touch-manipulation">
-                                        <input type="checkbox" wire:model="monk_ids" value="{{ $duty->monk->id }}"
-                                               wire:key="monk-weekly-{{ $duty->id }}"
-                                               class="w-4 h-4 rounded border-gray-300 text-brand-green focus:ring-brand-green/30 shrink-0">
-                                        <span class="text-sm text-slate-800">{{ $duty->monk->full_name }}</span>
-                                        <span class="text-[10px] text-gray-400 ml-auto shrink-0 truncate max-w-[35%]">{{ $duty->duty_name }}</span>
-                                    </label>
+                                {{-- Once (specific-date) duty groups --}}
+                                @foreach ($onceMonkGroups as $dateKey => $duties)
+                                    <div x-show="!monkSearch.trim() || Array.from($el.querySelectorAll('[data-monk-name]')).some(el => el.dataset.monkName.includes(monkSearch.trim().toLowerCase()))">
+                                        <div class="px-3 py-1.5 bg-orange-50 text-[10px] font-bold text-orange-600 uppercase tracking-wide sticky top-0">
+                                            {{ \Carbon\Carbon::parse($dateKey)->format('d/m/Y') }} · ສະເພາະວັນ
+                                        </div>
+                                        @foreach ($duties as $duty)
+                                            <label data-monk-name="{{ \Illuminate\Support\Str::lower($duty->monk->full_name) }}"
+                                                   x-show="!monkSearch.trim() || $el.dataset.monkName.includes(monkSearch.trim().toLowerCase())"
+                                                   class="flex items-center gap-3 px-3 py-2.5 cursor-pointer hover:bg-gray-100 transition-colors touch-manipulation">
+                                                <input type="checkbox" wire:model="monk_ids" value="{{ $duty->monk->id }}"
+                                                       wire:key="monk-once-{{ $duty->id }}"
+                                                       class="w-4 h-4 rounded border-gray-300 text-brand-green focus:ring-brand-green/30 shrink-0">
+                                                <span class="text-sm text-slate-800">{{ $duty->monk->full_name }}</span>
+                                                <span class="text-[10px] text-gray-400 ml-auto shrink-0 truncate max-w-[35%]">{{ $duty->duty_name }}</span>
+                                            </label>
+                                        @endforeach
+                                    </div>
                                 @endforeach
-                            @endforeach
 
-                            {{-- Monks with no duty assignment --}}
-                            @if ($monksWithoutDuty->isNotEmpty())
-                                <div class="px-3 py-1.5 bg-gray-100 text-[10px] font-bold text-gray-500 uppercase tracking-wide sticky top-0">
-                                    ບໍ່ມີໜ້າທີ່ຮັບຜິດຊອບ
-                                </div>
-                                @foreach ($monksWithoutDuty as $monk)
-                                    <label class="flex items-center gap-3 px-3 py-2.5 cursor-pointer hover:bg-gray-100 transition-colors touch-manipulation">
-                                        <input type="checkbox" wire:model="monk_ids" value="{{ $monk->id }}"
-                                               wire:key="monk-none-{{ $monk->id }}"
-                                               class="w-4 h-4 rounded border-gray-300 text-brand-green focus:ring-brand-green/30 shrink-0">
-                                        <span class="text-sm text-slate-800">{{ $monk->full_name }}</span>
-                                        <span class="text-xs text-gray-400 ml-auto shrink-0">{{ $monk->type_label }}</span>
-                                    </label>
+                                {{-- Weekly (recurring) duty groups --}}
+                                @foreach ($weeklyMonkGroups as $dayNum => $duties)
+                                    <div x-show="!monkSearch.trim() || Array.from($el.querySelectorAll('[data-monk-name]')).some(el => el.dataset.monkName.includes(monkSearch.trim().toLowerCase()))">
+                                        <div class="px-3 py-1.5 bg-brand-light-green text-[10px] font-bold text-brand-green uppercase tracking-wide sticky top-0">
+                                            {{ $dayNames[$dayNum] }} · ໝຸນວຽນ
+                                        </div>
+                                        @foreach ($duties as $duty)
+                                            <label data-monk-name="{{ \Illuminate\Support\Str::lower($duty->monk->full_name) }}"
+                                                   x-show="!monkSearch.trim() || $el.dataset.monkName.includes(monkSearch.trim().toLowerCase())"
+                                                   class="flex items-center gap-3 px-3 py-2.5 cursor-pointer hover:bg-gray-100 transition-colors touch-manipulation">
+                                                <input type="checkbox" wire:model="monk_ids" value="{{ $duty->monk->id }}"
+                                                       wire:key="monk-weekly-{{ $duty->id }}"
+                                                       class="w-4 h-4 rounded border-gray-300 text-brand-green focus:ring-brand-green/30 shrink-0">
+                                                <span class="text-sm text-slate-800">{{ $duty->monk->full_name }}</span>
+                                                <span class="text-[10px] text-gray-400 ml-auto shrink-0 truncate max-w-[35%]">{{ $duty->duty_name }}</span>
+                                            </label>
+                                        @endforeach
+                                    </div>
                                 @endforeach
-                            @endif
 
-                            @if ($onceMonkGroups->isEmpty() && $weeklyMonkGroups->isEmpty() && $monksWithoutDuty->isEmpty())
-                                <p class="px-3 py-3 text-sm text-gray-400">ບໍ່ມີພຣະສົງ/ສາມະເນນ</p>
-                            @endif
+                                {{-- Monks with no duty assignment --}}
+                                @if ($monksWithoutDuty->isNotEmpty())
+                                    <div x-show="!monkSearch.trim() || Array.from($el.querySelectorAll('[data-monk-name]')).some(el => el.dataset.monkName.includes(monkSearch.trim().toLowerCase()))">
+                                        <div class="px-3 py-1.5 bg-gray-100 text-[10px] font-bold text-gray-500 uppercase tracking-wide sticky top-0">
+                                            ບໍ່ມີໜ້າທີ່ຮັບຜິດຊອບ
+                                        </div>
+                                        @foreach ($monksWithoutDuty as $monk)
+                                            <label data-monk-name="{{ \Illuminate\Support\Str::lower($monk->full_name) }}"
+                                                   x-show="!monkSearch.trim() || $el.dataset.monkName.includes(monkSearch.trim().toLowerCase())"
+                                                   class="flex items-center gap-3 px-3 py-2.5 cursor-pointer hover:bg-gray-100 transition-colors touch-manipulation">
+                                                <input type="checkbox" wire:model="monk_ids" value="{{ $monk->id }}"
+                                                       wire:key="monk-none-{{ $monk->id }}"
+                                                       class="w-4 h-4 rounded border-gray-300 text-brand-green focus:ring-brand-green/30 shrink-0">
+                                                <span class="text-sm text-slate-800">{{ $monk->full_name }}</span>
+                                                <span class="text-xs text-gray-400 ml-auto shrink-0">{{ $monk->type_label }}</span>
+                                            </label>
+                                        @endforeach
+                                    </div>
+                                @endif
+
+                                @if ($onceMonkGroups->isEmpty() && $weeklyMonkGroups->isEmpty() && $monksWithoutDuty->isEmpty())
+                                    <p class="px-3 py-3 text-sm text-gray-400">ບໍ່ມີພຣະສົງ/ສາມະເນນ</p>
+                                @endif
+
+                                <p x-show="monkSearch.trim() && !Array.from($root.querySelectorAll('[data-monk-name]')).some(el => el.dataset.monkName.includes(monkSearch.trim().toLowerCase()))"
+                                   class="px-3 py-3 text-sm text-gray-400 text-center">ບໍ່ພົບພຣະທີ່ຄົ້ນຫາ</p>
+                            </div>
                         </div>
                         @error('monk_ids')<p class="text-red-500 text-xs mt-1.5">{{ $message }}</p>@enderror
                         @if (!empty($monk_ids))
