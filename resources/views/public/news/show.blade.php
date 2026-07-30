@@ -27,7 +27,7 @@
 
         <div class="flex items-center gap-2 mb-3 flex-wrap">
             @if ($article->category)
-                <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-blue-50 text-blue-600">
+                <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-brand-light-green text-brand-green">
                     {{ $article->category->name }}
                 </span>
             @endif

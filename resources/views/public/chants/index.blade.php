@@ -34,19 +34,22 @@
         @if ($categories->isNotEmpty())
             <nav aria-label="ໝວດໝູ່ບົດສູດມົນ"
                  class="sticky top-16 z-10 -mx-5 px-5 sm:mx-0 sm:px-0 py-3 mb-10 bg-[#faf8f2]/90 backdrop-blur-sm border-b border-black/5">
-                <div class="flex items-center gap-2 overflow-x-auto no-scrollbar sm:flex-wrap">
-                    <a href="{{ route('chants.public.index') }}"
-                       class="shrink-0 px-3.5 py-1.5 rounded-full text-xs font-bold transition-colors duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green
-                              {{ ! $categorySlug ? 'bg-brand-green text-white' : 'bg-white border border-gray-200 text-slate-600 hover:bg-gray-50' }}">
-                        ທັງໝົດ
-                    </a>
-                    @foreach ($categories as $category)
-                        <a href="{{ route('chants.public.index', ['category' => $category->slug]) }}"
+                <div class="relative">
+                    <div class="flex items-center gap-2 overflow-x-auto no-scrollbar sm:flex-wrap">
+                        <a href="{{ route('chants.public.index') }}"
                            class="shrink-0 px-3.5 py-1.5 rounded-full text-xs font-bold transition-colors duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green
-                                  {{ $categorySlug === $category->slug ? 'bg-brand-green text-white' : 'bg-white border border-gray-200 text-slate-600 hover:bg-gray-50' }}">
-                            {{ str_repeat('— ', $category->depth) }}{{ $category->name }}
+                                  {{ ! $categorySlug ? 'bg-brand-green text-white' : 'bg-white border border-gray-200 text-slate-600 hover:bg-gray-50' }}">
+                            ທັງໝົດ
                         </a>
-                    @endforeach
+                        @foreach ($categories as $category)
+                            <a href="{{ route('chants.public.index', ['category' => $category->slug]) }}"
+                               class="shrink-0 px-3.5 py-1.5 rounded-full text-xs font-bold transition-colors duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green
+                                      {{ $categorySlug === $category->slug ? 'bg-brand-green text-white' : 'bg-white border border-gray-200 text-slate-600 hover:bg-gray-50' }}">
+                                {{ str_repeat('— ', $category->depth) }}{{ $category->name }}
+                            </a>
+                        @endforeach
+                    </div>
+                    <div class="sm:hidden pointer-events-none absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-[#faf8f2] to-transparent" aria-hidden="true"></div>
                 </div>
             </nav>
         @endif
@@ -70,7 +73,7 @@
                                 <span class="text-brand-green">☸</span>
                             </span>
                             @if ($item->category)
-                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-blue-600">
+                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-brand-light-green text-brand-green">
                                     {{ $item->category->name }}
                                 </span>
                             @endif

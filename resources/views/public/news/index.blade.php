@@ -82,6 +82,7 @@
                     const slides = root.querySelectorAll('.hero-slide');
                     const dots = root.querySelectorAll('.hero-dot');
                     const total = slides.length;
+                    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
                     let current = 0;
                     let timer = null;
 
@@ -111,6 +112,7 @@
                     function prev() { show(current - 1); }
 
                     function startAutoplay() {
+                        if (prefersReducedMotion) return;
                         stopAutoplay();
                         timer = setInterval(next, 6000);
                     }
@@ -126,6 +128,16 @@
 
                     root.addEventListener('mouseenter', stopAutoplay);
                     root.addEventListener('mouseleave', startAutoplay);
+
+                    let touchStartX = null;
+                    root.addEventListener('touchstart', (e) => { touchStartX = e.changedTouches[0].clientX; stopAutoplay(); }, { passive: true });
+                    root.addEventListener('touchend', (e) => {
+                        if (touchStartX === null) return;
+                        const deltaX = e.changedTouches[0].clientX - touchStartX;
+                        if (Math.abs(deltaX) > 40) { deltaX < 0 ? next() : prev(); }
+                        touchStartX = null;
+                        startAutoplay();
+                    }, { passive: true });
 
                     startAutoplay();
                 })();
@@ -210,19 +222,22 @@
         @if ($categories->isNotEmpty())
             <nav aria-label="ໝວດໝູ່ຂ່າວ"
                  class="sticky top-16 z-10 -mx-5 px-5 sm:mx-0 sm:px-0 py-3 mb-10 bg-[#faf8f2]/90 backdrop-blur-sm border-b border-black/5">
-                <div class="flex items-center gap-2 overflow-x-auto no-scrollbar sm:flex-wrap">
-                    <a href="{{ route('news.public.index') }}"
-                       class="shrink-0 px-3.5 py-1.5 rounded-full text-xs font-bold transition-colors duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green
-                              {{ ! $categorySlug ? 'bg-brand-green text-white' : 'bg-white border border-gray-200 text-slate-600 hover:bg-gray-50' }}">
-                        ທັງໝົດ
-                    </a>
-                    @foreach ($categories as $category)
-                        <a href="{{ route('news.public.index', ['category' => $category->slug]) }}"
+                <div class="relative">
+                    <div class="flex items-center gap-2 overflow-x-auto no-scrollbar sm:flex-wrap">
+                        <a href="{{ route('news.public.index') }}"
                            class="shrink-0 px-3.5 py-1.5 rounded-full text-xs font-bold transition-colors duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green
-                                  {{ $categorySlug === $category->slug ? 'bg-brand-green text-white' : 'bg-white border border-gray-200 text-slate-600 hover:bg-gray-50' }}">
-                            {{ $category->name }}
+                                  {{ ! $categorySlug ? 'bg-brand-green text-white' : 'bg-white border border-gray-200 text-slate-600 hover:bg-gray-50' }}">
+                            ທັງໝົດ
                         </a>
-                    @endforeach
+                        @foreach ($categories as $category)
+                            <a href="{{ route('news.public.index', ['category' => $category->slug]) }}"
+                               class="shrink-0 px-3.5 py-1.5 rounded-full text-xs font-bold transition-colors duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green
+                                      {{ $categorySlug === $category->slug ? 'bg-brand-green text-white' : 'bg-white border border-gray-200 text-slate-600 hover:bg-gray-50' }}">
+                                {{ $category->name }}
+                            </a>
+                        @endforeach
+                    </div>
+                    <div class="sm:hidden pointer-events-none absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-[#faf8f2] to-transparent" aria-hidden="true"></div>
                 </div>
             </nav>
         @endif

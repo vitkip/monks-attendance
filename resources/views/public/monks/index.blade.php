@@ -36,27 +36,30 @@
         {{-- Filter tabs --}}
         <nav aria-label="ປະເພດສະມາຊິກ"
              class="sticky top-16 z-10 -mx-5 px-5 sm:mx-0 sm:px-0 py-3 mb-10 bg-[#faf8f2]/90 backdrop-blur-sm border-b border-black/5">
-            <div class="flex items-center gap-2 overflow-x-auto no-scrollbar sm:flex-wrap">
-                <a href="{{ route('monks.public.index') }}"
-                   class="shrink-0 px-3.5 py-1.5 rounded-full text-xs font-bold transition-colors duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green
-                          {{ ! $type ? 'bg-brand-green text-white' : 'bg-white border border-gray-200 text-slate-600 hover:bg-gray-50' }}">
-                    ທັງໝົດ
-                </a>
-                <a href="{{ route('monks.public.index', ['type' => 'monk']) }}"
-                   class="shrink-0 px-3.5 py-1.5 rounded-full text-xs font-bold transition-colors duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green
-                          {{ $type === 'monk' ? 'bg-brand-green text-white' : 'bg-white border border-gray-200 text-slate-600 hover:bg-gray-50' }}">
-                    ພຣະສົງ
-                </a>
-                <a href="{{ route('monks.public.index', ['type' => 'novice']) }}"
-                   class="shrink-0 px-3.5 py-1.5 rounded-full text-xs font-bold transition-colors duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green
-                          {{ $type === 'novice' ? 'bg-brand-green text-white' : 'bg-white border border-gray-200 text-slate-600 hover:bg-gray-50' }}">
-                    ສາມະເນນ
-                </a>
-                <a href="{{ route('monks.public.index', ['type' => 'nun']) }}"
-                   class="shrink-0 px-3.5 py-1.5 rounded-full text-xs font-bold transition-colors duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green
-                          {{ $type === 'nun' ? 'bg-brand-green text-white' : 'bg-white border border-gray-200 text-slate-600 hover:bg-gray-50' }}">
-                    ແມ່ຂາວ
-                </a>
+            <div class="relative">
+                <div class="flex items-center gap-2 overflow-x-auto no-scrollbar sm:flex-wrap">
+                    <a href="{{ route('monks.public.index') }}"
+                       class="shrink-0 px-3.5 py-1.5 rounded-full text-xs font-bold transition-colors duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green
+                              {{ ! $type ? 'bg-brand-green text-white' : 'bg-white border border-gray-200 text-slate-600 hover:bg-gray-50' }}">
+                        ທັງໝົດ
+                    </a>
+                    <a href="{{ route('monks.public.index', ['type' => 'monk']) }}"
+                       class="shrink-0 px-3.5 py-1.5 rounded-full text-xs font-bold transition-colors duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green
+                              {{ $type === 'monk' ? 'bg-brand-green text-white' : 'bg-white border border-gray-200 text-slate-600 hover:bg-gray-50' }}">
+                        ພຣະສົງ
+                    </a>
+                    <a href="{{ route('monks.public.index', ['type' => 'novice']) }}"
+                       class="shrink-0 px-3.5 py-1.5 rounded-full text-xs font-bold transition-colors duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green
+                              {{ $type === 'novice' ? 'bg-brand-green text-white' : 'bg-white border border-gray-200 text-slate-600 hover:bg-gray-50' }}">
+                        ສາມະເນນ
+                    </a>
+                    <a href="{{ route('monks.public.index', ['type' => 'nun']) }}"
+                       class="shrink-0 px-3.5 py-1.5 rounded-full text-xs font-bold transition-colors duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green
+                              {{ $type === 'nun' ? 'bg-brand-green text-white' : 'bg-white border border-gray-200 text-slate-600 hover:bg-gray-50' }}">
+                        ແມ່ຂາວ
+                    </a>
+                </div>
+                <div class="sm:hidden pointer-events-none absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-[#faf8f2] to-transparent" aria-hidden="true"></div>
             </div>
         </nav>
 
@@ -91,11 +94,13 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                         @foreach ($monkGroup as $monk)
                             <div class="bg-white rounded-2xl card-shadow border border-black/5 overflow-hidden p-4 flex items-start gap-3 transition-shadow duration-300 hover:shadow-lg">
-                                <img src="{{ $monk->photo_url }}" alt="{{ $monk->full_name }}"
+                                <img src="{{ $monk->photo_url }}" alt="{{ $monk->full_name }}" loading="lazy"
                                      class="w-12 h-12 rounded-full object-cover shrink-0 border border-gray-200">
                                 <div class="flex-1 min-w-0">
                                     <p class="font-semibold text-slate-800 text-sm leading-snug">{{ $monk->full_name }}</p>
-                                    <p class="text-[11px] text-gray-400 mt-0.5">{{ $monk->temple ?: 'ບໍ່ລະບຸວັດ' }}</p>
+                                    @if ($monk->temple)
+                                        <p class="text-[11px] text-gray-400 mt-0.5">{{ $monk->temple }}</p>
+                                    @endif
                                     <span class="inline-flex items-center mt-2 px-2.5 py-1 rounded-full text-[11px] font-medium bg-brand-light-green text-brand-green">
                                         ພັນສາ {{ $monk->pansa }}
                                     </span>
@@ -128,11 +133,13 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                         @foreach ($noviceGroup as $monk)
                             <div class="bg-white rounded-2xl card-shadow border border-black/5 overflow-hidden p-4 flex items-start gap-3 transition-shadow duration-300 hover:shadow-lg">
-                                <img src="{{ $monk->photo_url }}" alt="{{ $monk->full_name }}"
+                                <img src="{{ $monk->photo_url }}" alt="{{ $monk->full_name }}" loading="lazy"
                                      class="w-12 h-12 rounded-full object-cover shrink-0 border border-gray-200">
                                 <div class="flex-1 min-w-0">
                                     <p class="font-semibold text-slate-800 text-sm leading-snug">{{ $monk->full_name }}</p>
-                                    <p class="text-[11px] text-gray-400 mt-0.5">{{ $monk->temple ?: 'ບໍ່ລະບຸວັດ' }}</p>
+                                    @if ($monk->temple)
+                                        <p class="text-[11px] text-gray-400 mt-0.5">{{ $monk->temple }}</p>
+                                    @endif
                                     <span class="inline-flex items-center mt-2 px-2.5 py-1 rounded-full text-[11px] font-medium bg-orange-50 text-orange-600">
                                         ພັນສາ {{ $monk->pansa }}
                                     </span>
@@ -165,11 +172,13 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                         @foreach ($nunGroup as $monk)
                             <div class="bg-white rounded-2xl card-shadow border border-black/5 overflow-hidden p-4 flex items-start gap-3 transition-shadow duration-300 hover:shadow-lg">
-                                <img src="{{ $monk->photo_url }}" alt="{{ $monk->full_name }}"
+                                <img src="{{ $monk->photo_url }}" alt="{{ $monk->full_name }}" loading="lazy"
                                      class="w-12 h-12 rounded-full object-cover shrink-0 border border-gray-200">
                                 <div class="flex-1 min-w-0">
                                     <p class="font-semibold text-slate-800 text-sm leading-snug">{{ $monk->full_name }}</p>
-                                    <p class="text-[11px] text-gray-400 mt-0.5">{{ $monk->temple ?: 'ບໍ່ລະບຸວັດ' }}</p>
+                                    @if ($monk->temple)
+                                        <p class="text-[11px] text-gray-400 mt-0.5">{{ $monk->temple }}</p>
+                                    @endif
                                     <span class="inline-flex items-center mt-2 px-2.5 py-1 rounded-full text-[11px] font-medium bg-purple-50 text-purple-600">
                                         ພັນສາ {{ $monk->pansa }}
                                     </span>
