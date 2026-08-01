@@ -5,9 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\HeroSlide;
 use App\Models\News;
 use App\Models\NewsCategory;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -15,14 +13,10 @@ use Inertia\Response;
 class PublicNewsController extends Controller
 {
     /**
-     * Home page for guests; authenticated users are redirected to their dashboard.
+     * Home page — public news index, visible to guests and authenticated users alike.
      */
-    public function index(Request $request): Response|RedirectResponse
+    public function index(Request $request): Response
     {
-        if (Auth::check()) {
-            return redirect()->route('absences.index');
-        }
-
         $categorySlug = $request->query('category');
 
         $heroSlides = HeroSlide::active()->ordered()->get()->map(fn (HeroSlide $slide) => [
