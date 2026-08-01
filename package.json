@@ -9,12 +9,18 @@
     "devDependencies": {
         "@tailwindcss/typography": "^0.5.20",
         "@tailwindcss/vite": "^4.3.1",
+        "@vitejs/plugin-react": "^6.0.5",
         "concurrently": "^9.0.1",
         "laravel-vite-plugin": "^3.1",
         "tailwindcss": "^4.3.1",
         "vite": "^8.0.0"
     },
     "dependencies": {
-        "ckeditor5": "^48.3.1"
+        "@ckeditor/ckeditor5-react": "^11.2.0",
+        "@inertiajs/react": "^3.6.1",
+        "ckeditor5": "^48.3.1",
+        "react": "^19.2.8",
+        "react-dom": "^19.2.8",
+        "ziggy-js": "^2.6.3"
     }
 }
