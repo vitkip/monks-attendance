@@ -63,6 +63,11 @@ class Monk extends Model
         return $this->hasMany(DutySchedule::class);
     }
 
+    public function fundTransactions()
+    {
+        return $this->hasMany(FundTransaction::class);
+    }
+
     public function hasDutyOn(string $date): bool
     {
         return $this->dutySchedules()->whereDate('duty_date', $date)->exists();

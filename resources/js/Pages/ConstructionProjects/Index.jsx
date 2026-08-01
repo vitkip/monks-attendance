@@ -75,8 +75,10 @@ export default function ConstructionProjectsIndex({ filters, projects, statuses,
         e.preventDefault();
         const onSuccess = () => setShowModal(false);
         if (editId) {
-            form.transform((data) => ({ ...data, _method: 'put' })).post(route('construction-projects.update', editId), { onSuccess, preserveScroll: true, forceFormData: true });
+            form.transform((data) => ({ ...data, _method: 'put' }));
+            form.post(route('construction-projects.update', editId), { onSuccess, preserveScroll: true, forceFormData: true });
         } else {
+            form.transform((data) => data);
             form.post(route('construction-projects.store'), { onSuccess, preserveScroll: true, forceFormData: true });
         }
     }

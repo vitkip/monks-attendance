@@ -6,6 +6,7 @@ const NAV = [
     ['chants.public.index', 'ບົດສູດມົນ', '/info/chants'],
     ['electricity-bills.public.index', 'ລາຍການຄ່າໄຟຟ້າ', '/info/electricity-bills'],
     ['construction-projects.public.index', 'ໂຄງການກໍ່ສ້າງ', '/info/construction-projects'],
+    ['fund.public.index', 'ກອງທຶນ', '/info/fund'],
 ];
 
 function isActivePath(currentUrl, prefix) {
@@ -86,6 +87,7 @@ export default function PublicLayout({ children }) {
                         <Link href={route('chants.public.index')} className="hover:text-brand-green transition-colors">ບົດສູດມົນ</Link>
                         <Link href={route('electricity-bills.public.index')} className="hover:text-brand-green transition-colors">ຄ່າໄຟຟ້າ</Link>
                         <Link href={route('construction-projects.public.index')} className="hover:text-brand-green transition-colors">ກໍ່ສ້າງ</Link>
+                        <Link href={route('fund.public.index')} className="hover:text-brand-green transition-colors">ກອງທຶນ</Link>
                     </nav>
 
                     {hasSocial && (

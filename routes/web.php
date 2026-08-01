@@ -36,6 +36,9 @@ Route::prefix('info')->group(function () {
     // Public construction project transparency / ໂຄງການກໍ່ສ້າງ (no login required)
     Route::get('/construction-projects', [\App\Http\Controllers\PublicConstructionProjectController::class, 'index'])->name('construction-projects.public.index');
     Route::get('/construction-projects/{project}', [\App\Http\Controllers\PublicConstructionProjectController::class, 'show'])->name('construction-projects.public.show');
+
+    // Public fund ledger transparency / ລາຍຮັບ-ລາຍຈ່າຍກອງທຶນ (no login required)
+    Route::get('/fund', [\App\Http\Controllers\PublicFundController::class, 'index'])->name('fund.public.index');
 });
 
 // Authenticated users
@@ -86,6 +89,12 @@ Route::middleware('auth')->group(function () {
         Route::post('/construction-projects/{constructionProject}/transactions', [\App\Http\Controllers\ConstructionProjectController::class, 'storeTransaction'])->name('construction-projects.transactions.store');
         Route::put('/construction-projects/{constructionProject}/transactions/{transaction}', [\App\Http\Controllers\ConstructionProjectController::class, 'updateTransaction'])->name('construction-projects.transactions.update');
         Route::delete('/construction-projects/{constructionProject}/transactions/{transaction}', [\App\Http\Controllers\ConstructionProjectController::class, 'destroyTransaction'])->name('construction-projects.transactions.destroy');
+
+        // ກອງທຶນ / Fund income-expense ledger
+        Route::get('/fund', [\App\Http\Controllers\FundController::class, 'index'])->name('fund.index');
+        Route::post('/fund', [\App\Http\Controllers\FundController::class, 'store'])->name('fund.store');
+        Route::put('/fund/{fund}', [\App\Http\Controllers\FundController::class, 'update'])->name('fund.update');
+        Route::delete('/fund/{fund}', [\App\Http\Controllers\FundController::class, 'destroy'])->name('fund.destroy');
 
         // News & announcements
         Route::post('/news', [\App\Http\Controllers\NewsController::class, 'store'])->name('news.store');

@@ -34,6 +34,7 @@ const ICONS = {
     balance: 'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z',
     electricity: 'M13 10V3L4 14h7v7l9-11h-7z',
     construction: 'M3 21h18M4 21V8l8-5 8 5v13M9 21v-6h6v6M9 12h.01M15 12h.01M9 9h.01M15 9h.01',
+    fund: 'M3 10h18M5 6h14a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2zM12 15a2 2 0 100-4 2 2 0 000 4z',
     news: 'M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 12h6v-4H7v4z',
     chants: 'M12 6.253v13M12 6.253C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253',
     heroSlides: 'M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14M4 8h16M4 4h16a1 1 0 011 1v14a1 1 0 01-1 1H4a1 1 0 01-1-1V5a1 1 0 011-1z',
@@ -110,6 +111,7 @@ export default function AppLayout({ title, children }) {
                                     <>
                                         <NavLink href={route('electricity-bills.index')} active={isActive('/electricity-bills')} onNavigate={closeSidebar} icon={ICONS.electricity}>ແຈ້ງບິນຄ່າໄຟຟ້າ</NavLink>
                                         <NavLink href={route('construction-projects.index')} active={isActive('/construction-projects')} onNavigate={closeSidebar} icon={ICONS.construction}>ໂຄງການກໍ່ສ້າງ</NavLink>
+                                        <NavLink href={route('fund.index')} active={isActive('/fund')} onNavigate={closeSidebar} icon={ICONS.fund}>ລາຍຮັບ-ລາຍຈ່າຍກອງທຶນ</NavLink>
                                         <NavLink href={route('news.index')} active={isActive('/news')} onNavigate={closeSidebar} icon={ICONS.news}>ຂ່າວສານ</NavLink>
                                         <NavLink href={route('chants.index')} active={isActive('/chants')} onNavigate={closeSidebar} icon={ICONS.chants}>ບົດສູດມົນ</NavLink>
 
