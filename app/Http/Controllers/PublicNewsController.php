@@ -34,7 +34,9 @@ class PublicNewsController extends Controller
             'button_text' => $slide->button_text,
         ]);
 
-        $featured = $categorySlug ? null : News::published()->with(['author', 'category'])->latest('published_at')->latest()->first();
+        $featured = (!$categorySlug && $heroSlides->isEmpty())
+            ? News::published()->with(['author', 'category'])->latest('published_at')->latest()->first()
+            : null;
 
         $news = News::published()
             ->when($featured, fn ($q) => $q->where('id', '!=', $featured->id))

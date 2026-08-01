@@ -79,9 +79,9 @@ function HeroSlider({ slides }) {
                             src={slide.image_url}
                             alt=""
                             aria-hidden="true"
-                            className="absolute inset-0 w-full h-full object-cover opacity-60"
+                            className="absolute inset-0 w-full h-full object-cover opacity-90"
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-brand-green-dark via-brand-green-dark/75 to-brand-green-dark/30"></div>
+                        <div className="absolute inset-0 bg-gradient-to-t from-brand-green-dark via-brand-green-dark/50 to-brand-green-dark/10"></div>
 
                         <div className="relative h-full max-w-6xl mx-auto px-5 sm:px-8 pt-24 pb-10 sm:pb-14 w-full flex flex-col justify-end">
                             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest bg-white/10 text-brand-bright-green mb-4 w-fit">
@@ -348,7 +348,7 @@ export default function Index({ heroSlides, featured, news, categories, category
                         <p className="font-bold text-slate-700 mb-1">ຍັງບໍ່ມີຂ່າວປະກາດ</p>
                         <p className="text-slate-400 text-sm">ກະລຸນາກັບມາເບິ່ງໃໝ່ພາຍຫຼັງ</p>
                     </div>
-                ) : news.data.length === 0 ? (
+                ) : categorySlug && news.data.length === 0 ? (
                     <div className="flex flex-col items-center justify-center text-center py-24">
                         <span className="text-5xl text-brand-green/30 mb-4">☸</span>
                         <p className="font-bold text-slate-700 mb-1">ຍັງບໍ່ມີຂ່າວໃນໝວດໝູ່ນີ້</p>
@@ -367,11 +367,15 @@ export default function Index({ heroSlides, featured, news, categories, category
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                                {news.data.map((item) => (
-                                    <NewsCard key={item.id} item={item} />
-                                ))}
-                            </div>
+                            {news.data.length === 0 ? (
+                                <p className="text-sm text-slate-400 py-6">ຍັງບໍ່ມີຂ່າວອື່ນເພີ່ມເຕີມ</p>
+                            ) : (
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                    {news.data.map((item) => (
+                                        <NewsCard key={item.id} item={item} />
+                                    ))}
+                                </div>
+                            )}
 
                             {news.links && news.links.length > 3 && (
                                 <div className="mt-10">
