@@ -20,6 +20,15 @@ class Monk extends Model
         'ordination_date' => 'date',
     ];
 
+    public static function statuses(): array
+    {
+        return [
+            'active' => 'ຍັງບວດ',
+            'disrobed' => 'ສິກແລ້ວ',
+            'transferred' => 'ຍ້າຍວັດ',
+        ];
+    }
+
     /**
      * Number of vassa (rains retreats) completed since ordination.
      * Approximated as full calendar years elapsed since ordination_date.
@@ -82,6 +91,16 @@ class Monk extends Model
             'nun'    => 'ແມ່ຂາວ',
             default  => $this->type,
         };
+    }
+
+    public function getStatusLabelAttribute(): string
+    {
+        return self::statuses()[$this->status] ?? $this->status;
+    }
+
+    public function isActive(): bool
+    {
+        return $this->status === 'active';
     }
 
     public function getPhotoUrlAttribute(): string

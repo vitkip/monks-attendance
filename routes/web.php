@@ -23,6 +23,9 @@ Route::prefix('info')->group(function () {
     // Public monks & novices directory (no login required)
     Route::get('/monks', [\App\Http\Controllers\PublicMonkController::class, 'index'])->name('monks.public.index');
 
+    // Public absence & fine record board (no login required, no header/footer — standalone display)
+    Route::get('/absences', [\App\Http\Controllers\PublicAbsenceController::class, 'index'])->name('absences.public.index');
+
     // Public chants / ບົດສູດມົນ (no login required — visible to the community)
     Route::get('/chants', [\App\Http\Controllers\PublicChantController::class, 'index'])->name('chants.public.index');
     Route::get('/chants/{slug}', [\App\Http\Controllers\PublicChantController::class, 'show'])->name('chants.public.show');

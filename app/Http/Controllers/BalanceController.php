@@ -17,7 +17,7 @@ class BalanceController extends Controller
         $filterType = (string) $request->query('type', '');
         $onlyDebt = $request->query('onlyDebt', '1') !== '0';
 
-        $monks = Monk::where('status', 1)
+        $monks = Monk::where('status', 'active')
             ->withCount(['absences as total_count'])
             ->withCount(['absences as unpaid_count' => fn ($q) => $q->where('is_paid', 0)])
             ->withSum(['absences as unpaid_fine' => fn ($q) => $q->where('is_paid', 0)], 'fine_amount')
@@ -31,7 +31,7 @@ class BalanceController extends Controller
             ->load(['absences' => fn ($q) => $q->where('is_paid', 0)->with('fineRate')->orderBy('absent_date')]);
 
         $totalUnpaid = Absence::where('is_paid', 0)->sum('fine_amount');
-        $monksWithDebt = Monk::where('status', 1)
+        $monksWithDebt = Monk::where('status', 'active')
             ->whereHas('absences', fn ($q) => $q->where('is_paid', 0))
             ->count();
         $unpaidCount = Absence::where('is_paid', 0)->count();

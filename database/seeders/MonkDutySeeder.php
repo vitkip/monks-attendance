@@ -92,7 +92,7 @@ class MonkDutySeeder extends Seeder
                     'surname' => $surname,
                     'type'    => $type,
                     'pansa'   => 0,
-                    'status'  => 1,
+                    'status'  => 'active',
                 ]);
 
                 DutySchedule::create([

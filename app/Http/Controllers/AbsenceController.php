@@ -53,7 +53,7 @@ class AbsenceController extends Controller
             ])
             ->values();
 
-        $monks = Monk::where('status', 1)->orderBy('name')->get();
+        $monks = Monk::where('status', 'active')->orderBy('name')->get();
         $fineRates = FineRate::orderBy('name')->get(['id', 'name', 'amount']);
 
         $dutySchedules = DutySchedule::with('monk')

@@ -62,7 +62,7 @@ class DutyScheduleController extends Controller
                 ])->values()
             : collect();
 
-        $monks = Monk::where('status', 1)->orderBy('name')->get();
+        $monks = Monk::where('status', 'active')->orderBy('name')->get();
 
         return Inertia::render('DutySchedules/Index', [
             'filters' => ['search' => $search, 'type' => $filterType],

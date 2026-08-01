@@ -12,7 +12,7 @@ class PublicMonkController extends Controller
     {
         $type = $request->query('type');
 
-        $monks = Monk::where('status', 1)
+        $monks = Monk::where('status', 'active')
             ->when($type, fn($q) => $q->where('type', $type))
             ->orderBy('pansa', 'desc')
             ->orderBy('name')
@@ -33,9 +33,9 @@ class PublicMonkController extends Controller
         $noviceGroup = $monks->where('type', 'novice')->values()->map($mapMonk)->all();
         $nunGroup = $monks->where('type', 'nun')->values()->map($mapMonk)->all();
 
-        $totalMonks = Monk::where('status', 1)->where('type', 'monk')->count();
-        $totalNovices = Monk::where('status', 1)->where('type', 'novice')->count();
-        $totalNuns = Monk::where('status', 1)->where('type', 'nun')->count();
+        $totalMonks = Monk::where('status', 'active')->where('type', 'monk')->count();
+        $totalNovices = Monk::where('status', 'active')->where('type', 'novice')->count();
+        $totalNuns = Monk::where('status', 'active')->where('type', 'nun')->count();
 
         return Inertia::render('Public/Monks/Index', compact('monkGroup', 'noviceGroup', 'nunGroup', 'totalMonks', 'totalNovices', 'totalNuns', 'type'));
     }

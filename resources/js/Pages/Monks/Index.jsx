@@ -25,8 +25,20 @@ const typeActiveClasses = {
     nun: 'bg-purple-50 text-purple-600 border-purple-200',
 };
 
+const statusClasses = {
+    active: 'bg-green-50 text-green-600',
+    disrobed: 'bg-gray-100 text-gray-500',
+    transferred: 'bg-amber-50 text-amber-600',
+};
+
+const statusActiveClasses = {
+    active: 'bg-green-50 text-green-600 border-green-200',
+    disrobed: 'bg-gray-100 text-gray-500 border-gray-300',
+    transferred: 'bg-amber-50 text-amber-600 border-amber-200',
+};
+
 const emptyForm = {
-    name: '', surname: '', type: 'monk', birth_date: '', ordination_date: '', temple: '', photo: null,
+    name: '', surname: '', type: 'monk', status: 'active', birth_date: '', ordination_date: '', temple: '', photo: null,
 };
 
 function pansaFor(ordinationDate) {
@@ -45,19 +57,20 @@ function ageFor(birthDate) {
     return pansaFor(birthDate);
 }
 
-export default function MonksIndex({ filters, monks, totalCount, monkCount, noviceCount, nunCount }) {
+export default function MonksIndex({ filters, monks, statuses, totalCount, monkCount, noviceCount, nunCount }) {
     const [search, setSearch] = useState(filters.search);
     const [filterType, setFilterType] = useState(filters.type);
+    const [filterStatus, setFilterStatus] = useState(filters.status);
     const debounceRef = useRef(null);
 
     useEffect(() => {
         clearTimeout(debounceRef.current);
         debounceRef.current = setTimeout(() => {
-            router.get(route('monks.index'), { search, type: filterType }, { preserveState: true, preserveScroll: true, replace: true });
+            router.get(route('monks.index'), { search, type: filterType, status: filterStatus }, { preserveState: true, preserveScroll: true, replace: true });
         }, 300);
         return () => clearTimeout(debounceRef.current);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [search, filterType]);
+    }, [search, filterType, filterStatus]);
 
     const [showModal, setShowModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -86,6 +99,7 @@ export default function MonksIndex({ filters, monks, totalCount, monkCount, novi
             name: monk.name,
             surname: monk.surname,
             type: monk.type,
+            status: monk.status || 'active',
             birth_date: monk.birth_date || '',
             ordination_date: monk.ordination_date || '',
             temple: monk.temple || '',
@@ -201,6 +215,13 @@ export default function MonksIndex({ filters, monks, totalCount, monkCount, novi
                     <option value="novice">ສາມະເນນ</option>
                     <option value="nun">ແມ່ຂາວ</option>
                 </select>
+                <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}
+                    className="bg-[#f8fafa] border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 sm:w-auto focus:outline-none focus:ring-2 focus:ring-brand-green/30 focus:border-transparent transition-shadow">
+                    <option value="">ທຸກສະຖານະ</option>
+                    {Object.entries(statuses).map(([value, label]) => (
+                        <option key={value} value={value}>{label}</option>
+                    ))}
+                </select>
             </div>
 
             {/* Mobile cards */}
@@ -223,6 +244,11 @@ export default function MonksIndex({ filters, monks, totalCount, monkCount, novi
                                     <span className={`px-2.5 py-1 rounded-full text-xs font-bold flex-shrink-0 ${typeClasses[monk.type] || 'bg-gray-50 text-gray-600'}`}>
                                         {monk.type_label}
                                     </span>
+                                    {monk.status !== 'active' && (
+                                        <span className={`px-2.5 py-1 rounded-full text-xs font-bold flex-shrink-0 ${statusClasses[monk.status] || 'bg-gray-50 text-gray-600'}`}>
+                                            {monk.status_label}
+                                        </span>
+                                    )}
                                 </div>
                                 <p className="text-gray-400 text-xs mt-0.5 truncate">
                                     {monk.temple || '—'}&nbsp;·&nbsp;{monk.pansa} ພັນສາ&nbsp;·&nbsp;ອາຍຸ {monk.age ?? '—'}
@@ -267,6 +293,7 @@ export default function MonksIndex({ filters, monks, totalCount, monkCount, novi
                             <th className="px-4 py-3.5 text-left text-[11px] font-medium text-gray-400 uppercase tracking-wide">ຮູບ</th>
                             <th className="px-4 py-3.5 text-left text-[11px] font-medium text-gray-400 uppercase tracking-wide">ຊື່-ນາມສະກຸນ</th>
                             <th className="px-4 py-3.5 text-left text-[11px] font-medium text-gray-400 uppercase tracking-wide">ປະເພດ</th>
+                            <th className="px-4 py-3.5 text-left text-[11px] font-medium text-gray-400 uppercase tracking-wide">ສະຖານະ</th>
                             <th className="px-4 py-3.5 text-left text-[11px] font-medium text-gray-400 uppercase tracking-wide hidden lg:table-cell">ພັນສາ</th>
                             <th className="px-4 py-3.5 text-left text-[11px] font-medium text-gray-400 uppercase tracking-wide hidden lg:table-cell">ອາຍຸ</th>
                             <th className="px-4 py-3.5 text-left text-[11px] font-medium text-gray-400 uppercase tracking-wide hidden lg:table-cell">ວັດ</th>
@@ -278,7 +305,7 @@ export default function MonksIndex({ filters, monks, totalCount, monkCount, novi
                     <tbody>
                         {monks.data.length === 0 ? (
                             <tr>
-                                <td colSpan={10} className="px-4 py-16 text-center">
+                                <td colSpan={11} className="px-4 py-16 text-center">
                                     <div className="w-14 h-14 rounded-full bg-brand-light-green flex items-center justify-center mx-auto mb-4">
                                         <span className="text-2xl text-brand-green select-none">☸</span>
                                     </div>
@@ -296,6 +323,11 @@ export default function MonksIndex({ filters, monks, totalCount, monkCount, novi
                                 <td className="px-4 py-3.5">
                                     <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${typeClasses[monk.type] || 'bg-gray-50 text-gray-600'}`}>
                                         {monk.type_label}
+                                    </span>
+                                </td>
+                                <td className="px-4 py-3.5">
+                                    <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${statusClasses[monk.status] || 'bg-gray-50 text-gray-600'}`}>
+                                        {monk.status_label}
                                     </span>
                                 </td>
                                 <td className="px-4 py-3.5 text-slate-600 hidden lg:table-cell">{monk.pansa} ພັນສາ</td>
@@ -404,6 +436,19 @@ export default function MonksIndex({ filters, monks, totalCount, monkCount, novi
                                         </button>
                                     ))}
                                 </div>
+                            </div>
+
+                            <div>
+                                <label className="block text-[10px] font-medium text-gray-400 mb-1.5 uppercase tracking-widest">ສະຖານະ</label>
+                                <div className="grid grid-cols-3 gap-2">
+                                    {Object.entries(statuses).map(([value, label]) => (
+                                        <button key={value} type="button" onClick={() => form.setData('status', value)}
+                                            className={`px-3 py-2.5 rounded-xl text-sm font-semibold border transition-all ${form.data.status === value ? statusActiveClasses[value] : 'bg-[#f8fafa] text-gray-400 border-gray-200 hover:bg-gray-100 hover:text-slate-600'}`}>
+                                            {label}
+                                        </button>
+                                    ))}
+                                </div>
+                                {form.errors.status && <p className="text-red-500 text-xs mt-1">{form.errors.status}</p>}
                             </div>
 
                             <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest pt-3 border-t border-gray-100">ວັນທີ</p>

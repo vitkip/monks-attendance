@@ -18,6 +18,7 @@ class MonkController extends Controller
     {
         $search = (string) $request->query('search', '');
         $filterType = (string) $request->query('type', '');
+        $filterStatus = (string) $request->query('status', '');
 
         $monks = Monk::query()
             ->when($search, fn ($q) => $q->where('name', 'like', "%{$search}%")
@@ -25,7 +26,7 @@ class MonkController extends Controller
                 ->orWhere('temple', 'like', "%{$search}%")
             )
             ->when($filterType, fn ($q) => $q->where('type', $filterType))
-            ->where('status', 1)
+            ->when($filterStatus, fn ($q) => $q->where('status', $filterStatus))
             ->withCount('absences')
             ->withSum('absences', 'fine_amount')
             ->latest()
@@ -38,6 +39,8 @@ class MonkController extends Controller
                 'full_name' => $monk->full_name,
                 'type' => $monk->type,
                 'type_label' => $monk->type_label,
+                'status' => $monk->status,
+                'status_label' => $monk->status_label,
                 'photo_url' => $monk->photo_url,
                 'temple' => $monk->temple,
                 'pansa' => $monk->pansa,
@@ -49,12 +52,13 @@ class MonkController extends Controller
             ]);
 
         return Inertia::render('Monks/Index', [
-            'filters' => ['search' => $search, 'type' => $filterType],
+            'filters' => ['search' => $search, 'type' => $filterType, 'status' => $filterStatus],
             'monks' => $monks,
-            'totalCount' => Monk::where('status', 1)->count(),
-            'monkCount' => Monk::where('status', 1)->where('type', 'monk')->count(),
-            'noviceCount' => Monk::where('status', 1)->where('type', 'novice')->count(),
-            'nunCount' => Monk::where('status', 1)->where('type', 'nun')->count(),
+            'statuses' => Monk::statuses(),
+            'totalCount' => Monk::where('status', 'active')->count(),
+            'monkCount' => Monk::where('status', 'active')->where('type', 'monk')->count(),
+            'noviceCount' => Monk::where('status', 'active')->where('type', 'novice')->count(),
+            'nunCount' => Monk::where('status', 'active')->where('type', 'nun')->count(),
         ]);
     }
 
@@ -91,6 +95,7 @@ class MonkController extends Controller
             'name' => 'required|string|max:100',
             'surname' => 'required|string|max:100',
             'type' => ['required', Rule::in(['monk', 'novice', 'nun'])],
+            'status' => ['required', Rule::in(array_keys(Monk::statuses()))],
             'birth_date' => 'nullable|date|before:today',
             'ordination_date' => 'nullable|date|before_or_equal:today',
             'temple' => 'nullable|string|max:150',
@@ -130,6 +135,7 @@ class MonkController extends Controller
             'name' => $validated['name'],
             'surname' => $validated['surname'],
             'type' => $validated['type'],
+            'status' => $validated['status'],
             'birth_date' => $validated['birth_date'] ?: null,
             'ordination_date' => $validated['ordination_date'] ?: null,
             'pansa' => Monk::calculatePansa($validated['ordination_date'] ?? null),

@@ -157,14 +157,24 @@ export default function AbsencesIndex({
                     <h1 className="text-2xl sm:text-3xl font-bold text-slate-800">ກວດສອບການຂາດລາ</h1>
                     <p className="text-gray-400 text-sm mt-1">ບັນທຶກ ແລະ ຄຳນວນຄ່າປັບໃໝ</p>
                 </div>
-                <button onClick={openCreate}
-                    className="shrink-0 flex items-center gap-2 px-4 py-2.5 sm:px-5 sm:py-3 bg-brand-green text-white rounded-2xl text-sm font-semibold hover:bg-opacity-90 transition shadow-lg shadow-brand-green/20 touch-manipulation">
-                    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4 shrink-0">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M10 4v12M4 10h12" />
-                    </svg>
-                    <span className="hidden sm:inline">ບັນທຶກການຂາດ</span>
-                    <span className="sm:hidden">ບັນທຶກ</span>
-                </button>
+                <div className="shrink-0 flex items-center gap-2.5">
+                    <a href={route('absences.public.index')} target="_blank" rel="noopener"
+                        className="flex items-center gap-2 px-4 py-2.5 sm:px-5 sm:py-3 bg-white border border-gray-200 text-slate-600 rounded-2xl text-sm font-semibold hover:bg-gray-50 transition">
+                        <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                        </svg>
+                        <span className="hidden sm:inline">ເປີດໜ້າ Frontend</span>
+                        <span className="sm:hidden">Frontend</span>
+                    </a>
+                    <button onClick={openCreate}
+                        className="flex items-center gap-2 px-4 py-2.5 sm:px-5 sm:py-3 bg-brand-green text-white rounded-2xl text-sm font-semibold hover:bg-opacity-90 transition shadow-lg shadow-brand-green/20 touch-manipulation">
+                        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4 shrink-0">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M10 4v12M4 10h12" />
+                        </svg>
+                        <span className="hidden sm:inline">ບັນທຶກການຂາດ</span>
+                        <span className="sm:hidden">ບັນທຶກ</span>
+                    </button>
+                </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4 mb-6">
