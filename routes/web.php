@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 // Guest only
@@ -10,14 +9,8 @@ Route::middleware('guest')->group(function () {
 });
 
 // Public news (no login required — visible to the community). Home page for guests;
-// authenticated users are redirected to their dashboard.
-Route::get('/', function (\Illuminate\Http\Request $request) {
-    if (Auth::check()) {
-        return redirect()->route('absences.index');
-    }
-
-    return app(\App\Http\Controllers\PublicNewsController::class)->index($request);
-})->name('news.public.index');
+// authenticated users are redirected to their dashboard (see PublicNewsController::index).
+Route::get('/', [\App\Http\Controllers\PublicNewsController::class, 'index'])->name('news.public.index');
 // Public pages (no login required). Deliberately NOT prefixed "/public" — on
 // hosts where the document root is the project root (not public/), Laravel's
 // own front controller lives at /public/index.php, so a route path that also
@@ -63,14 +56,14 @@ Route::middleware('auth')->group(function () {
     Route::get('/chants', [\App\Http\Controllers\ChantController::class, 'index'])->name('chants.index');
 
     // Custom Webpage Design (Donezo Dashboard from Stitch)
-    Route::get('/custom-webpage-design', fn() => view('designs.custom-webpage-design'))->name('custom-webpage-design');
+    Route::get('/custom-webpage-design', [\App\Http\Controllers\DesignController::class, 'customWebpageDesign'])->name('custom-webpage-design');
 
     // Temple Management System (TMS) Designs from Stitch
     Route::prefix('designs/tms')->group(function () {
-        Route::get('/dashboard', fn() => view('designs.tms-dashboard'))->name('designs.tms-dashboard');
-        Route::get('/monk-management', fn() => view('designs.tms-monk-management'))->name('designs.tms-monk-management');
-        Route::get('/public-news', fn() => view('designs.tms-public-news'))->name('designs.tms-public-news');
-        Route::get('/news-announcement', fn() => view('designs.tms-news-announcement'))->name('designs.tms-news-announcement');
+        Route::get('/dashboard', [\App\Http\Controllers\DesignController::class, 'tmsDashboard'])->name('designs.tms-dashboard');
+        Route::get('/monk-management', [\App\Http\Controllers\DesignController::class, 'tmsMonkManagement'])->name('designs.tms-monk-management');
+        Route::get('/public-news', [\App\Http\Controllers\DesignController::class, 'tmsPublicNews'])->name('designs.tms-public-news');
+        Route::get('/news-announcement', [\App\Http\Controllers\DesignController::class, 'tmsNewsAnnouncement'])->name('designs.tms-news-announcement');
     });
 
     // Admin only
@@ -146,11 +139,6 @@ Route::middleware('auth')->group(function () {
     Route::post('/profile/password', [\App\Http\Controllers\ProfileController::class, 'updatePassword'])->name('profile.update-password');
 
     // Logout
-    Route::post('/logout', function () {
-        Auth::logout();
-        request()->session()->invalidate();
-        request()->session()->regenerateToken();
-        return redirect()->route('login');
-    })->name('logout');
+    Route::post('/logout', [\App\Http\Controllers\Auth\LoginController::class, 'destroy'])->name('logout');
 
 });

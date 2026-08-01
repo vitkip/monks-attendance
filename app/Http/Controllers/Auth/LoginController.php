@@ -38,4 +38,14 @@ class LoginController extends Controller
 
         return redirect()->route('absences.index');
     }
+
+    public function destroy(Request $request): RedirectResponse
+    {
+        Auth::logout();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('login');
+    }
 }
