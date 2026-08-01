@@ -2,6 +2,7 @@ import { Link } from '@inertiajs/react';
 import PublicLayout from '@/Layouts/PublicLayout';
 import SeoHead from '@/Components/SeoHead';
 import Pagination from '@/Components/Pagination';
+import CopyAccountButton from '@/Components/CopyAccountButton';
 
 function fmt(n) {
     return new Intl.NumberFormat('en-US').format(Math.round(n));
@@ -13,7 +14,8 @@ const FILTERS = [
     ['expense', 'ລາຍຈ່າຍ'],
 ];
 
-export default function FundPublicIndex({ type, transactions, totalIncomeAll, totalExpenseAll, balanceAll }) {
+export default function FundPublicIndex({ type, transactions, totalIncomeAll, totalExpenseAll, balanceAll, fundAccount }) {
+    const hasAccount = fundAccount && (fundAccount.bank_name || fundAccount.account_name || fundAccount.account_number);
     return (
         <PublicLayout>
             <SeoHead
@@ -34,12 +36,7 @@ export default function FundPublicIndex({ type, transactions, totalIncomeAll, to
 
                     <h1 className="text-white text-3xl sm:text-4xl font-bold leading-tight">ບັນຊີກອງທຶນດອກບົວທອງ</h1>
                     <p className="text-white/60 text-sm sm:text-base mt-3 max-w-xl leading-relaxed">
-                        ເປີດເຜີຍລາຍຮັບ-ລາຍຈ່າຍຂອງກອງທຶນວັດ ໃຫ້ຍາດໂຍມ ແລະ ຜູ້ມີສັດທາຮ່ວມ ບໍລິຈາກເຂົ້າກອງທຶນໄດ້
-                        ຜ່ານເລກບັນຊີ: 158020001014846
-                        ທະນາຄານ ການຄ້າ ມະຫາຊົນລາວ (BCEL)
-                        <br />
-                        ເລກບັນຊີ: 1234567890123
-                        ທະນາຄານ ການຄ້າ ມະຫາຊົນລາວ (BCEL)
+                        ເປີດເຜີຍລາຍຮັບ-ລາຍຈ່າຍຂອງກອງທຶນວັດ ໃຫ້ຍາດໂຍມ ແລະ ຜູ້ມີສັດທາຮ່ວມຕິດຕາມໄດ້
                     </p>
 
                     <div className="flex flex-wrap items-center gap-3 mt-7">
@@ -56,6 +53,37 @@ export default function FundPublicIndex({ type, transactions, totalIncomeAll, to
                             <span className="text-xs text-white/60">ກີບ · ຍອດເຫຼືອສຸດທິ</span>
                         </div>
                     </div>
+
+                    {/* Donate — the account details visitors actually came here for */}
+                    {hasAccount && (
+                        <div className="mt-9 bg-white/[0.04] rounded-2xl px-5 sm:px-6 py-6">
+                            <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-4">ຮ່ວມບໍລິຈາກເຂົ້າກອງທຶນ</p>
+                            <div className="flex flex-col sm:flex-row sm:items-center gap-5 sm:gap-8">
+                                {fundAccount.bank_name && (
+                                    <div>
+                                        <p className="text-[10px] text-white/40 uppercase tracking-widest mb-1">ທະນາຄານ</p>
+                                        <p className="text-white text-sm font-semibold">{fundAccount.bank_name}</p>
+                                    </div>
+                                )}
+                                {fundAccount.account_name && (
+                                    <div>
+                                        <p className="text-[10px] text-white/40 uppercase tracking-widest mb-1">ຊື່ບັນຊີ</p>
+                                        <p className="text-white text-sm font-semibold">{fundAccount.account_name}</p>
+                                    </div>
+                                )}
+                                {fundAccount.account_number && (
+                                    <div>
+                                        <p className="text-[10px] text-white/40 uppercase tracking-widest mb-1">ເລກບັນຊີ</p>
+                                        <CopyAccountButton
+                                            value={fundAccount.account_number}
+                                            className="text-lg font-extrabold text-white hover:text-brand-bright-green"
+                                            iconClassName="w-4 h-4"
+                                        />
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
                 </div>
             </section>
 

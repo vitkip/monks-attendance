@@ -143,6 +143,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/settings/logo', [\App\Http\Controllers\SettingController::class, 'updateLogo'])->name('settings.logo.update');
         Route::post('/settings/logo/remove', [\App\Http\Controllers\SettingController::class, 'removeLogo'])->name('settings.logo.remove');
         Route::post('/settings/contact', [\App\Http\Controllers\SettingController::class, 'updateContact'])->name('settings.contact.update');
+        Route::post('/settings/fund', [\App\Http\Controllers\SettingController::class, 'updateFund'])->name('settings.fund.update');
     });
 
     // Profile

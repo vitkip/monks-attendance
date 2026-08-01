@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\FundTransaction;
+use App\Models\Setting;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -45,6 +46,11 @@ class PublicFundController extends Controller
             'totalIncomeAll' => $totalIncomeAll,
             'totalExpenseAll' => $totalExpenseAll,
             'balanceAll' => $totalIncomeAll - $totalExpenseAll,
+            'fundAccount' => [
+                'bank_name' => Setting::get('fund_bank_name'),
+                'account_name' => Setting::get('fund_account_name'),
+                'account_number' => Setting::get('fund_account_number'),
+            ],
         ]);
     }
 }

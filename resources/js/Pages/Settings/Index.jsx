@@ -2,7 +2,7 @@ import { useForm, router } from '@inertiajs/react';
 import { useState } from 'react';
 import AppLayout from '@/Layouts/AppLayout';
 
-export default function SettingsIndex({ currentLogo, contactWhatsapp, contactFacebook, contactEmail, contactYoutube }) {
+export default function SettingsIndex({ currentLogo, contactWhatsapp, contactFacebook, contactEmail, contactYoutube, fundBankName, fundAccountName, fundAccountNumber }) {
     const [dragging, setDragging] = useState(false);
     const [logoPreview, setLogoPreview] = useState('');
 
@@ -12,6 +12,11 @@ export default function SettingsIndex({ currentLogo, contactWhatsapp, contactFac
         contactFacebook: contactFacebook || '',
         contactEmail: contactEmail || '',
         contactYoutube: contactYoutube || '',
+    });
+    const fundForm = useForm({
+        fundBankName: fundBankName || '',
+        fundAccountName: fundAccountName || '',
+        fundAccountNumber: fundAccountNumber || '',
     });
 
     function pickLogoFile(file) {
@@ -50,6 +55,11 @@ export default function SettingsIndex({ currentLogo, contactWhatsapp, contactFac
     function submitContact(e) {
         e.preventDefault();
         contactForm.post(route('settings.contact.update'), { preserveScroll: true });
+    }
+
+    function submitFund(e) {
+        e.preventDefault();
+        fundForm.post(route('settings.fund.update'), { preserveScroll: true });
     }
 
     return (
@@ -233,6 +243,73 @@ export default function SettingsIndex({ currentLogo, contactWhatsapp, contactFac
                                     className="px-5 py-2.5 bg-brand-green hover:bg-opacity-90 text-white text-sm font-semibold rounded-2xl transition shadow-lg shadow-brand-green/20 disabled:opacity-60 disabled:cursor-not-allowed"
                                 >
                                     {contactForm.processing ? 'ກຳລັງບັນທຶກ...' : 'ບັນທຶກ'}
+                                </button>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+
+                {/* Fund Bank Account Card */}
+                <div className="bg-white rounded-3xl card-shadow overflow-hidden">
+
+                    <div className="px-6 py-4 border-b border-gray-100 bg-[#f8fafa]">
+                        <h2 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">ບັນຊີທະນາຄານກອງທຶນ</h2>
+                    </div>
+
+                    <div className="px-6 py-6">
+                        <p className="text-xs text-gray-400 -mt-1 mb-4">ສະແດງຢູ່ໜ້າກອງທຶນສາທາລະນະ ເພື່ອໃຫ້ຍາດໂຍມບໍລິຈາກເຂົ້າກອງທຶນໄດ້</p>
+                        <form onSubmit={submitFund} className="space-y-4">
+
+                            <div>
+                                <label className="block text-[10px] font-medium text-gray-400 uppercase tracking-widest mb-2">ຊື່ທະນາຄານ</label>
+                                <input
+                                    type="text"
+                                    value={fundForm.data.fundBankName}
+                                    onChange={(e) => fundForm.setData('fundBankName', e.target.value)}
+                                    placeholder="ຕົວຢ່າງ: ທະນາຄານການຄ້າຕ່າງປະເທດລາວ (BCEL)"
+                                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-[#f8fafa] text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-green/30 focus:border-brand-green"
+                                />
+                                {fundForm.errors.fundBankName && (
+                                    <p className="mt-1.5 text-red-500 text-xs">{fundForm.errors.fundBankName}</p>
+                                )}
+                            </div>
+
+                            <div>
+                                <label className="block text-[10px] font-medium text-gray-400 uppercase tracking-widest mb-2">ຊື່ບັນຊີ</label>
+                                <input
+                                    type="text"
+                                    value={fundForm.data.fundAccountName}
+                                    onChange={(e) => fundForm.setData('fundAccountName', e.target.value)}
+                                    placeholder="ຕົວຢ່າງ: ວັດປ່າໜອງບົວທອງໃຕ້"
+                                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-[#f8fafa] text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-green/30 focus:border-brand-green"
+                                />
+                                {fundForm.errors.fundAccountName && (
+                                    <p className="mt-1.5 text-red-500 text-xs">{fundForm.errors.fundAccountName}</p>
+                                )}
+                            </div>
+
+                            <div>
+                                <label className="block text-[10px] font-medium text-gray-400 uppercase tracking-widest mb-2">ເລກບັນຊີ</label>
+                                <input
+                                    type="text"
+                                    value={fundForm.data.fundAccountNumber}
+                                    onChange={(e) => fundForm.setData('fundAccountNumber', e.target.value)}
+                                    placeholder="ຕົວຢ່າງ: 158020001014846"
+                                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-[#f8fafa] text-sm text-slate-700 tabular-nums focus:outline-none focus:ring-2 focus:ring-brand-green/30 focus:border-brand-green"
+                                />
+                                {fundForm.errors.fundAccountNumber && (
+                                    <p className="mt-1.5 text-red-500 text-xs">{fundForm.errors.fundAccountNumber}</p>
+                                )}
+                            </div>
+
+                            <div className="flex justify-end">
+                                <button
+                                    type="submit"
+                                    disabled={fundForm.processing}
+                                    className="px-5 py-2.5 bg-brand-green hover:bg-opacity-90 text-white text-sm font-semibold rounded-2xl transition shadow-lg shadow-brand-green/20 disabled:opacity-60 disabled:cursor-not-allowed"
+                                >
+                                    {fundForm.processing ? 'ກຳລັງບັນທຶກ...' : 'ບັນທຶກ'}
                                 </button>
                             </div>
 

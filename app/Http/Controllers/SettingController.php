@@ -20,6 +20,9 @@ class SettingController extends Controller
             'contactFacebook' => Setting::get('contact_facebook'),
             'contactEmail' => Setting::get('contact_email'),
             'contactYoutube' => Setting::get('contact_youtube'),
+            'fundBankName' => Setting::get('fund_bank_name'),
+            'fundAccountName' => Setting::get('fund_account_name'),
+            'fundAccountNumber' => Setting::get('fund_account_number'),
         ]);
     }
 
@@ -76,5 +79,24 @@ class SettingController extends Controller
         Setting::set('contact_youtube', $validated['contactYoutube'] ?? null);
 
         return back()->with('success', 'ບັນທຶກຂໍ້ມູນຕິດຕໍ່ສຳເລັດ');
+    }
+
+    public function updateFund(Request $request): RedirectResponse
+    {
+        $validated = Validator::make($request->all(), [
+            'fundBankName' => 'nullable|string|max:100',
+            'fundAccountName' => 'nullable|string|max:150',
+            'fundAccountNumber' => 'nullable|string|max:50',
+        ], [
+            'fundBankName.max' => 'ຊື່ທະນາຄານຍາວເກີນໄປ',
+            'fundAccountName.max' => 'ຊື່ບັນຊີຍາວເກີນໄປ',
+            'fundAccountNumber.max' => 'ເລກບັນຊີຍາວເກີນໄປ',
+        ])->validate();
+
+        Setting::set('fund_bank_name', $validated['fundBankName'] ?? null);
+        Setting::set('fund_account_name', $validated['fundAccountName'] ?? null);
+        Setting::set('fund_account_number', $validated['fundAccountNumber'] ?? null);
+
+        return back()->with('success', 'ບັນທຶກຂໍ້ມູນບັນຊີກອງທຶນສຳເລັດ');
     }
 }
