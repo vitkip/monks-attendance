@@ -41,7 +41,7 @@ export default function HeroSlidesIndex({ slides }) {
         e.preventDefault();
         const onSuccess = () => setShowModal(false);
         if (editId) {
-            form.transform((data) => ({ ...data, _method: 'put' })).post(route('hero-slides.update', editId), { onSuccess, preserveScroll: true, forceFormData: true });
+            form.post(route('hero-slides.update', editId), { onSuccess, preserveScroll: true, forceFormData: true });
         } else {
             form.post(route('hero-slides.store'), { onSuccess, preserveScroll: true, forceFormData: true });
         }

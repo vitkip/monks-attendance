@@ -1,7 +1,7 @@
 import { Link, usePage } from '@inertiajs/react';
 
 const NAV = [
-    ['news.public.index', 'ຂ່າວສານ', '/'],
+    ['news.public.index', 'ຂ່າວສານ', '/news'],
     ['monks.public.index', 'ພຣະສົງ', '/info/monks'],
     ['chants.public.index', 'ບົດສູດມົນ', '/info/chants'],
     ['electricity-bills.public.index', 'ລາຍການຄ່າໄຟຟ້າ', '/info/electricity-bills'],
@@ -43,9 +43,8 @@ export default function PublicLayout({ children }) {
                             <Link
                                 key={routeName}
                                 href={route(routeName)}
-                                className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold transition-colors ${
-                                    isActivePath(currentUrl, prefix) ? 'bg-white/15 text-white' : 'text-white/60 hover:text-white'
-                                }`}
+                                className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold transition-colors ${isActivePath(currentUrl, prefix) ? 'bg-white/15 text-white' : 'text-white/60 hover:text-white'
+                                    }`}
                             >
                                 {label}
                             </Link>
