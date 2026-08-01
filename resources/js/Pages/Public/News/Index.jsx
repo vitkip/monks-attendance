@@ -66,6 +66,8 @@ function HeroSlider({ slides }) {
         >
             {slides.map((slide, index) => {
                 const active = index === current;
+                const nearCurrent =
+                    active || index === (current + 1) % total || index === (current - 1 + total) % total;
 
                 return (
                     <div
@@ -75,12 +77,19 @@ function HeroSlider({ slides }) {
                         }`}
                         aria-hidden={active ? 'false' : 'true'}
                     >
-                        <img
-                            src={slide.image_url}
-                            alt=""
-                            aria-hidden="true"
-                            className="absolute inset-0 w-full h-full object-cover opacity-90"
-                        />
+                        {/* Only the active slide plus its immediate neighbors fetch an image —
+                            keeps the crossfade smooth without downloading every slide upfront. */}
+                        {nearCurrent && (
+                            <img
+                                src={slide.image_url}
+                                alt=""
+                                aria-hidden="true"
+                                loading={index === 0 ? 'eager' : 'lazy'}
+                                fetchpriority={index === 0 ? 'high' : 'auto'}
+                                decoding="async"
+                                className="absolute inset-0 w-full h-full object-cover opacity-90"
+                            />
+                        )}
                         <div className="absolute inset-0 bg-gradient-to-t from-brand-green-dark via-brand-green-dark/50 to-brand-green-dark/10"></div>
 
                         <div className="relative h-full max-w-6xl mx-auto px-5 sm:px-8 pt-24 pb-10 sm:pb-14 w-full flex flex-col justify-end">
@@ -171,21 +180,28 @@ function HeroSlider({ slides }) {
     );
 }
 
-function NewsCard({ item }) {
+function NewsCard({ item, priority }) {
+    const [loaded, setLoaded] = useState(false);
+
     return (
         <Link
             href={route('news.public.show', item.slug)}
             className="group bg-white rounded-2xl card-shadow border border-black/5 overflow-hidden flex flex-col transition-all duration-300 hover:-translate-y-1 hover:shadow-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green"
         >
-            <div className="aspect-[16/9] bg-brand-light-green overflow-hidden">
+            <div className="relative aspect-[16/9] bg-brand-light-green overflow-hidden">
                 {item.image_url ? (
-                    <img
-                        src={item.image_url}
-                        alt={item.title}
-                        loading="lazy"
-                        className="w-full h-full object-cover opacity-0 group-hover:scale-105 transition-[opacity,transform] duration-500"
-                        onLoad={(e) => e.currentTarget.classList.remove('opacity-0')}
-                    />
+                    <>
+                        {!loaded && <div className="absolute inset-0 animate-pulse bg-brand-light-green" aria-hidden="true"></div>}
+                        <img
+                            src={item.image_url}
+                            alt={item.title}
+                            loading={priority ? 'eager' : 'lazy'}
+                            fetchpriority={priority ? 'high' : 'auto'}
+                            decoding="async"
+                            className={`w-full h-full object-cover transition-[opacity,transform] duration-500 group-hover:scale-105 ${loaded ? 'opacity-100' : 'opacity-0'}`}
+                            onLoad={() => setLoaded(true)}
+                        />
+                    </>
                 ) : (
                     <div className="w-full h-full flex items-center justify-center">
                         <span className="text-2xl text-brand-green/40">☸</span>
@@ -232,7 +248,15 @@ export default function Index({ heroSlides, featured, news, categories, category
                 <section className="relative overflow-hidden bg-brand-green-dark min-h-[420px] sm:min-h-[500px] flex items-end">
                     <div className="absolute inset-0">
                         {featured && featured.image_url ? (
-                            <img src={featured.image_url} alt="" aria-hidden="true" className="w-full h-full object-cover opacity-60" />
+                            <img
+                                src={featured.image_url}
+                                alt=""
+                                aria-hidden="true"
+                                loading="eager"
+                                fetchpriority="high"
+                                decoding="async"
+                                className="w-full h-full object-cover opacity-60"
+                            />
                         ) : (
                             <div className="w-full h-full bg-brand-tracker opacity-80"></div>
                         )}
@@ -361,7 +385,7 @@ export default function Index({ heroSlides, featured, news, categories, category
                             <div className="flex items-end justify-between mb-6">
                                 <div>
                                     <h2 className="text-lg font-bold text-slate-800">
-                                        {categorySlug ? activeCategory?.name : 'ຂ່າວອື່ນໆ'}
+                                        {categorySlug ? activeCategory?.name : featured ? 'ຂ່າວອື່ນໆ' : 'ຂ່າວທັງໝົດ'}
                                     </h2>
                                     <p className="text-slate-400 text-xs mt-0.5">ຕິດຕາມຄວາມເຄື່ອນໄຫວພາຍໃນວັດ</p>
                                 </div>
@@ -371,8 +395,8 @@ export default function Index({ heroSlides, featured, news, categories, category
                                 <p className="text-sm text-slate-400 py-6">ຍັງບໍ່ມີຂ່າວອື່ນເພີ່ມເຕີມ</p>
                             ) : (
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                                    {news.data.map((item) => (
-                                        <NewsCard key={item.id} item={item} />
+                                    {news.data.map((item, index) => (
+                                        <NewsCard key={item.id} item={item} priority={index < 2} />
                                     ))}
                                 </div>
                             )}

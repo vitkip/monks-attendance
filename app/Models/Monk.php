@@ -88,6 +88,6 @@ class Monk extends Model
     {
         return $this->photo
             ? asset('storage/' . $this->photo)
-            : asset('images/default-monk.png');
+            : asset('images/default-monk.svg');
     }
 }
