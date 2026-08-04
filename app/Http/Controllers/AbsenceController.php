@@ -124,6 +124,26 @@ class AbsenceController extends Controller
             throw ValidationException::withMessages(['absent_date' => implode(' | ', $conflicts)]);
         }
 
+        // Check for duplicate: same monk + same fine_rate + same date
+        $duplicateMessages = [];
+        foreach ($monkIds as $monkId) {
+            $exists = Absence::where('monk_id', $monkId)
+                ->where('fine_rate_id', $data['fine_rate_id'])
+                ->where('absent_date', $data['absent_date'])
+                ->exists();
+
+            if ($exists) {
+                $monk = Monk::find($monkId);
+                $fineRate = FineRate::find($data['fine_rate_id']);
+                $duplicateMessages[] = ($monk?->full_name ?? '') .
+                    ' ຖືກໝາຍຂາດປະເພດ "' . ($fineRate?->name ?? '') . '" ໃນວັນນີ້ແລ້ວ';
+            }
+        }
+
+        if (! empty($duplicateMessages)) {
+            throw ValidationException::withMessages(['monk_ids' => implode(' | ', $duplicateMessages)]);
+        }
+
         foreach ($monkIds as $monkId) {
             Absence::create([
                 'monk_id' => $monkId,
@@ -146,6 +166,20 @@ class AbsenceController extends Controller
         $conflict = $this->dutyConflictMessage((int) $data['monk_id'], $data['absent_date']);
         if ($conflict) {
             throw ValidationException::withMessages(['absent_date' => $conflict]);
+        }
+
+        // Check for duplicate: same monk + same fine_rate + same date (exclude current record)
+        $duplicateExists = Absence::where('monk_id', $data['monk_id'])
+            ->where('fine_rate_id', $data['fine_rate_id'])
+            ->where('absent_date', $data['absent_date'])
+            ->where('id', '!=', $absence->id)
+            ->exists();
+
+        if ($duplicateExists) {
+            $fineRate = FineRate::find($data['fine_rate_id']);
+            throw ValidationException::withMessages([
+                'monk_id' => 'ພຣະອົງນີ້ ຖືກໝາຍຂາດປະເພດ "' . ($fineRate?->name ?? '') . '" ໃນວັນນີ້ແລ້ວ',
+            ]);
         }
 
         $absence->update([
