@@ -23,7 +23,11 @@ export default function Index({ billsByMonth, availableYears, year, monthly, tot
 
     return (
         <PublicLayout>
-            <SeoHead title="ລາຍຈ່າຍຄ່າໄຟຟ້າ" description="ລາຍງານຄ່າໄຟຟ້າຂອງວັດປ່າໜອງບົວທອງໃຕ້ ແບບໂປ່ງໃສ" />
+            <SeoHead
+                title="ລາຍຈ່າຍຄ່າໄຟຟ້າ"
+                description="ລາຍງານຄ່າໄຟຟ້າຂອງວັດປ່າໜອງບົວທອງໃຕ້ ແບບໂປ່ງໃສ ປະຊາຊົນ ແລະ ພຸດທະສາສະນິກະຊົນສາມາດກວດສອບໄດ້"
+                keywords="ລາຍຈ່າຍຄ່າໄຟຟ້າ, ວັດປ່າໜອງບົວທອງໃຕ້, ວັດປ່າໜອງບົວທອງ, ພຣະສົງ, ບຸນ, ພຸດທະສາສະໜາ, ປະເທດລາວ, nongbuathong"
+            />
 
             {/* Hero */}
             <section className="relative overflow-hidden bg-brand-green-dark">

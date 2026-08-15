@@ -91,8 +91,9 @@ export default function Index({ monks, days, maxAbsence, maxFine, periodStart, p
     return (
         <div className="bg-[#faf8f2] font-sans text-slate-700 min-h-screen">
             <SeoHead
-                title="ສະຖິຕິການຂາດ ແລະ ຄ່າປັບ"
-                description="ຂໍ້ມູນສະຖິຕິການຂາດ ແລະ ຄ່າປັບຂອງພຣະສົງ ແລະ ສາມະເນນ ພາຍໃນວັດປ່າໜອງບົວທອງໃຕ້"
+                title="ກະຕິກາ ແລະ ສະຖິຕິການປະຕິບັດທຳ"
+                description="ຂໍ້ມູນສະຖິຕິການປະຕິບັດທຳ, ລະບຽບວິນັຍ, ແລະ ການຮ່ວມກິດຈະກຳຂອງພຣະສົງ, ສາມະເນນ, ຜູ້ບວດຂາວ ວັດປ່າໜອງບົວທອງໃຕ້ ປະເທດລາວ"
+                keywords="ລະບຽບວັດ, ພຣະສົງ, ສາມະເນນ, ບວດຂາວ, ການປະຕິບັດທຳ, ກຳມະຖານ, ໄຫວ້ພຣະ, ວັດປ່າໜອງບົວທອງໃຕ້, ພຸດທະສາສະໜາ, ປະເທດລາວ"
             />
 
             <section className="relative overflow-hidden bg-brand-green-dark">

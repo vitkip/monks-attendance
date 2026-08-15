@@ -66,9 +66,34 @@ export default function Show({ article, recent }) {
         });
     };
 
+    const articleSchema = {
+        '@context': 'https://schema.org',
+        '@type': 'NewsArticle',
+        headline: article.title,
+        description: article.excerpt_or_summary,
+        image: article.image_url ? [article.image_url] : [],
+        datePublished: article.published_at,
+        dateModified: article.updated_at || article.published_at,
+        author: {
+            '@type': 'Organization',
+            name: 'ວັດປ່າໜອງບົວທອງໃຕ້',
+        },
+        publisher: {
+            '@type': 'Organization',
+            name: 'ວັດປ່າໜອງບົວທອງໃຕ້',
+        },
+    };
+
     return (
         <PublicLayout>
-            <SeoHead title={article.title} description={article.excerpt_or_summary} image={article.image_url} />
+            <SeoHead
+                title={article.title}
+                description={article.excerpt_or_summary}
+                image={article.image_url}
+                type="article"
+                schemaJson={articleSchema}
+                keywords={`${article.title}, ວັດປ່າໜອງບົວທອງໃຕ້, ວັດປ່າໜອງບົວທອງ, ພຣະສົງ, ງານບຸນ, ບຸນ, ພຸດທະສາສະໜາ, ປະເທດລາວ, ການປະຕິບັດທຳ, ກຳມະຖານ, ບວດຂາວ, ໄຫວ້ພຣະ`}
+            />
 
             {/* Reading progress bar */}
             <div

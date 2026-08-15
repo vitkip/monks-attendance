@@ -22,7 +22,12 @@ function seoDescription(description) {
 export default function ConstructionProjectPublicShow({ project, transactions, statuses }) {
     return (
         <PublicLayout>
-            <SeoHead title={project.name} description={seoDescription(project.description)} image={project.image_url} />
+            <SeoHead
+                title={`ໂຄງການກໍ່ສ້າງ: ${project.name}`}
+                description={`ໂຄງການກໍ່ສ້າງ ${project.name} ວັດປ່າໜອງບົວທອງໃຕ້ — ${seoDescription(project.description)}`}
+                image={project.image_url}
+                keywords={`ໂຄງການກໍ່ສ້າງ, ${project.name}, ວັດປ່າໜອງບົວທອງໃຕ້, ວັດປ່າໜອງບົວທອງ, ບຸນ, ພຣະສົງ, ພຸດທະສາສະໜາ, ປະເທດລາວ, nongbuathong`}
+            />
 
             <div className="max-w-6xl mx-auto px-5 sm:px-8 py-10 sm:py-14">
 

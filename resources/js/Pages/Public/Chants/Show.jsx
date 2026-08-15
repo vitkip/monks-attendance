@@ -16,7 +16,12 @@ export default function ChantShow({ chant, related }) {
 
     return (
         <PublicLayout>
-            <SeoHead title={chant.title} description={chant.content_html.replace(/<[^>]*>/g, '').slice(0, 150)} />
+            <SeoHead
+                title={`ບົດສູດມົນ: ${chant.title}`}
+                description={`ບົດສູດມົນ ${chant.title} — ${chant.content_html.replace(/<[^>]*>/g, '').slice(0, 150)}`}
+                keywords={`ບົດສູດມົນ, ${chant.title}, ໄຫວ້ພຣະ, ການປະຕິບັດທຳ, ກຳມະຖານ, ວັດປ່າໜອງບົວທອງໃຕ້, ວັດປ່າໜອງບົວທອງ, ພຣະສົງ, ພຸດທະສາສະໜາ, ປະເທດລາວ`}
+                type="article"
+            />
 
             <article className="max-w-6xl mx-auto px-5 sm:px-8 py-10 sm:py-14">
 

@@ -1,2 +1,18 @@
 User-agent: *
-Disallow:
+Allow: /
+Disallow: /login
+Disallow: /absences
+Disallow: /balance
+Disallow: /news
+Disallow: /chants
+Disallow: /monks
+Disallow: /fine-rates
+Disallow: /hero-slides
+Disallow: /news-categories
+Disallow: /chant-categories
+Disallow: /duty-schedules
+Disallow: /users
+Disallow: /settings
+Disallow: /profile
+
+Sitemap: /sitemap.xml

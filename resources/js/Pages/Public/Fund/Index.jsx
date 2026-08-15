@@ -19,8 +19,9 @@ export default function FundPublicIndex({ type, transactions, totalIncomeAll, to
     return (
         <PublicLayout>
             <SeoHead
-                title="ກອງທຶນ"
-                description="ຄວາມໂປ່ງໃສລາຍຮັບ-ລາຍຈ່າຍຂອງກອງທຶນວັດປ່າໜອງບົວທອງໃຕ້"
+                title="ກອງທຶນ ງົບປະມານ ແລະ ການບໍລິຈາກ"
+                description="ຄວາມໂປ່ງໃສລາຍຮັບ-ລາຍຈ່າຍກອງທຶນ, ການທຳບຸນ, ແລະ ງົບປະມານຂອງວັດປ່າໜອງບົວທອງໃຕ້ ປະເທດລາວ"
+                keywords="ກອງທຶນວັດ, ບໍລິຈາກ, ບຸນ, ທຳບຸນ, ວັດປ່າໜອງບົວທອງໃຕ້, ວັດປ່າໜອງບົວທອງ, ພຣະສົງ, ພຸດທະສາສະໜາ, ປະເທດລາວ, nongbuathong"
             />
 
             {/* Hero */}

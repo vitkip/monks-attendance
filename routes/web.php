@@ -11,6 +11,7 @@ Route::middleware('guest')->group(function () {
 // Public news (no login required — visible to the community). Home page for guests;
 // authenticated users are redirected to their dashboard (see PublicNewsController::index).
 Route::get('/', [\App\Http\Controllers\PublicNewsController::class, 'index'])->name('news.public.index');
+Route::get('/sitemap.xml', [\App\Http\Controllers\SitemapController::class, 'index'])->name('sitemap');
 // Public pages (no login required). Deliberately NOT prefixed "/public" — on
 // hosts where the document root is the project root (not public/), Laravel's
 // own front controller lives at /public/index.php, so a route path that also

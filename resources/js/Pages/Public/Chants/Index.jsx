@@ -6,7 +6,11 @@ import Pagination from '@/Components/Pagination';
 export default function ChantsIndex({ chants, categories, categorySlug }) {
     return (
         <PublicLayout>
-            <SeoHead title="ບົດສູດມົນ" description="ລວມບົດສູດມົນຕ່າງໆ ຂອງວັດປ່າໜອງບົວທອງໃຕ້" />
+            <SeoHead
+                title="ບົດສູດມົນ ໄຫວ້ພຣະ ແລະ ການປະຕິບັດທຳ"
+                description="ລວມບົດສູດມົນ ໄຫວ້ພຣະ ທຳມະ ປະຕິບັດທຳ ແລະ ກຳມະຖານ ຂອງວັດປ່າໜອງບົວທອງໃຕ້ ນະຄອນຫຼວງວຽງຈັນ ປະເທດລາວ"
+                keywords="ບົດສູດມົນ, ໄຫວ້ພຣະ, ການປະຕິບັດທຳ, ກຳມະຖານ, ທຳມະ, ວັດປ່າໜອງບົວທອງໃຕ້, ວັດປ່າໜອງບົວທອງ, ພຣະສົງ, ບວດຂາວ, ພຸດທະສາສະໜາ, ປະເທດລາວ, nongbuathong"
+            />
 
             {/* Hero */}
             <section className="relative overflow-hidden bg-brand-green-dark">
