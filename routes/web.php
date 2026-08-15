@@ -77,6 +77,7 @@ Route::middleware('auth')->group(function () {
         // Electricity bill notifications / ແຈ້ງບິນຄ່າໄຟຟ້າ
         Route::get('/electricity-bills', [\App\Http\Controllers\ElectricityBillController::class, 'index'])->name('electricity-bills.index');
         Route::post('/electricity-bills', [\App\Http\Controllers\ElectricityBillController::class, 'store'])->name('electricity-bills.store');
+        Route::post('/electricity-bills/scan-ai', [\App\Http\Controllers\ElectricityBillController::class, 'scanAi'])->name('electricity-bills.scan-ai');
         Route::post('/electricity-bills/{electricityBill}/update', [\App\Http\Controllers\ElectricityBillController::class, 'update'])->name('electricity-bills.update');
         Route::delete('/electricity-bills/{electricityBill}', [\App\Http\Controllers\ElectricityBillController::class, 'destroy'])->name('electricity-bills.destroy');
 

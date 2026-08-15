@@ -11,6 +11,12 @@ const LAO_MONTHS = {
 
 const fmt = (n) => new Intl.NumberFormat('en-US').format(n);
 
+function isPdf(fileOrUrl) {
+    if (!fileOrUrl) return false;
+    if (typeof fileOrUrl === 'string') return fileOrUrl.toLowerCase().split('?')[0].endsWith('.pdf');
+    return false;
+}
+
 export default function Index({ billsByMonth, availableYears, year, monthly, totalYear, countYear, totalAllTime }) {
     const maxMonthly = monthly.length ? Math.max(...monthly) : 0;
     const hasMonthlyData = maxMonthly > 0;
@@ -167,13 +173,19 @@ export default function Index({ billsByMonth, availableYears, year, monthly, tot
                                                     href={bill.image_url}
                                                     target="_blank"
                                                     rel="noopener"
-                                                    className="w-14 h-14 rounded-xl overflow-hidden bg-gray-100 shrink-0 border border-gray-200"
+                                                    className="w-14 h-14 rounded-xl overflow-hidden bg-gray-100 shrink-0 border border-gray-200 flex items-center justify-center"
                                                 >
-                                                    <img
-                                                        src={bill.image_url}
-                                                        alt={`ໃບບິນ ${bill.customer_name} ເດືອນ ${bill.bill_month_label}`}
-                                                        className="w-full h-full object-cover"
-                                                    />
+                                                    {isPdf(bill.image || bill.image_url) ? (
+                                                        <svg className="w-7 h-7 text-red-500" fill="currentColor" viewBox="0 0 24 24">
+                                                            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 2l5 5h-5V4zM8.5 13h1c.55 0 1 .45 1 1s-.45 1-1 1h-.5v1.5a.5.5 0 01-1 0V13.5a.5.5 0 01.5-.5zm3.5 0h1c.83 0 1.5.67 1.5 1.5v1c0 .83-.67 1.5-1.5 1.5h-1a.5.5 0 01-.5-.5v-3a.5.5 0 01.5-.5zm1 3c.28 0 .5-.22.5-.5v-1c0-.28-.22-.5-.5-.5h-.5v2h.5zm2.5-3h1.5a.5.5 0 010 1H16v.5h1a.5.5 0 010 1h-1v1a.5.5 0 01-1 0v-3a.5.5 0 01.5-.5z" />
+                                                        </svg>
+                                                    ) : (
+                                                        <img
+                                                            src={bill.image_url}
+                                                            alt={`ໃບບິນ ${bill.customer_name} ເດືອນ ${bill.bill_month_label}`}
+                                                            className="w-full h-full object-cover"
+                                                        />
+                                                    )}
                                                 </a>
 
                                                 <div className="flex-1 min-w-0">

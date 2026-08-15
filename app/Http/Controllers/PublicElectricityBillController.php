@@ -38,6 +38,7 @@ class PublicElectricityBillController extends Controller
                         'bill_month' => $bill->bill_month->format('Y-m'),
                         'bill_month_label' => $bill->bill_month->format('m/Y'),
                         'amount' => (float) $bill->amount,
+                        'image' => $bill->image,
                         'image_url' => $bill->image_url,
                     ])->values(),
                 ];

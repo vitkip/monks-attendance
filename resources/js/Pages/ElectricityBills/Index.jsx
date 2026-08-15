@@ -7,6 +7,13 @@ function fmt(n) {
     return new Intl.NumberFormat('en-US').format(Math.round(n));
 }
 
+function isPdf(fileOrUrl) {
+    if (!fileOrUrl) return false;
+    if (fileOrUrl instanceof File) return fileOrUrl.type === 'application/pdf';
+    if (typeof fileOrUrl === 'string') return fileOrUrl.toLowerCase().endsWith('.pdf');
+    return false;
+}
+
 const emptyForm = {
     account_number: '', province: '', customer_name: '', bill_month: '', amount: '', image: null,
 };
@@ -47,13 +54,23 @@ export default function ElectricityBillsIndex({ filters, bills, provinces }) {
     const [existingImageUrl, setExistingImageUrl] = useState('');
     const [imagePreview, setImagePreview] = useState('');
     const [dragging, setDragging] = useState(false);
+    const [isScanningAi, setIsScanningAi] = useState(false);
+    const [aiMessage, setAiMessage] = useState('');
+    const [aiError, setAiError] = useState('');
     const form = useForm(emptyForm);
+
+    function resetAiState() {
+        setAiMessage('');
+        setAiError('');
+        setIsScanningAi(false);
+    }
 
     function openCreate() {
         setEditId(null);
         setIsDuplicate(false);
         setExistingImageUrl('');
         setImagePreview('');
+        resetAiState();
         form.clearErrors();
         form.setData({ ...emptyForm });
         setShowModal(true);
@@ -64,6 +81,7 @@ export default function ElectricityBillsIndex({ filters, bills, provinces }) {
         setIsDuplicate(false);
         setExistingImageUrl(bill.image_url || '');
         setImagePreview('');
+        resetAiState();
         form.clearErrors();
         form.setData({
             account_number: bill.account_number,
@@ -81,6 +99,7 @@ export default function ElectricityBillsIndex({ filters, bills, provinces }) {
         setIsDuplicate(true);
         setExistingImageUrl('');
         setImagePreview('');
+        resetAiState();
         form.clearErrors();
         form.setData({
             account_number: bill.account_number,
@@ -100,7 +119,12 @@ export default function ElectricityBillsIndex({ filters, bills, provinces }) {
 
     function onImageChange(file) {
         form.setData('image', file);
-        setImagePreview(file ? URL.createObjectURL(file) : '');
+        resetAiState();
+        if (file && !isPdf(file)) {
+            setImagePreview(URL.createObjectURL(file));
+        } else {
+            setImagePreview('');
+        }
     }
 
     function handleFileInput(e) {
@@ -118,9 +142,57 @@ export default function ElectricityBillsIndex({ filters, bills, provinces }) {
         onImageChange(null);
     }
 
+    async function scanBillWithAi() {
+        if (!form.data.image) return;
+        setIsScanningAi(true);
+        setAiMessage('');
+        setAiError('');
+
+        const formData = new FormData();
+        formData.append('image', form.data.image);
+
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
+            || (document.cookie.match(/XSRF-TOKEN=([^;]+)/)?.[1] ? decodeURIComponent(document.cookie.match(/XSRF-TOKEN=([^;]+)/)[1]) : '');
+
+        try {
+            const response = await fetch(route('electricity-bills.scan-ai'), {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                    'X-XSRF-TOKEN': csrfToken,
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+                body: formData,
+            });
+
+            const resData = await response.json();
+
+            if (resData?.success) {
+                const data = resData.data;
+                form.setData((prev) => ({
+                    ...prev,
+                    amount: data.amount ? String(data.amount) : prev.amount,
+                    account_number: data.account_number || prev.account_number,
+                    customer_name: data.customer_name || prev.customer_name,
+                    province: data.province || prev.province,
+                    bill_month: data.bill_month || prev.bill_month,
+                }));
+                setAiMessage('✨ AI ດຶງຂໍ້ມູນສຳເລັດ! ກະລຸນາກວດສອບຄວາມຖືກຕ້ອງກ່ອນບັນທຶກ.');
+            } else {
+                setAiError(resData?.message || 'ບໍ່ສາມາດດຶງຂໍ້ມູນຈາກ AI ໄດ້');
+            }
+        } catch (err) {
+            setAiError('ເກີດຂໍ້ຜິດພາດໃນການສະແກນ');
+        } finally {
+            setIsScanningAi(false);
+        }
+    }
+
     function closeModal() {
         setShowModal(false);
         setIsDuplicate(false);
+        resetAiState();
     }
 
     function submit(e) {
@@ -222,8 +294,14 @@ export default function ElectricityBillsIndex({ filters, bills, provinces }) {
                 ) : bills.data.map((bill) => (
                     <div key={bill.id} className="bg-white rounded-2xl card-shadow overflow-hidden">
                         <button onClick={() => openView(bill)} className="w-full flex items-center gap-3 px-4 py-3.5 text-left">
-                            <div className="w-12 h-12 rounded-xl overflow-hidden flex-shrink-0 bg-gray-100">
-                                <img src={bill.image_url} alt={bill.customer_name} className="w-full h-full object-cover" />
+                            <div className="w-12 h-12 rounded-xl overflow-hidden flex-shrink-0 bg-gray-100 flex items-center justify-center">
+                                {isPdf(bill.image) ? (
+                                    <svg className="w-6 h-6 text-red-500" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 2l5 5h-5V4zM8.5 13h1c.55 0 1 .45 1 1s-.45 1-1 1h-.5v1.5a.5.5 0 01-1 0V13.5a.5.5 0 01.5-.5zm3.5 0h1c.83 0 1.5.67 1.5 1.5v1c0 .83-.67 1.5-1.5 1.5h-1a.5.5 0 01-.5-.5v-3a.5.5 0 01.5-.5zm1 3c.28 0 .5-.22.5-.5v-1c0-.28-.22-.5-.5-.5h-.5v2h.5zm2.5-3h1.5a.5.5 0 010 1H16v.5h1a.5.5 0 010 1h-1v1a.5.5 0 01-1 0v-3a.5.5 0 01.5-.5z" />
+                                    </svg>
+                                ) : (
+                                    <img src={bill.image_url} alt={bill.customer_name} className="w-full h-full object-cover" />
+                                )}
                             </div>
                             <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-2">
@@ -296,8 +374,14 @@ export default function ElectricityBillsIndex({ filters, bills, provinces }) {
                         ) : bills.data.map((bill) => (
                             <tr key={bill.id} className="border-b border-gray-100 last:border-0 hover:bg-gray-50 transition-colors">
                                 <td className="px-4 py-3.5">
-                                    <button onClick={() => openView(bill)} className="block w-11 h-11 rounded-xl overflow-hidden bg-gray-100">
-                                        <img src={bill.image_url} alt={bill.customer_name} className="w-full h-full object-cover" />
+                                    <button onClick={() => openView(bill)} className="block w-11 h-11 rounded-xl overflow-hidden bg-gray-100 flex items-center justify-center">
+                                        {isPdf(bill.image) ? (
+                                            <svg className="w-5 h-5 text-red-500" fill="currentColor" viewBox="0 0 24 24">
+                                                <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 2l5 5h-5V4zM8.5 13h1c.55 0 1 .45 1 1s-.45 1-1 1h-.5v1.5a.5.5 0 01-1 0V13.5a.5.5 0 01.5-.5zm3.5 0h1c.83 0 1.5.67 1.5 1.5v1c0 .83-.67 1.5-1.5 1.5h-1a.5.5 0 01-.5-.5v-3a.5.5 0 01.5-.5zm1 3c.28 0 .5-.22.5-.5v-1c0-.28-.22-.5-.5-.5h-.5v2h.5zm2.5-3h1.5a.5.5 0 010 1H16v.5h1a.5.5 0 010 1h-1v1a.5.5 0 01-1 0v-3a.5.5 0 01.5-.5z" />
+                                            </svg>
+                                        ) : (
+                                            <img src={bill.image_url} alt={bill.customer_name} className="w-full h-full object-cover" />
+                                        )}
                                     </button>
                                 </td>
                                 <td className="px-4 py-3.5 overflow-hidden">
@@ -371,7 +455,22 @@ export default function ElectricityBillsIndex({ filters, bills, provinces }) {
                         </div>
 
                         <div className="flex-1 overflow-y-auto">
-                            <img src={viewingBill.image_url} alt={viewingBill.customer_name} className="w-full aspect-[4/3] object-cover bg-gray-100" />
+                            {isPdf(viewingBill.image) ? (
+                                <div className="w-full bg-gray-100">
+                                    <div className="flex items-center gap-2 px-4 py-2 bg-gray-50 border-b border-gray-200">
+                                        <svg className="w-4 h-4 text-red-500 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 2l5 5h-5V4zM8.5 13h1c.55 0 1 .45 1 1s-.45 1-1 1h-.5v1.5a.5.5 0 01-1 0V13.5a.5.5 0 01.5-.5zm3.5 0h1c.83 0 1.5.67 1.5 1.5v1c0 .83-.67 1.5-1.5 1.5h-1a.5.5 0 01-.5-.5v-3a.5.5 0 01.5-.5zm1 3c.28 0 .5-.22.5-.5v-1c0-.28-.22-.5-.5-.5h-.5v2h.5zm2.5-3h1.5a.5.5 0 010 1H16v.5h1a.5.5 0 010 1h-1v1a.5.5 0 01-1 0v-3a.5.5 0 01.5-.5z" />
+                                        </svg>
+                                        <span className="text-xs font-medium text-slate-600 truncate flex-1">ໄຟລ໌ PDF</span>
+                                        <a href={viewingBill.image_url} target="_blank" rel="noopener noreferrer"
+                                            className="text-xs font-medium text-brand-green hover:underline flex-shrink-0"
+                                            onClick={(e) => e.stopPropagation()}>ເປີດໃນແຖບໃໝ່</a>
+                                    </div>
+                                    <iframe src={viewingBill.image_url} className="w-full aspect-[4/3]" title="ໃບບິນ PDF" />
+                                </div>
+                            ) : (
+                                <img src={viewingBill.image_url} alt={viewingBill.customer_name} className="w-full aspect-[4/3] object-cover bg-gray-100" />
+                            )}
                             <div className="px-6 py-5 space-y-3">
                                 <div>
                                     <h2 className="text-xl font-bold text-slate-800 leading-snug">{viewingBill.customer_name}</h2>
@@ -508,16 +607,24 @@ export default function ElectricityBillsIndex({ filters, bills, provinces }) {
 
                             <div>
                                 <label className="block text-[10px] font-medium text-gray-400 mb-1.5 uppercase tracking-widest">
-                                    ຮູບພາບບິນ <span className="text-red-500">*</span>
+                                    ຮູບພາບ / PDF ໃບບິນ <span className="text-red-500">*</span>
                                 </label>
 
                                 {/* Current image (edit mode, no new file chosen yet) */}
                                 {existingImageUrl && !form.data.image && (
                                     <div className="flex items-center gap-3 p-3 bg-[#f8fafa] rounded-xl border border-gray-200 mb-2.5">
-                                        <img src={existingImageUrl} alt="ຮູບປັດຈຸບັນ"
-                                            className="w-14 h-14 object-cover rounded-lg border border-gray-200 flex-shrink-0" />
+                                        {isPdf(existingImageUrl) ? (
+                                            <div className="w-14 h-14 rounded-lg border border-gray-200 flex-shrink-0 bg-white flex items-center justify-center">
+                                                <svg className="w-7 h-7 text-red-500" fill="currentColor" viewBox="0 0 24 24">
+                                                    <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 2l5 5h-5V4zM8.5 13h1c.55 0 1 .45 1 1s-.45 1-1 1h-.5v1.5a.5.5 0 01-1 0V13.5a.5.5 0 01.5-.5zm3.5 0h1c.83 0 1.5.67 1.5 1.5v1c0 .83-.67 1.5-1.5 1.5h-1a.5.5 0 01-.5-.5v-3a.5.5 0 01.5-.5zm1 3c.28 0 .5-.22.5-.5v-1c0-.28-.22-.5-.5-.5h-.5v2h.5zm2.5-3h1.5a.5.5 0 010 1H16v.5h1a.5.5 0 010 1h-1v1a.5.5 0 01-1 0v-3a.5.5 0 01.5-.5z" />
+                                                </svg>
+                                            </div>
+                                        ) : (
+                                            <img src={existingImageUrl} alt="ຮູບປັດຈຸບັນ"
+                                                className="w-14 h-14 object-cover rounded-lg border border-gray-200 flex-shrink-0" />
+                                        )}
                                         <div className="flex-1 min-w-0">
-                                            <p className="text-xs font-medium text-slate-800">ຮູບພາບປັດຈຸບັນ</p>
+                                            <p className="text-xs font-medium text-slate-800">{isPdf(existingImageUrl) ? 'ໄຟລ໌ PDF ປັດຈຸບັນ' : 'ຮູບພາບປັດຈຸບັນ'}</p>
                                             <p className="text-xs text-gray-400 mt-0.5">ເລືອກໄຟລ໌ໃໝ່ເພື່ອປ່ຽນແທນ</p>
                                         </div>
                                     </div>
@@ -531,7 +638,7 @@ export default function ElectricityBillsIndex({ filters, bills, provinces }) {
                                     className={`relative rounded-2xl border-2 border-dashed transition-colors duration-150 cursor-pointer block
                                                 ${dragging ? 'border-brand-green bg-brand-light-green' : 'border-gray-200 bg-[#f8fafa]'}`}>
 
-                                    <input type="file" accept="image/*" onChange={handleFileInput}
+                                    <input type="file" accept="image/*,.pdf" onChange={handleFileInput}
                                         className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
 
                                     <div className="flex flex-col items-center justify-center py-6 px-4 text-center pointer-events-none">
@@ -539,7 +646,7 @@ export default function ElectricityBillsIndex({ filters, bills, provinces }) {
                                             <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
                                         </svg>
                                         <p className="text-sm text-gray-400">ລາກໄຟລ໌ມາວາງ ຫຼື <span className="text-brand-green font-medium">ຄລິກເລືອກໄຟລ໌</span></p>
-                                        <p className="text-xs text-gray-400/70 mt-1">ຮູບໃບບິນຄ່າໄຟຟ້າ — JPG, PNG — ສູງສຸດ 4MB</p>
+                                        <p className="text-xs text-gray-400/70 mt-1">ຮູບໃບບິນ ຫຼື PDF — JPG, PNG, PDF — ສູງສຸດ 4MB</p>
                                     </div>
                                 </label>
 
@@ -547,16 +654,67 @@ export default function ElectricityBillsIndex({ filters, bills, provinces }) {
 
                                 {/* Preview of newly selected file */}
                                 {form.data.image && (
-                                    <div className="flex items-center gap-3 p-3 bg-[#f8fafa] rounded-xl border border-gray-200 mt-2.5">
-                                        <img src={imagePreview} alt="ຕົວຢ່າງ" className="w-14 h-14 object-cover rounded-lg border border-gray-200 flex-shrink-0" />
-                                        <div className="flex-1 min-w-0">
-                                            <p className="text-xs font-medium text-slate-800 truncate">{form.data.image.name}</p>
-                                            <p className="text-xs text-gray-400">{(form.data.image.size / 1024).toFixed(1)} KB</p>
+                                    <div className="space-y-2.5 mt-2.5">
+                                        <div className="flex items-center gap-3 p-3 bg-[#f8fafa] rounded-xl border border-gray-200">
+                                            {isPdf(form.data.image) ? (
+                                                <div className="w-14 h-14 rounded-lg border border-gray-200 flex-shrink-0 bg-white flex items-center justify-center">
+                                                    <svg className="w-7 h-7 text-red-500" fill="currentColor" viewBox="0 0 24 24">
+                                                        <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 2l5 5h-5V4zM8.5 13h1c.55 0 1 .45 1 1s-.45 1-1 1h-.5v1.5a.5.5 0 01-1 0V13.5a.5.5 0 01.5-.5zm3.5 0h1c.83 0 1.5.67 1.5 1.5v1c0 .83-.67 1.5-1.5 1.5h-1a.5.5 0 01-.5-.5v-3a.5.5 0 01.5-.5zm1 3c.28 0 .5-.22.5-.5v-1c0-.28-.22-.5-.5-.5h-.5v2h.5zm2.5-3h1.5a.5.5 0 010 1H16v.5h1a.5.5 0 010 1h-1v1a.5.5 0 01-1 0v-3a.5.5 0 01.5-.5z" />
+                                                    </svg>
+                                                </div>
+                                            ) : (
+                                                <img src={imagePreview} alt="ຕົວຢ່າງ" className="w-14 h-14 object-cover rounded-lg border border-gray-200 flex-shrink-0" />
+                                            )}
+                                            <div className="flex-1 min-w-0">
+                                                <p className="text-xs font-medium text-slate-800 truncate">{form.data.image.name}</p>
+                                                <p className="text-xs text-gray-400">{(form.data.image.size / 1024).toFixed(1)} KB</p>
+                                            </div>
+                                            <button type="button" onClick={clearImage}
+                                                className="flex-shrink-0 text-xs text-red-500 hover:text-red-600 font-medium transition-colors px-2 py-1">
+                                                ຍົກເລີກ
+                                            </button>
                                         </div>
-                                        <button type="button" onClick={clearImage}
-                                            className="flex-shrink-0 text-xs text-red-500 hover:text-red-600 font-medium transition-colors px-2 py-1">
-                                            ຍົກເລີກ
+
+                                        <button
+                                            type="button"
+                                            onClick={scanBillWithAi}
+                                            disabled={isScanningAi}
+                                            className="w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-xl text-xs font-semibold shadow-md shadow-purple-500/20 transition-all disabled:opacity-60"
+                                        >
+                                            {isScanningAi ? (
+                                                <>
+                                                    <svg className="animate-spin w-4 h-4 text-white" fill="none" viewBox="0 0 24 24">
+                                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                                    </svg>
+                                                    <span>ກຳລັງສະແກນ ແລະ ດຶງຂໍ້ມູນດ້ວຍ AI...</span>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                                    </svg>
+                                                    <span>✨ ສະແກນບິນດ້ວຍ AI (ດຶງຈຳນວນເງິນ & ຂໍ້ມູນອັດໂນມັດ)</span>
+                                                </>
+                                            )}
                                         </button>
+                                    </div>
+                                )}
+
+                                {aiMessage && (
+                                    <div className="mt-2.5 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs flex items-center gap-2">
+                                        <svg className="w-4 h-4 shrink-0 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                        </svg>
+                                        <span>{aiMessage}</span>
+                                    </div>
+                                )}
+                                {aiError && (
+                                    <div className="mt-2.5 p-3 rounded-xl bg-red-50 border border-red-200 text-red-600 text-xs flex items-center gap-2">
+                                        <svg className="w-4 h-4 shrink-0 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                        </svg>
+                                        <span>{aiError}</span>
                                     </div>
                                 )}
                             </div>
