@@ -57,7 +57,7 @@ class ElectricityBillController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
-        $data = $this->validateBill($request, isEdit: false);
+        $data = $this->validateBill($request, currentBill: null);
         $data['image'] = $request->file('image')->store('electricity-bills', 'public');
         $data['user_id'] = auth()->id();
 
@@ -68,7 +68,7 @@ class ElectricityBillController extends Controller
 
     public function update(Request $request, ElectricityBill $electricityBill): RedirectResponse
     {
-        $data = $this->validateBill($request, isEdit: true);
+        $data = $this->validateBill($request, currentBill: $electricityBill);
 
         if ($request->hasFile('image')) {
             if ($electricityBill->image) {
@@ -94,8 +94,10 @@ class ElectricityBillController extends Controller
         return back()->with('success', 'ລຶບໃບບິນຄ່າໄຟຟ້າສຳເລັດ');
     }
 
-    private function validateBill(Request $request, bool $isEdit): array
+    private function validateBill(Request $request, ?ElectricityBill $currentBill = null): array
     {
+        $isEdit = $currentBill !== null;
+
         $rules = [
             'account_number' => 'required|string|max:50',
             'province' => 'required|string|in:' . implode(',', ElectricityBill::provinces()),
@@ -116,7 +118,29 @@ class ElectricityBillController extends Controller
             'image.mimes' => 'ຮອງຮັບສະເພາະໄຟລ໌ JPG, PNG, GIF, WebP ຫຼື PDF ເທົ່ານັ້ນ',
         ];
 
-        $validated = Validator::make($request->all(), $rules, $messages)->validate();
+        $validator = Validator::make($request->all(), $rules, $messages);
+
+        $validator->after(function ($validator) use ($request, $currentBill) {
+            $accountNumber = trim((string) $request->input('account_number'));
+            $billMonth = (string) $request->input('bill_month');
+
+            if ($accountNumber !== '' && $billMonth !== '' && preg_match('/^\d{4}-\d{2}$/', $billMonth)) {
+                [$year, $month] = explode('-', $billMonth);
+
+                $exists = ElectricityBill::query()
+                    ->where('account_number', $accountNumber)
+                    ->whereYear('bill_month', (int) $year)
+                    ->whereMonth('bill_month', (int) $month)
+                    ->when($currentBill, fn ($q) => $q->where('id', '!=', $currentBill->id))
+                    ->exists();
+
+                if ($exists) {
+                    $validator->errors()->add('account_number', 'ເລກບັນຊີຜູ້ໃຊ້ໄຟຟ້ານີ້ ມີການບັນທຶກໃບບິນໃນເດືອນນີ້ແລ້ວ');
+                }
+            }
+        });
+
+        $validated = $validator->validate();
 
         return [
             'account_number' => $validated['account_number'],
