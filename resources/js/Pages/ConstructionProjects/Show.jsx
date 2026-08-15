@@ -7,6 +7,13 @@ function fmt(n) {
     return new Intl.NumberFormat('en-US').format(Math.round(n));
 }
 
+function isPdf(fileOrUrl) {
+    if (!fileOrUrl) return false;
+    if (fileOrUrl instanceof File) return fileOrUrl.type === 'application/pdf';
+    if (typeof fileOrUrl === 'string') return fileOrUrl.toLowerCase().endsWith('.pdf');
+    return false;
+}
+
 const statusPillClasses = {
     completed: 'bg-brand-light-green text-brand-green',
     paused: 'bg-gray-100 text-gray-500',
@@ -30,13 +37,25 @@ export default function ConstructionProjectShow({ project, transactions, statuse
     const [deleteId, setDeleteId] = useState(null);
     const [editId, setEditId] = useState(null);
     const [currentImageUrl, setCurrentImageUrl] = useState('');
+    const [imagePreview, setImagePreview] = useState('');
     const [dragging, setDragging] = useState(false);
+    const [isScanningAi, setIsScanningAi] = useState(false);
+    const [aiMessage, setAiMessage] = useState('');
+    const [aiError, setAiError] = useState('');
     const fileInputRef = useRef(null);
     const form = useForm(emptyForm);
+
+    function resetAiState() {
+        setAiMessage('');
+        setAiError('');
+        setIsScanningAi(false);
+    }
 
     function openCreate() {
         setEditId(null);
         setCurrentImageUrl('');
+        setImagePreview('');
+        resetAiState();
         form.clearErrors();
         form.setData({ ...emptyForm, transaction_date: new Date().toISOString().slice(0, 10) });
         setShowModal(true);
@@ -45,10 +64,12 @@ export default function ConstructionProjectShow({ project, transactions, statuse
     function openEdit(tx) {
         setEditId(tx.id);
         setCurrentImageUrl(tx.image_url || '');
+        setImagePreview('');
+        resetAiState();
         form.clearErrors();
         form.setData({
             type: tx.type,
-            amount: tx.amount,
+            amount: String(tx.amount),
             transaction_date: tx.transaction_date,
             description: tx.description || '',
             image: null,
@@ -56,9 +77,85 @@ export default function ConstructionProjectShow({ project, transactions, statuse
         setShowModal(true);
     }
 
+    function onImageChange(file) {
+        form.setData('image', file);
+        resetAiState();
+        if (file && !isPdf(file)) {
+            setImagePreview(URL.createObjectURL(file));
+        } else {
+            setImagePreview('');
+        }
+    }
+
+    function handleFileInput(e) {
+        onImageChange(e.target.files?.[0] || null);
+    }
+
+    function handleDrop(e) {
+        e.preventDefault();
+        setDragging(false);
+        const file = e.dataTransfer.files?.[0] || null;
+        if (file) onImageChange(file);
+    }
+
+    function clearImage() {
+        onImageChange(null);
+    }
+
+    async function scanTransactionWithAi() {
+        if (!form.data.image) return;
+        setIsScanningAi(true);
+        setAiMessage('');
+        setAiError('');
+
+        const formData = new FormData();
+        formData.append('image', form.data.image);
+
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
+            || (document.cookie.match(/XSRF-TOKEN=([^;]+)/)?.[1] ? decodeURIComponent(document.cookie.match(/XSRF-TOKEN=([^;]+)/)[1]) : '');
+
+        try {
+            const response = await fetch(route('construction-projects.scan-ai'), {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                    'X-XSRF-TOKEN': csrfToken,
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+                body: formData,
+            });
+
+            const resData = await response.json();
+
+            if (resData?.success) {
+                const data = resData.data;
+                form.setData((prev) => ({
+                    ...prev,
+                    amount: data.amount ? String(data.amount) : prev.amount,
+                    transaction_date: data.transaction_date || prev.transaction_date,
+                    description: data.description || prev.description,
+                    type: data.type || prev.type,
+                }));
+                setAiMessage('✨ AI ດຶງຂໍ້ມູນສຳເລັດ! ກະລຸນາກວດສອບຄວາມຖືກຕ້ອງກ່ອນບັນທຶກ.');
+            } else {
+                setAiError(resData?.message || 'ບໍ່ສາມາດດຶງຂໍ້ມູນຈາກ AI ໄດ້');
+            }
+        } catch (err) {
+            setAiError('ເກີດຂໍ້ຜິດພາດໃນການສະແກນ');
+        } finally {
+            setIsScanningAi(false);
+        }
+    }
+
+    function closeModal() {
+        setShowModal(false);
+        resetAiState();
+    }
+
     function submit(e) {
         e.preventDefault();
-        const onSuccess = () => setShowModal(false);
+        const onSuccess = () => closeModal();
         if (editId) {
             form.transform((data) => ({ ...data, _method: 'put' }));
             form.post(route('construction-projects.transactions.update', [project.id, editId]), { onSuccess, preserveScroll: true, forceFormData: true });
@@ -191,8 +288,14 @@ export default function ConstructionProjectShow({ project, transactions, statuse
 
                                 <div className="shrink-0 w-10 h-10 rounded-xl overflow-hidden bg-[#f8fafa] border border-gray-100 flex items-center justify-center">
                                     {tx.image_url ? (
-                                        <a href={tx.image_url} target="_blank" rel="noopener noreferrer" className="w-full h-full block">
-                                            <img src={tx.image_url} alt="ຮູບບິນ" className="w-full h-full object-cover" />
+                                        <a href={tx.image_url} target="_blank" rel="noopener noreferrer" className="w-full h-full flex items-center justify-center">
+                                            {isPdf(tx.image_url || tx.image) ? (
+                                                <svg className="w-6 h-6 text-red-500" fill="currentColor" viewBox="0 0 24 24">
+                                                    <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 2l5 5h-5V4zM8.5 13h1c.55 0 1 .45 1 1s-.45 1-1 1h-.5v1.5a.5.5 0 01-1 0V13.5a.5.5 0 01.5-.5zm3.5 0h1c.83 0 1.5.67 1.5 1.5v1c0 .83-.67 1.5-1.5 1.5h-1a.5.5 0 01-.5-.5v-3a.5.5 0 01.5-.5zm1 3c.28 0 .5-.22.5-.5v-1c0-.28-.22-.5-.5-.5h-.5v2h.5zm2.5-3h1.5a.5.5 0 010 1H16v.5h1a.5.5 0 010 1h-1v1a.5.5 0 01-1 0v-3a.5.5 0 01.5-.5z" />
+                                                </svg>
+                                            ) : (
+                                                <img src={tx.image_url} alt="ຮູບບິນ" className="w-full h-full object-cover" />
+                                            )}
                                         </a>
                                     ) : (
                                         <svg className="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="1.5">
@@ -289,46 +392,107 @@ export default function ConstructionProjectShow({ project, transactions, statuse
                             </div>
 
                             <div>
-                                <label className="block text-[10px] font-medium text-gray-400 mb-1.5 uppercase tracking-widest">ຮູບພາບບິນ</label>
+                                <label className="block text-[10px] font-medium text-gray-400 mb-1.5 uppercase tracking-widest">
+                                    ຮູບພາບ / PDF ໃບບິນ
+                                </label>
 
                                 {currentImageUrl && !form.data.image && (
                                     <div className="flex items-center gap-3 p-3 bg-[#f8fafa] rounded-xl border border-gray-200 mb-2.5">
-                                        <img src={currentImageUrl} alt="ຮູບປັດຈຸບັນ" className="w-14 h-14 object-cover rounded-lg border border-gray-200 flex-shrink-0" />
+                                        {isPdf(currentImageUrl) ? (
+                                            <div className="w-14 h-14 rounded-lg border border-gray-200 flex-shrink-0 bg-white flex items-center justify-center">
+                                                <svg className="w-7 h-7 text-red-500" fill="currentColor" viewBox="0 0 24 24">
+                                                    <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 2l5 5h-5V4zM8.5 13h1c.55 0 1 .45 1 1s-.45 1-1 1h-.5v1.5a.5.5 0 01-1 0V13.5a.5.5 0 01.5-.5zm3.5 0h1c.83 0 1.5.67 1.5 1.5v1c0 .83-.67 1.5-1.5 1.5h-1a.5.5 0 01-.5-.5v-3a.5.5 0 01.5-.5zm1 3c.28 0 .5-.22.5-.5v-1c0-.28-.22-.5-.5-.5h-.5v2h.5zm2.5-3h1.5a.5.5 0 010 1H16v.5h1a.5.5 0 010 1h-1v1a.5.5 0 01-1 0v-3a.5.5 0 01.5-.5z" />
+                                                </svg>
+                                            </div>
+                                        ) : (
+                                            <img src={currentImageUrl} alt="ຮູບປັດຈຸບັນ" className="w-14 h-14 object-cover rounded-lg border border-gray-200 flex-shrink-0" />
+                                        )}
                                         <div className="flex-1 min-w-0">
-                                            <p className="text-xs font-medium text-slate-800">ຮູບພາບປັດຈຸບັນ</p>
+                                            <p className="text-xs font-medium text-slate-800">{isPdf(currentImageUrl) ? 'ໄຟລ໌ PDF ປັດຈຸບັນ' : 'ຮູບພາບປັດຈຸບັນ'}</p>
                                             <p className="text-xs text-gray-400 mt-0.5">ເລືອກໄຟລ໌ໃໝ່ເພື່ອປ່ຽນແທນ</p>
                                         </div>
                                     </div>
                                 )}
 
-                                <div
+                                <label
                                     onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
                                     onDragLeave={(e) => { e.preventDefault(); setDragging(false); }}
-                                    onDrop={(e) => { e.preventDefault(); setDragging(false); const f = e.dataTransfer.files?.[0]; if (f) form.setData('image', f); }}
-                                    onClick={() => fileInputRef.current?.click()}
-                                    className={`relative rounded-2xl border-2 border-dashed transition-colors duration-150 cursor-pointer ${dragging ? 'border-brand-green bg-brand-light-green' : 'border-gray-200 bg-[#f8fafa]'}`}
+                                    onDrop={handleDrop}
+                                    className={`relative rounded-2xl border-2 border-dashed transition-colors duration-150 cursor-pointer block ${dragging ? 'border-brand-green bg-brand-light-green' : 'border-gray-200 bg-[#f8fafa]'}`}
                                 >
-                                    <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={(e) => form.setData('image', e.target.files?.[0] || null)} />
+                                    <input ref={fileInputRef} type="file" accept="image/*,.pdf" className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" onChange={handleFileInput} />
                                     <div className="flex flex-col items-center justify-center py-6 px-4 text-center pointer-events-none">
                                         <svg className="w-7 h-7 text-gray-400 mb-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="1.5">
                                             <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
                                         </svg>
                                         <p className="text-sm text-gray-400">ລາກໄຟລ໌ມາວາງ ຫຼື <span className="text-brand-green font-medium">ຄລິກເລືອກໄຟລ໌</span></p>
-                                        <p className="text-xs text-gray-400/70 mt-1">ຮູບບິນ/ໃບຮັບເງິນ (ບໍ່ບັງຄັບ) — JPG, PNG — ສູງສຸດ 4MB</p>
+                                        <p className="text-xs text-gray-400/70 mt-1">ຮູບໃບບິນ ຫຼື PDF — JPG, PNG, PDF — ສູງສຸດ 4MB</p>
                                     </div>
-                                </div>
+                                </label>
                                 {form.errors.image && <p className="text-red-500 text-xs mt-1.5">{form.errors.image}</p>}
 
                                 {form.data.image && (
-                                    <div className="flex items-center gap-3 p-3 bg-[#f8fafa] rounded-xl border border-gray-200 mt-2.5">
-                                        <img src={URL.createObjectURL(form.data.image)} alt="ຕົວຢ່າງ" className="w-14 h-14 object-cover rounded-lg border border-gray-200 flex-shrink-0" />
-                                        <div className="flex-1 min-w-0">
-                                            <p className="text-xs font-medium text-slate-800 truncate">{form.data.image.name}</p>
-                                            <p className="text-xs text-gray-400">{(form.data.image.size / 1024).toFixed(1)} KB</p>
+                                    <div className="space-y-2.5 mt-2.5">
+                                        <div className="flex items-center gap-3 p-3 bg-[#f8fafa] rounded-xl border border-gray-200">
+                                            {isPdf(form.data.image) ? (
+                                                <div className="w-14 h-14 rounded-lg border border-gray-200 flex-shrink-0 bg-white flex items-center justify-center">
+                                                    <svg className="w-7 h-7 text-red-500" fill="currentColor" viewBox="0 0 24 24">
+                                                        <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 2l5 5h-5V4zM8.5 13h1c.55 0 1 .45 1 1s-.45 1-1 1h-.5v1.5a.5.5 0 01-1 0V13.5a.5.5 0 01.5-.5zm3.5 0h1c.83 0 1.5.67 1.5 1.5v1c0 .83-.67 1.5-1.5 1.5h-1a.5.5 0 01-.5-.5v-3a.5.5 0 01.5-.5zm1 3c.28 0 .5-.22.5-.5v-1c0-.28-.22-.5-.5-.5h-.5v2h.5zm2.5-3h1.5a.5.5 0 010 1H16v.5h1a.5.5 0 010 1h-1v1a.5.5 0 01-1 0v-3a.5.5 0 01.5-.5z" />
+                                                    </svg>
+                                                </div>
+                                            ) : (
+                                                <img src={imagePreview} alt="ຕົວຢ່າງ" className="w-14 h-14 object-cover rounded-lg border border-gray-200 flex-shrink-0" />
+                                            )}
+                                            <div className="flex-1 min-w-0">
+                                                <p className="text-xs font-medium text-slate-800 truncate">{form.data.image.name}</p>
+                                                <p className="text-xs text-gray-400">{(form.data.image.size / 1024).toFixed(1)} KB</p>
+                                            </div>
+                                            <button type="button" onClick={clearImage} className="flex-shrink-0 text-xs text-red-500 hover:text-red-600 font-medium transition-colors px-2 py-1">
+                                                ຍົກເລີກ
+                                            </button>
                                         </div>
-                                        <button type="button" onClick={() => form.setData('image', null)} className="flex-shrink-0 text-xs text-red-500 hover:text-red-600 font-medium transition-colors px-2 py-1">
-                                            ຍົກເລີກ
+
+                                        <button
+                                            type="button"
+                                            onClick={scanTransactionWithAi}
+                                            disabled={isScanningAi}
+                                            className="w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-xl text-xs font-semibold shadow-md shadow-purple-500/20 transition-all disabled:opacity-60"
+                                        >
+                                            {isScanningAi ? (
+                                                <>
+                                                    <svg className="animate-spin w-4 h-4 text-white" fill="none" viewBox="0 0 24 24">
+                                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                                    </svg>
+                                                    <span>ກຳລັງສະແກນ ແລະ ດຶງຂໍ້ມູນດ້ວຍ AI...</span>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                                    </svg>
+                                                    <span>✨ ສະແກນບິນດ້ວຍ AI (ດຶງຈຳນວນເງິນ, ວັນທີ & ລາຍລະອຽດ)</span>
+                                                </>
+                                            )}
                                         </button>
+                                    </div>
+                                )}
+
+                                {aiMessage && (
+                                    <div className="mt-2.5 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-medium flex items-center gap-2">
+                                        <svg className="w-4 h-4 shrink-0 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                        </svg>
+                                        <span>{aiMessage}</span>
+                                    </div>
+                                )}
+
+                                {aiError && (
+                                    <div className="mt-2.5 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium flex items-center gap-2">
+                                        <svg className="w-4 h-4 shrink-0 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                        <span>{aiError}</span>
                                     </div>
                                 )}
                             </div>

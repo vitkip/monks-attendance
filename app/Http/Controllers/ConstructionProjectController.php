@@ -6,6 +6,8 @@ use App\Models\ConstructionProject;
 use App\Models\ConstructionTransaction;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
@@ -222,13 +224,13 @@ class ConstructionProjectController extends Controller
             'amount' => 'required|numeric|min:0',
             'transaction_date' => 'required|date',
             'description' => 'nullable|string|max:255',
-            'image' => 'nullable|image|max:4096',
+            'image' => 'nullable|mimes:jpg,jpeg,png,gif,webp,pdf|max:4096',
         ], [
             'type.required' => 'ກະລຸນາເລືອກປະເພດລາຍການ',
             'amount.required' => 'ກະລຸນາປ້ອນຈຳນວນເງິນ',
             'amount.numeric' => 'ຈຳນວນເງິນຕ້ອງເປັນຕົວເລກ',
             'transaction_date.required' => 'ກະລຸນາເລືອກວັນທີ',
-            'image.image' => 'ໄຟລ໌ຕ້ອງເປັນຮູບພາບ',
+            'image.mimes' => 'ຮອງຮັບສະເພາະໄຟລ໌ JPG, PNG, GIF, WebP ຫຼື PDF ເທົ່ານັ້ນ',
         ])->validate();
 
         return [
@@ -237,5 +239,128 @@ class ConstructionProjectController extends Controller
             'transaction_date' => $validated['transaction_date'],
             'description' => $validated['description'] ?: null,
         ];
+    }
+
+    public function scanAi(Request $request)
+    {
+        $request->validate([
+            'image' => 'required|file|mimes:jpg,jpeg,png,gif,webp,pdf|max:4096',
+        ], [
+            'image.required' => 'ກະລຸນາເລືອກໄຟລ໌ເພື່ອສະແກນ',
+            'image.mimes' => 'ຮອງຮັບສະເພາະໄຟລ໌ JPG, PNG, GIF, WebP ຫຼື PDF ເທົ່ານັ້ນ',
+            'image.max' => 'ຂະໜາດໄຟລ໌ຕ້ອງບໍ່ເກີນ 4MB',
+        ]);
+
+        $file = $request->file('image');
+        $mimeType = $file->getMimeType();
+
+        if ($file->getClientOriginalExtension() === 'pdf' || $mimeType === 'application/pdf') {
+            $mimeType = 'application/pdf';
+        }
+
+        $base64Data = base64_encode(file_get_contents($file->getRealPath()));
+        $apiKey = config('services.anthropic.api_key');
+
+        if (!$apiKey) {
+            return response()->json([
+                'success' => false,
+                'message' => 'ບໍ່ພົບ API Key ຂອງ Anthropic ໃນລະບົບ',
+            ], 400);
+        }
+
+        $sourceContent = [
+            'type' => $mimeType === 'application/pdf' ? 'document' : 'image',
+            'source' => [
+                'type' => 'base64',
+                'media_type' => $mimeType,
+                'data' => $base64Data,
+            ],
+        ];
+
+        $promptText = 'You are an expert OCR parser for construction expense receipts, invoices, material store bills, and payment records in Lao and English. Examine this receipt image or PDF document and extract the following details accurately: 1. "amount": Total payable / paid amount in Kip or currency (numeric float or integer only, no commas or currency symbols). 2. "transaction_date": Date on receipt in YYYY-MM-DD format (if not found or invalid, return empty string). 3. "description": Brief item summary or vendor/store name and items bought in Lao (string, e.g. "ຄ່າຊີມັງ 10 ຖົງ", "ຄ່າເຫຼັກ 12mm"). 4. "type": Return "expense" for purchase/expense receipt, or "income" for donation/income receipt. Default to "expense". Return ONLY a raw JSON object with keys: "amount", "transaction_date", "description", "type". No markdown tags, no explanation.';
+
+        $modelsToTry = [
+            'claude-sonnet-4-6',
+            'claude-haiku-4-5-20251001',
+            'claude-sonnet-4-5-20250929',
+            'claude-3-5-sonnet-latest',
+        ];
+        $response = null;
+
+        try {
+            foreach ($modelsToTry as $modelName) {
+                $res = Http::withHeaders([
+                    'x-api-key' => $apiKey,
+                    'anthropic-version' => '2023-06-01',
+                    'anthropic-beta' => 'pdfs-2024-09-25',
+                    'content-type' => 'application/json',
+                ])->timeout(30)->post('https://api.anthropic.com/v1/messages', [
+                    'model' => $modelName,
+                    'max_tokens' => 1000,
+                    'messages' => [
+                        [
+                            'role' => 'user',
+                            'content' => [
+                                $sourceContent,
+                                [
+                                    'type' => 'text',
+                                    'text' => $promptText,
+                                ],
+                            ],
+                        ],
+                    ],
+                ]);
+
+                $response = $res;
+                if ($res->successful()) {
+                    break;
+                }
+            }
+
+            if (!$response || !$response->successful()) {
+                Log::error('Anthropic API scan error (Construction): ' . ($response ? $response->body() : 'No response'));
+                return response()->json([
+                    'success' => false,
+                    'message' => 'ການຕິດຕໍ່ AI ລົ້ມເຫຼວ: ' . ($response ? ($response->json('error.message') ?? $response->body()) : 'No response'),
+                ], 500);
+            }
+
+            $contentBlocks = $response->json('content', []);
+            $rawContent = '';
+            foreach ($contentBlocks as $block) {
+                if (($block['type'] ?? '') === 'text') {
+                    $rawContent .= $block['text'] ?? '';
+                }
+            }
+            $rawContent = trim($rawContent);
+            $cleanJson = preg_replace('/^```(?:json)?\s*|\s*```$/i', '', $rawContent);
+            $cleanJson = trim($cleanJson);
+
+            $parsed = json_decode($cleanJson, true);
+
+            if (!is_array($parsed)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'AI ບໍ່ສາມາດອ່ານໂຄງສ້າງຂໍ້ມູນໄດ້',
+                    'raw' => $rawContent,
+                ], 422);
+            }
+
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'amount' => isset($parsed['amount']) ? (float) preg_replace('/[^0-9.]/', '', (string)$parsed['amount']) : '',
+                    'transaction_date' => (string) ($parsed['transaction_date'] ?? ''),
+                    'description' => (string) ($parsed['description'] ?? ''),
+                    'type' => in_array(($parsed['type'] ?? ''), ['income', 'expense']) ? $parsed['type'] : 'expense',
+                ],
+            ]);
+        } catch (\Throwable $e) {
+            Log::error('AI scan exception (Construction): ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'ເກີດຂໍ້ຜິດພາດໃນການປະມວນຜົນ: ' . $e->getMessage(),
+            ], 500);
+        }
     }
 }

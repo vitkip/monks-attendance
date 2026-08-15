@@ -85,6 +85,7 @@ Route::middleware('auth')->group(function () {
         // Construction projects / ໂຄງການກໍ່ສ້າງ (ລາຍຈ່າຍ/ລາຍຮັບ ແລະ ສະຫຼຸບ)
         Route::get('/construction-projects', [\App\Http\Controllers\ConstructionProjectController::class, 'index'])->name('construction-projects.index');
         Route::post('/construction-projects', [\App\Http\Controllers\ConstructionProjectController::class, 'store'])->name('construction-projects.store');
+        Route::post('/construction-projects/scan-ai', [\App\Http\Controllers\ConstructionProjectController::class, 'scanAi'])->name('construction-projects.scan-ai');
         Route::get('/construction-projects/{constructionProject}', [\App\Http\Controllers\ConstructionProjectController::class, 'show'])->name('construction-projects.show');
         Route::put('/construction-projects/{constructionProject}', [\App\Http\Controllers\ConstructionProjectController::class, 'update'])->name('construction-projects.update');
         Route::delete('/construction-projects/{constructionProject}', [\App\Http\Controllers\ConstructionProjectController::class, 'destroy'])->name('construction-projects.destroy');
