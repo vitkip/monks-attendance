@@ -101,10 +101,20 @@ class ConstructionProjectController extends Controller
                 'balance' => $constructionProject->balance,
                 'progress_percent' => $constructionProject->progress_percent,
                 'target_amount' => $constructionProject->target_amount !== null ? (float) $constructionProject->target_amount : null,
+                'show_transactions' => (bool) $constructionProject->show_transactions,
             ],
             'transactions' => $transactions,
             'statuses' => ConstructionProject::statuses(),
         ]);
+    }
+
+    public function toggleTransactions(ConstructionProject $constructionProject): RedirectResponse
+    {
+        $constructionProject->update(['show_transactions' => ! $constructionProject->show_transactions]);
+
+        return back()->with('success', $constructionProject->show_transactions
+            ? 'ເປີດການສະແດງລາຍການໃນໜ້າສາທາລະນະແລ້ວ'
+            : 'ປິດການສະແດງລາຍການໃນໜ້າສາທາລະນະແລ້ວ');
     }
 
     public function store(Request $request): RedirectResponse

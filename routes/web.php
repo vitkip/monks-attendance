@@ -88,6 +88,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/construction-projects/scan-ai', [\App\Http\Controllers\ConstructionProjectController::class, 'scanAi'])->name('construction-projects.scan-ai');
         Route::get('/construction-projects/{constructionProject}', [\App\Http\Controllers\ConstructionProjectController::class, 'show'])->name('construction-projects.show');
         Route::put('/construction-projects/{constructionProject}', [\App\Http\Controllers\ConstructionProjectController::class, 'update'])->name('construction-projects.update');
+        Route::patch('/construction-projects/{constructionProject}/toggle-transactions', [\App\Http\Controllers\ConstructionProjectController::class, 'toggleTransactions'])->name('construction-projects.toggle-transactions');
         Route::delete('/construction-projects/{constructionProject}', [\App\Http\Controllers\ConstructionProjectController::class, 'destroy'])->name('construction-projects.destroy');
         Route::post('/construction-projects/{constructionProject}/transactions', [\App\Http\Controllers\ConstructionProjectController::class, 'storeTransaction'])->name('construction-projects.transactions.store');
         Route::put('/construction-projects/{constructionProject}/transactions/{transaction}', [\App\Http\Controllers\ConstructionProjectController::class, 'updateTransaction'])->name('construction-projects.transactions.update');

@@ -74,20 +74,24 @@ class PublicConstructionProjectController extends Controller
 
     public function show(ConstructionProject $project): Response
     {
-        $transactions = $project->transactions()
-            ->latest('transaction_date')
-            ->latest()
-            ->paginate(15)
-            ->through(fn (ConstructionTransaction $tx) => [
-                'id' => $tx->id,
-                'type' => $tx->type,
-                'amount' => (float) $tx->amount,
-                'transaction_date' => $tx->transaction_date->format('Y-m-d'),
-                'transaction_date_month' => $tx->transaction_date->translatedFormat('M'),
-                'transaction_date_day' => $tx->transaction_date->format('d'),
-                'description' => $tx->description,
-                'image_url' => $tx->image_url,
-            ]);
+        $showTransactions = (bool) $project->show_transactions;
+
+        $transactions = $showTransactions
+            ? $project->transactions()
+                ->latest('transaction_date')
+                ->latest()
+                ->paginate(15)
+                ->through(fn (ConstructionTransaction $tx) => [
+                    'id' => $tx->id,
+                    'type' => $tx->type,
+                    'amount' => (float) $tx->amount,
+                    'transaction_date' => $tx->transaction_date->format('Y-m-d'),
+                    'transaction_date_month' => $tx->transaction_date->translatedFormat('M'),
+                    'transaction_date_day' => $tx->transaction_date->format('d'),
+                    'description' => $tx->description,
+                    'image_url' => $tx->image_url,
+                ])
+            : null;
 
         return Inertia::render('Public/ConstructionProjects/Show', [
             'project' => [
@@ -105,6 +109,7 @@ class PublicConstructionProjectController extends Controller
                 'target_amount' => $project->target_amount !== null ? (float) $project->target_amount : null,
             ],
             'transactions' => $transactions,
+            'showTransactions' => $showTransactions,
             'statuses' => ConstructionProject::statuses(),
         ]);
     }

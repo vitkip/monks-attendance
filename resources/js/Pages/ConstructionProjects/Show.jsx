@@ -178,6 +178,10 @@ export default function ConstructionProjectShow({ project, transactions, statuse
         });
     }
 
+    function toggleShowTransactions() {
+        router.patch(route('construction-projects.toggle-transactions', project.id), {}, { preserveScroll: true });
+    }
+
     return (
         <AppLayout title={project.name}>
             <Link href={route('construction-projects.index')} className="flex items-center gap-1.5 text-xs font-medium text-gray-400 hover:text-brand-green transition-colors mb-4">
@@ -245,6 +249,17 @@ export default function ConstructionProjectShow({ project, transactions, statuse
                             <span className="text-xs font-semibold text-slate-600">ຍອດເຫຼືອ</span>
                             <span className={`text-base font-extrabold tabular-nums ${project.balance >= 0 ? 'text-slate-800' : 'text-rose-800'}`}>{fmt(project.balance)}</span>
                         </div>
+                    </div>
+
+                    <div className="flex items-center justify-between gap-3 mt-5 pt-4 border-t border-gray-100">
+                        <div className="min-w-0">
+                            <p className="text-xs font-semibold text-slate-600">ສະແດງລາຍການ</p>
+                            <p className="text-[11px] text-gray-400">ໃນໜ້າສາທາລະນະ</p>
+                        </div>
+                        <button type="button" onClick={toggleShowTransactions} aria-pressed={project.show_transactions}
+                            className={`relative shrink-0 w-11 h-6 rounded-full transition-colors ${project.show_transactions ? 'bg-brand-green' : 'bg-gray-200'}`}>
+                            <span className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow-sm transition-transform ${project.show_transactions ? 'translate-x-5' : 'translate-x-0'}`}></span>
+                        </button>
                     </div>
 
                     {project.description && (

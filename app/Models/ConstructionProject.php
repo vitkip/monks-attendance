@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class ConstructionProject extends Model
 {
     protected $fillable = [
-        'name', 'description', 'start_date', 'target_amount', 'image', 'status', 'user_id',
+        'name', 'description', 'start_date', 'target_amount', 'image', 'status', 'show_transactions', 'user_id',
     ];
 
     protected function casts(): array
@@ -15,6 +15,7 @@ class ConstructionProject extends Model
         return [
             'start_date' => 'date',
             'target_amount' => 'decimal:2',
+            'show_transactions' => 'boolean',
         ];
     }
 

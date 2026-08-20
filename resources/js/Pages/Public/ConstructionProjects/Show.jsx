@@ -19,7 +19,7 @@ function seoDescription(description) {
     return plain.length > 150 ? `${plain.slice(0, 150)}…` : plain;
 }
 
-export default function ConstructionProjectPublicShow({ project, transactions, statuses }) {
+export default function ConstructionProjectPublicShow({ project, transactions, showTransactions, statuses }) {
     return (
         <PublicLayout>
             <SeoHead
@@ -109,56 +109,60 @@ export default function ConstructionProjectPublicShow({ project, transactions, s
                 </div>
 
                 {/* Ledger */}
-                <div className="flex items-center gap-3 mb-5">
-                    <p className="text-sm font-bold text-slate-800 shrink-0">ບັນຊີລາຍຮັບ-ລາຍຈ່າຍ</p>
-                    <div className="flex-1 h-px bg-gray-200"></div>
-                    <span className="text-[11px] text-gray-400 font-medium px-2 py-1 bg-gray-100 rounded-full shrink-0">
-                        {transactions.total} ລາຍການ
-                    </span>
-                </div>
-
-                {transactions.data.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center text-center py-16 bg-white rounded-2xl card-shadow border border-black/5">
-                        <p className="font-bold text-slate-700 mb-1">ຍັງບໍ່ມີລາຍການ</p>
-                        <p className="text-slate-400 text-sm">ໂຄງການນີ້ຍັງບໍ່ທັນມີການບັນທຶກລາຍຮັບ-ລາຍຈ່າຍ</p>
-                    </div>
-                ) : (
+                {showTransactions && transactions ? (
                     <>
-                        <div className="bg-white rounded-2xl card-shadow border border-black/5 overflow-hidden">
-                            {transactions.data.map((tx, i) => (
-                                <div key={tx.id} className={`flex items-center gap-3 sm:gap-4 px-4 sm:px-5 py-4 ${i !== transactions.data.length - 1 ? 'border-b border-gray-100' : ''}`}>
-                                    <div className="shrink-0 w-10 text-center">
-                                        <p className="text-[9px] font-bold uppercase tracking-wide text-gray-400 leading-none mb-0.5">{tx.transaction_date_month}</p>
-                                        <p className="text-base font-extrabold text-slate-800 leading-none tabular-nums">{tx.transaction_date_day}</p>
-                                    </div>
-
-                                    {tx.image_url ? (
-                                        <a href={tx.image_url} target="_blank" rel="noopener noreferrer"
-                                            className="w-12 h-12 rounded-xl overflow-hidden bg-gray-100 shrink-0 border border-gray-200">
-                                            <img src={tx.image_url} alt="ຮູບບິນ" className="w-full h-full object-cover" />
-                                        </a>
-                                    ) : (
-                                        <div className="w-12 h-12 rounded-xl bg-[#f8fafa] border border-gray-100 shrink-0 flex items-center justify-center">
-                                            <svg className="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="1.5">
-                                                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                            </svg>
-                                        </div>
-                                    )}
-
-                                    <div className="flex-1 min-w-0">
-                                        <p className="font-semibold text-slate-800 text-sm truncate">{tx.description || (tx.type === 'income' ? 'ລາຍຮັບ' : 'ລາຍຈ່າຍ')}</p>
-                                    </div>
-
-                                    <p className={`shrink-0 font-extrabold tabular-nums text-sm sm:text-base ${tx.type === 'income' ? 'text-brand-green' : 'text-rose-800'}`}>
-                                        {tx.type === 'income' ? '+' : '−'}{fmt(tx.amount)}
-                                    </p>
-                                </div>
-                            ))}
+                        <div className="flex items-center gap-3 mb-5">
+                            <p className="text-sm font-bold text-slate-800 shrink-0">ບັນຊີລາຍຮັບ-ລາຍຈ່າຍ</p>
+                            <div className="flex-1 h-px bg-gray-200"></div>
+                            <span className="text-[11px] text-gray-400 font-medium px-2 py-1 bg-gray-100 rounded-full shrink-0">
+                                {transactions.total} ລາຍການ
+                            </span>
                         </div>
 
-                        {transactions.data.length > 0 && <div className="mt-6"><Pagination links={transactions.links} /></div>}
+                        {transactions.data.length === 0 ? (
+                            <div className="flex flex-col items-center justify-center text-center py-16 bg-white rounded-2xl card-shadow border border-black/5">
+                                <p className="font-bold text-slate-700 mb-1">ຍັງບໍ່ມີລາຍການ</p>
+                                <p className="text-slate-400 text-sm">ໂຄງການນີ້ຍັງບໍ່ທັນມີການບັນທຶກລາຍຮັບ-ລາຍຈ່າຍ</p>
+                            </div>
+                        ) : (
+                            <>
+                                <div className="bg-white rounded-2xl card-shadow border border-black/5 overflow-hidden">
+                                    {transactions.data.map((tx, i) => (
+                                        <div key={tx.id} className={`flex items-center gap-3 sm:gap-4 px-4 sm:px-5 py-4 ${i !== transactions.data.length - 1 ? 'border-b border-gray-100' : ''}`}>
+                                            <div className="shrink-0 w-10 text-center">
+                                                <p className="text-[9px] font-bold uppercase tracking-wide text-gray-400 leading-none mb-0.5">{tx.transaction_date_month}</p>
+                                                <p className="text-base font-extrabold text-slate-800 leading-none tabular-nums">{tx.transaction_date_day}</p>
+                                            </div>
+
+                                            {tx.image_url ? (
+                                                <a href={tx.image_url} target="_blank" rel="noopener noreferrer"
+                                                    className="w-12 h-12 rounded-xl overflow-hidden bg-gray-100 shrink-0 border border-gray-200">
+                                                    <img src={tx.image_url} alt="ຮູບບິນ" className="w-full h-full object-cover" />
+                                                </a>
+                                            ) : (
+                                                <div className="w-12 h-12 rounded-xl bg-[#f8fafa] border border-gray-100 shrink-0 flex items-center justify-center">
+                                                    <svg className="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="1.5">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                                    </svg>
+                                                </div>
+                                            )}
+
+                                            <div className="flex-1 min-w-0">
+                                                <p className="font-semibold text-slate-800 text-sm truncate">{tx.description || (tx.type === 'income' ? 'ລາຍຮັບ' : 'ລາຍຈ່າຍ')}</p>
+                                            </div>
+
+                                            <p className={`shrink-0 font-extrabold tabular-nums text-sm sm:text-base ${tx.type === 'income' ? 'text-brand-green' : 'text-rose-800'}`}>
+                                                {tx.type === 'income' ? '+' : '−'}{fmt(tx.amount)}
+                                            </p>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                {transactions.data.length > 0 && <div className="mt-6"><Pagination links={transactions.links} /></div>}
+                            </>
+                        )}
                     </>
-                )}
+                ) : null}
             </div>
         </PublicLayout>
     );
