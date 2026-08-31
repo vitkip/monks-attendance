@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\HeroSlide;
 use App\Models\News;
 use App\Models\NewsCategory;
+use App\Support\PageMeta;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
@@ -106,7 +107,7 @@ class PublicNewsController extends Controller
                 'minutes_label' => $this->readingMinutes($article->content),
             ],
             'recent' => $recent,
-        ]);
+        ])->withViewData(['meta' => PageMeta::forArticle($article)]);
     }
 
     /**
