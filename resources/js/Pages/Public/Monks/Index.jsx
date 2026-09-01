@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link } from '@inertiajs/react';
 import PublicLayout from '@/Layouts/PublicLayout';
 import SeoHead from '@/Components/SeoHead';
@@ -85,6 +85,186 @@ function SearchIcon() {
     );
 }
 
+const TYPE_DOT = {
+    monk: 'bg-brand-green',
+    novice: 'bg-brand-bright-green',
+    nun: 'bg-purple-300',
+};
+
+const HERO_MAX = 21;
+
+/** Position one portrait in the 3D cover-flow relative to the centred index. */
+function coverflowTransform(offset) {
+    if (offset === 0) return 'translate(-50%, -50%) translateZ(0) rotateY(0deg) scale(1)';
+    const dir = offset > 0 ? 1 : -1;
+    const abs = Math.abs(offset);
+    const shift = 50 + (abs - 1) * 38; // % of the card's own width
+    const depth = -abs * 120;
+    const spin = -dir * 46;
+    const scale = 1 - abs * 0.05;
+    return `translate(calc(-50% ${dir > 0 ? '+' : '-'} ${shift}%), -50%) translateZ(${depth}px) rotateY(${spin}deg) scale(${scale})`;
+}
+
+function HeroCoverflow({ people }) {
+    const n = people.length;
+    const [active, setActive] = useState(0);
+    const [interacting, setInteracting] = useState(false);
+    const [tabHidden, setTabHidden] = useState(false);
+    const [reduceMotion, setReduceMotion] = useState(false);
+
+    const maxOffset = Math.min(4, Math.floor((n - 1) / 2));
+    const current = people[active];
+
+    useEffect(() => {
+        const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+        const sync = () => setReduceMotion(mq.matches);
+        sync();
+        mq.addEventListener('change', sync);
+        return () => mq.removeEventListener('change', sync);
+    }, []);
+
+    useEffect(() => {
+        const sync = () => setTabHidden(document.hidden);
+        document.addEventListener('visibilitychange', sync);
+        return () => document.removeEventListener('visibilitychange', sync);
+    }, []);
+
+    useEffect(() => {
+        if (reduceMotion || interacting || tabHidden || n <= 1) return;
+        const id = setInterval(() => setActive((a) => (a + 1) % n), 4200);
+        return () => clearInterval(id);
+    }, [reduceMotion, interacting, tabHidden, n]);
+
+    const go = (dir) => setActive((a) => (a + dir + n) % n);
+
+    return (
+        <div
+            role="group"
+            aria-roledescription="carousel"
+            aria-label="ຮູບພາບ ພຣະສົງ ສາມະເນນ ແລະ ແມ່ຂາວ"
+            className="mt-9 select-none"
+            onMouseEnter={() => setInteracting(true)}
+            onMouseLeave={() => setInteracting(false)}
+            onFocus={() => setInteracting(true)}
+            onBlur={(e) => {
+                if (!e.currentTarget.contains(e.relatedTarget)) setInteracting(false);
+            }}
+            onKeyDown={(e) => {
+                if (e.key === 'ArrowRight') { e.preventDefault(); go(1); }
+                if (e.key === 'ArrowLeft') { e.preventDefault(); go(-1); }
+            }}
+        >
+            <div className="relative" style={{ perspective: '1500px' }}>
+                <div
+                    className="glow-dawn absolute left-1/2 top-1/2 w-[340px] h-[340px] sm:w-[440px] sm:h-[440px] -translate-x-1/2 -translate-y-1/2 pointer-events-none"
+                    aria-hidden="true"
+                />
+
+                <div className="relative h-[280px] sm:h-[340px]" style={{ transformStyle: 'preserve-3d' }}>
+                    {people.map((person, i) => {
+                        let offset = i - active;
+                        if (offset > n / 2) offset -= n;
+                        if (offset < -n / 2) offset += n;
+                        if (Math.abs(offset) > maxOffset) return null;
+
+                        const abs = Math.abs(offset);
+                        const isActive = offset === 0;
+
+                        return (
+                            <button
+                                key={person.id}
+                                type="button"
+                                tabIndex={isActive ? 0 : -1}
+                                aria-label={`${person.full_name} · ${person.type_label}`}
+                                aria-current={isActive ? 'true' : undefined}
+                                onClick={() => !isActive && setActive(i)}
+                                className="coverflow-card absolute left-1/2 top-1/2 block w-[142px] sm:w-[188px] rounded-2xl overflow-hidden focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-bright-green"
+                                style={{
+                                    transform: coverflowTransform(offset),
+                                    zIndex: 30 - abs,
+                                    opacity: abs >= 4 ? 0 : 1 - Math.max(0, abs - 1) * 0.24 - (abs > 0 ? 0.06 : 0),
+                                    filter: `brightness(${1 - abs * 0.14})`,
+                                    pointerEvents: abs >= 4 ? 'none' : 'auto',
+                                    cursor: isActive ? 'default' : 'pointer',
+                                }}
+                            >
+                                <div
+                                    className={`relative aspect-[4/5] bg-white/5 ring-1 ring-inset ${
+                                        isActive ? 'ring-brand-bright-green/60' : 'ring-white/10'
+                                    }`}
+                                >
+                                    <img
+                                        src={person.photo_url}
+                                        alt={person.full_name}
+                                        loading={abs <= 1 ? 'eager' : 'lazy'}
+                                        decoding="async"
+                                        draggable="false"
+                                        className="w-full h-full object-cover"
+                                    />
+                                    <span
+                                        className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/55 to-transparent"
+                                        aria-hidden="true"
+                                    />
+                                    <span
+                                        className={`absolute top-2 left-2 w-1.5 h-1.5 rounded-full ${TYPE_DOT[person.type] || 'bg-white'}`}
+                                        aria-hidden="true"
+                                    />
+                                </div>
+                            </button>
+                        );
+                    })}
+                </div>
+
+                {n > 1 && (
+                    <>
+                        <button
+                            type="button"
+                            onClick={() => go(-1)}
+                            aria-label="ຮູບກ່ອນໜ້າ"
+                            className="absolute left-1 sm:left-2 top-1/2 -translate-y-1/2 z-40 grid place-items-center w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 text-white/80 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-bright-green"
+                        >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                            </svg>
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => go(1)}
+                            aria-label="ຮູບຕໍ່ໄປ"
+                            className="absolute right-1 sm:right-2 top-1/2 -translate-y-1/2 z-40 grid place-items-center w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 text-white/80 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-bright-green"
+                        >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </button>
+                    </>
+                )}
+            </div>
+
+            <div key={active} className="fade-up mt-5">
+                <p className="text-white font-semibold text-base sm:text-lg leading-snug">{current.full_name}</p>
+                <p className="text-white/50 text-xs sm:text-sm mt-1.5 flex flex-wrap items-center justify-center gap-x-2 gap-y-1">
+                    <span className="inline-flex items-center gap-1.5">
+                        <span
+                            className={`w-1.5 h-1.5 rounded-full ${TYPE_DOT[current.type] || 'bg-white'}`}
+                            aria-hidden="true"
+                        />
+                        {current.type_label}
+                    </span>
+                    {current.pansa != null && <span>· ພັນສາ {current.pansa}</span>}
+                    {current.temple && <span className="hidden sm:inline">· {current.temple}</span>}
+                </p>
+            </div>
+
+            {n > 1 && (
+                <p className="text-white/35 text-[11px] tabular-nums mt-2">
+                    {active + 1} / {n}
+                </p>
+            )}
+        </div>
+    );
+}
+
 export default function Index({ monkGroup, noviceGroup, nunGroup, totalMonks, totalNovices, totalNuns, type }) {
     const groups = { monk: monkGroup, novice: noviceGroup, nun: nunGroup };
     const totalAll = totalMonks + totalNovices + totalNuns;
@@ -105,6 +285,18 @@ export default function Index({ monkGroup, noviceGroup, nunGroup, totalMonks, to
     }, [normalizedQuery, monkGroup, noviceGroup, nunGroup]);
 
     const resultCount = filteredGroups.monk.length + filteredGroups.novice.length + filteredGroups.nun.length;
+
+    // Interleave the three cohorts so the hero cover flow mixes monks, novices and nuns.
+    const heroPeople = useMemo(() => {
+        const pools = [monkGroup, noviceGroup, nunGroup].map((g) => g.filter((p) => p.photo_url));
+        const longest = Math.max(0, ...pools.map((p) => p.length));
+        const mixed = [];
+        for (let i = 0; i < longest; i += 1) {
+            for (const pool of pools) if (pool[i]) mixed.push(pool[i]);
+        }
+        return mixed.slice(0, HERO_MAX);
+    }, [monkGroup, noviceGroup, nunGroup]);
+
     const isEmpty = totalAll === 0;
     const noResults = !isEmpty && normalizedQuery && resultCount === 0;
 
@@ -134,17 +326,21 @@ export default function Index({ monkGroup, noviceGroup, nunGroup, totalMonks, to
                     ☸
                 </span>
 
-                <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-16 pb-10 sm:pt-20 sm:pb-12">
+                <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-14 pb-11 sm:pt-16 sm:pb-14 text-center">
                     <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest bg-white/10 text-brand-bright-green mb-4">
                         <span aria-hidden="true">☸</span> ທະບຽນວັດ
                     </span>
 
-                    <h1 className="text-white text-3xl sm:text-4xl font-bold leading-tight">ພຣະສົງ ແລະ ສາມະເນນ</h1>
-                    <p className="text-white/60 text-sm sm:text-base mt-3 max-w-xl leading-relaxed">
-                        ລາຍຊື່ພຣະສົງ ແລະ ສາມະເນນທັງໝົດພາຍໃນວັດ ຈຳນວນທັງໝົດ {totalAll} ຮູບ
+                    <h1 className="text-white text-3xl sm:text-4xl font-bold leading-tight">
+                        ພຣະສົງ ສາມະເນນ ແລະ ແມ່ຂາວ
+                    </h1>
+                    <p className="text-white/60 text-sm sm:text-base mt-3 max-w-xl mx-auto leading-relaxed">
+                        ໜ້າຕາຂອງສະມາຊິກທັງໝົດພາຍໃນວັດ · ທັງໝົດ {totalAll} ຮູບ
                     </p>
 
-                    <div className="flex flex-wrap items-center gap-3 mt-7">
+                    {heroPeople.length > 0 && <HeroCoverflow people={heroPeople} />}
+
+                    <div className="flex flex-wrap justify-center items-center gap-3 mt-10">
                         <div className="flex items-baseline gap-1.5 bg-white/10 rounded-2xl px-4 py-2.5">
                             <span className="text-lg font-bold text-white tabular-nums leading-none">{totalMonks}</span>
                             <span className="text-xs text-white/60">ອົງ · ພຣະສົງ</span>
