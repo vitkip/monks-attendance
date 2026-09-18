@@ -769,7 +769,7 @@
         <div class="rpt-footer">
             <div class="signature-row">
                 <div class="signature-box">
-                    <div class="sig-role">ເຈົ້າອະທິວັດ</div>
+                    <div class="sig-role">ເຈົ້າອະທິການວັດ</div>
                     <div class="sig-line"></div>
                     <div class="sig-label">ຊື່-ນາມສະກຸນ / ລາຍເຊັນ</div>
                 </div>
