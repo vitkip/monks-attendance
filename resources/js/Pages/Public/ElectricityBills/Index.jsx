@@ -187,6 +187,8 @@ export default function Index({ billsByMonth, availableYears, year, monthly, tot
                                                         <img
                                                             src={bill.image_url}
                                                             alt={`ໃບບິນ ${bill.customer_name} ເດືອນ ${bill.bill_month_label}`}
+                                                            loading="lazy"
+                                                            decoding="async"
                                                             className="w-full h-full object-cover"
                                                         />
                                                     )}

@@ -29,7 +29,7 @@ class NewsController extends Controller
             ->when($search, fn ($q) => $q->where('title', 'like', "%{$search}%")
                 ->orWhere('excerpt', 'like', "%{$search}%")
             )
-            ->with(['author', 'category'])
+            ->with(['author:id,name', 'category:id,name'])
             ->latest('published_at')
             ->latest()
             ->paginate(9)
@@ -53,6 +53,10 @@ class NewsController extends Controller
                 'created_at' => $item->created_at->toISOString(),
             ]);
 
+        $categories = \Illuminate\Support\Facades\Cache::remember('news_categories_admin', 3600, function () {
+            return NewsCategory::orderBy('name')->get(['id', 'name']);
+        });
+
         return Inertia::render('News/Index', [
             'filters' => [
                 'search' => $search,
@@ -60,7 +64,7 @@ class NewsController extends Controller
                 'category' => $filterCategory,
             ],
             'news' => $news,
-            'categories' => NewsCategory::orderBy('name')->get(['id', 'name']),
+            'categories' => $categories,
         ]);
     }
 

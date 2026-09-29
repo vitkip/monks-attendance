@@ -29,24 +29,29 @@ class FundController extends Controller
                 ->orWhere('party_name', 'like', "%{$search}%")
                 ->orWhereHas('monk', fn ($q3) => $q3->where('name', 'like', "%{$search}%")->orWhere('surname', 'like', "%{$search}%"))
             ))
-            ->with(['monk', 'recordedBy'])
+            ->with(['monk:id,name,surname,type,photo', 'recordedBy:id,name'])
             ->latest('transaction_date')
             ->latest()
             ->paginate(15)
             ->withQueryString()
             ->through(fn (FundTransaction $tx) => $this->transformTransaction($tx));
 
+        $totals = FundTransaction::selectRaw("
+            SUM(CASE WHEN type = 'income' THEN amount ELSE 0 END) as total_income,
+            SUM(CASE WHEN type = 'expense' THEN amount ELSE 0 END) as total_expense
+        ")->first();
+
         return Inertia::render('Fund/Index', [
             'filters' => ['search' => $search, 'type' => $filterType, 'month' => $filterMonth],
             'transactions' => $transactions,
             'types' => FundTransaction::types(),
-            'monks' => Monk::orderBy('name')->get()->map(fn (Monk $m) => [
+            'monks' => Monk::orderBy('name')->get(['id', 'name', 'surname', 'type'])->map(fn (Monk $m) => [
                 'id' => $m->id,
                 'full_name' => $m->full_name,
                 'type_label' => $m->type_label,
             ]),
-            'totalIncomeAll' => (float) FundTransaction::where('type', 'income')->sum('amount'),
-            'totalExpenseAll' => (float) FundTransaction::where('type', 'expense')->sum('amount'),
+            'totalIncomeAll' => (float) ($totals->total_income ?? 0),
+            'totalExpenseAll' => (float) ($totals->total_expense ?? 0),
         ]);
     }
 

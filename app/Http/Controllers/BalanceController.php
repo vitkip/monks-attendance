@@ -18,23 +18,28 @@ class BalanceController extends Controller
         $onlyDebt = $request->query('onlyDebt', '1') !== '0';
 
         $monks = Monk::where('status', 'active')
+            ->select(['id', 'name', 'surname', 'type', 'photo', 'temple', 'pansa'])
             ->withCount(['absences as total_count'])
             ->withCount(['absences as unpaid_count' => fn ($q) => $q->where('is_paid', 0)])
             ->withSum(['absences as unpaid_fine' => fn ($q) => $q->where('is_paid', 0)], 'fine_amount')
+            ->with(['absences' => fn ($q) => $q->where('is_paid', 0)->select(['id', 'monk_id', 'fine_rate_id', 'absent_date', 'fine_amount', 'reason'])->with('fineRate:id,name')->orderBy('absent_date')])
             ->when($search, fn ($q) => $q->where(fn ($inner) => $inner->where('name', 'like', "%{$search}%")
                 ->orWhere('surname', 'like', "%{$search}%")
             ))
             ->when($filterType, fn ($q) => $q->where('type', $filterType))
             ->when($onlyDebt, fn ($q) => $q->whereHas('absences', fn ($inner) => $inner->where('is_paid', 0)))
             ->orderByDesc('unpaid_fine')
-            ->get()
-            ->load(['absences' => fn ($q) => $q->where('is_paid', 0)->with('fineRate')->orderBy('absent_date')]);
+            ->get();
 
-        $totalUnpaid = Absence::where('is_paid', 0)->sum('fine_amount');
+        $unpaidStats = Absence::where('is_paid', 0)
+            ->selectRaw('SUM(fine_amount) as total_unpaid, COUNT(*) as unpaid_count')
+            ->first();
+        $totalUnpaid = (float) ($unpaidStats->total_unpaid ?? 0);
+        $unpaidCount = (int) ($unpaidStats->unpaid_count ?? 0);
+
         $monksWithDebt = Monk::where('status', 'active')
             ->whereHas('absences', fn ($q) => $q->where('is_paid', 0))
             ->count();
-        $unpaidCount = Absence::where('is_paid', 0)->count();
 
         return Inertia::render('Balance/Index', [
             'filters' => ['search' => $search, 'type' => $filterType, 'onlyDebt' => $onlyDebt],

@@ -38,7 +38,8 @@ class DutyScheduleReportController extends Controller
 
         $weeklyGroups = collect();
         if ($type !== 'once') {
-            $weeklyGroups = DutySchedule::with('monk')
+            $weeklyGroups = DutySchedule::with('monk:id,name,surname,type,pansa,photo')
+                ->select(['id', 'monk_id', 'duty_name', 'schedule_type', 'day_of_week'])
                 ->where('schedule_type', 'weekly')
                 ->orderBy('day_of_week')
                 ->get()
@@ -48,7 +49,8 @@ class DutyScheduleReportController extends Controller
 
         $onceGroups = collect();
         if ($type !== 'weekly') {
-            $query = DutySchedule::with('monk')
+            $query = DutySchedule::with('monk:id,name,surname,type,pansa,photo')
+                ->select(['id', 'monk_id', 'duty_name', 'schedule_type', 'duty_date'])
                 ->where('schedule_type', 'once')
                 ->orderBy('duty_date');
 

@@ -26,7 +26,6 @@ class ConstructionProjectController extends Controller
             ->withSum('incomeTransactions as income_sum', 'amount')
             ->withSum('expenseTransactions as expense_sum', 'amount')
             ->withCount('transactions')
-            ->with('recordedBy')
             ->latest()
             ->paginate(9)
             ->withQueryString()
@@ -52,12 +51,17 @@ class ConstructionProjectController extends Controller
                 ];
             });
 
+        $txTotals = ConstructionTransaction::selectRaw("
+            SUM(CASE WHEN type = 'income' THEN amount ELSE 0 END) as total_income,
+            SUM(CASE WHEN type = 'expense' THEN amount ELSE 0 END) as total_expense
+        ")->first();
+
         return Inertia::render('ConstructionProjects/Index', [
             'filters' => ['search' => $search, 'status' => $filterStatus],
             'projects' => $projects,
             'statuses' => ConstructionProject::statuses(),
-            'totalIncomeAll' => (float) ConstructionTransaction::where('type', 'income')->sum('amount'),
-            'totalExpenseAll' => (float) ConstructionTransaction::where('type', 'expense')->sum('amount'),
+            'totalIncomeAll' => (float) ($txTotals->total_income ?? 0),
+            'totalExpenseAll' => (float) ($txTotals->total_expense ?? 0),
             'ongoingCount' => ConstructionProject::where('status', 'ongoing')->count(),
         ]);
     }

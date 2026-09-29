@@ -14,6 +14,7 @@ class PublicAbsenceController extends Controller
         $since = Carbon::now()->subDays($days)->startOfDay();
 
         $monks = Monk::where('status', 'active')
+            ->select(['id', 'name', 'surname', 'type', 'photo', 'temple'])
             ->withCount(['absences as absence_count' => fn ($q) => $q->where('absent_date', '>=', $since)])
             ->withSum(['absences as fine_total' => fn ($q) => $q->where('absent_date', '>=', $since)], 'fine_amount')
             ->orderByDesc('fine_total')

@@ -25,7 +25,8 @@ class ChantController extends Controller
                 $q->whereIn('category_id', $ids);
             })
             ->when($search, fn ($q) => $q->where('title', 'like', "%{$search}%"))
-            ->with('category')
+            ->with('category:id,name')
+            ->select(['id', 'title', 'slug', 'content', 'category_id'])
             ->orderBy('title')
             ->paginate(9)
             ->withQueryString()

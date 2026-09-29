@@ -22,7 +22,8 @@ class AbsenceController extends Controller
         $filterMonth = (string) $request->query('month', '');
         $filterPaid = (string) $request->query('paid', '');
 
-        $absenceGroups = Absence::with(['monk', 'fineRate'])
+        $absenceGroups = Absence::with(['monk:id,name,surname,type', 'fineRate:id,name'])
+            ->select(['id', 'monk_id', 'fine_rate_id', 'absent_date', 'fine_amount', 'is_paid', 'reason', 'note'])
             ->when($search, fn ($q) => $q->whereHas('monk', fn ($mq) => $mq->where('name', 'like', "%{$search}%")
                 ->orWhere('surname', 'like', "%{$search}%")
             ))
@@ -53,10 +54,11 @@ class AbsenceController extends Controller
             ])
             ->values();
 
-        $monks = Monk::where('status', 'active')->orderBy('name')->get();
+        $monks = Monk::where('status', 'active')->select(['id', 'name', 'surname', 'type'])->orderBy('name')->get();
         $fineRates = FineRate::orderBy('name')->get(['id', 'name', 'amount']);
 
-        $dutySchedules = DutySchedule::with('monk')
+        $dutySchedules = DutySchedule::with('monk:id,name,surname')
+            ->select(['id', 'monk_id', 'duty_name', 'schedule_type', 'duty_date', 'day_of_week'])
             ->whereIn('monk_id', $monks->pluck('id'))
             ->get();
 

@@ -38,7 +38,9 @@ class DutyScheduleController extends Controller
         ];
 
         $weeklyGroups = $filterType !== 'once'
-            ? DutySchedule::with('monk')->where('schedule_type', 'weekly')
+            ? DutySchedule::with('monk:id,name,surname,type,photo')
+                ->select(['id', 'monk_id', 'duty_name', 'description', 'schedule_type', 'duty_date', 'day_of_week'])
+                ->where('schedule_type', 'weekly')
                 ->when($search, $applySearch)
                 ->orderBy('day_of_week')
                 ->get()
@@ -51,7 +53,9 @@ class DutyScheduleController extends Controller
             : collect();
 
         $onceGroups = $filterType !== 'weekly'
-            ? DutySchedule::with('monk')->where('schedule_type', 'once')
+            ? DutySchedule::with('monk:id,name,surname,type,photo')
+                ->select(['id', 'monk_id', 'duty_name', 'description', 'schedule_type', 'duty_date', 'day_of_week'])
+                ->where('schedule_type', 'once')
                 ->when($search, $applySearch)
                 ->orderBy('duty_date')
                 ->get()
@@ -62,15 +66,19 @@ class DutyScheduleController extends Controller
                 ])->values()
             : collect();
 
-        $monks = Monk::where('status', 'active')->orderBy('name')->get();
+        $monks = Monk::where('status', 'active')->select(['id', 'name', 'surname', 'type'])->orderBy('name')->get();
+
+        $dutyCounts = DutySchedule::selectRaw('schedule_type, count(*) as count')
+            ->groupBy('schedule_type')
+            ->pluck('count', 'schedule_type');
 
         return Inertia::render('DutySchedules/Index', [
             'filters' => ['search' => $search, 'type' => $filterType],
             'weeklyGroups' => $weeklyGroups,
             'onceGroups' => $onceGroups,
             'monks' => $monks->map(fn ($m) => ['id' => $m->id, 'full_name' => $m->full_name, 'type_label' => $m->type_label]),
-            'totalWeekly' => DutySchedule::where('schedule_type', 'weekly')->count(),
-            'totalOnce' => DutySchedule::where('schedule_type', 'once')->count(),
+            'totalWeekly' => (int) ($dutyCounts['weekly'] ?? 0),
+            'totalOnce' => (int) ($dutyCounts['once'] ?? 0),
             'dayNames' => DutySchedule::$dayNames,
         ]);
     }

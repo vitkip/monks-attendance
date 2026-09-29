@@ -49,18 +49,24 @@ class PublicConstructionProjectController extends Controller
 
         $featuredProject = ConstructionProject::where('status', 'ongoing')
             ->whereNotNull('target_amount')
+            ->withSum('incomeTransactions as income_sum', 'amount')
             ->latest('start_date')
             ->latest()
             ->first();
 
-        $featured = $featuredProject ? [
-            'id' => $featuredProject->id,
-            'name' => $featuredProject->name,
-            'image_url' => $featuredProject->image_url,
-            'progress_percent' => $featuredProject->progress_percent,
-            'total_income' => $featuredProject->total_income,
-            'target_amount' => (float) $featuredProject->target_amount,
-        ] : null;
+        $featured = null;
+        if ($featuredProject) {
+            $fIncome = (float) ($featuredProject->income_sum ?? 0);
+            $fTarget = (float) $featuredProject->target_amount;
+            $featured = [
+                'id' => $featuredProject->id,
+                'name' => $featuredProject->name,
+                'image_url' => $featuredProject->image_url,
+                'progress_percent' => $fTarget > 0 ? min(100, round($fIncome / $fTarget * 100, 1)) : null,
+                'total_income' => $fIncome,
+                'target_amount' => $fTarget,
+            ];
+        }
 
         return Inertia::render('Public/ConstructionProjects/Index', [
             'status' => $status,

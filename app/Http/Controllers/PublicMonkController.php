@@ -13,6 +13,7 @@ class PublicMonkController extends Controller
         $type = $request->query('type');
 
         $monks = Monk::where('status', 'active')
+            ->select(['id', 'name', 'surname', 'type', 'photo', 'pansa', 'birth_date', 'temple'])
             ->when($type, fn($q) => $q->where('type', $type))
             ->orderBy('pansa', 'desc')
             ->orderBy('name')
@@ -33,9 +34,19 @@ class PublicMonkController extends Controller
         $noviceGroup = $monks->where('type', 'novice')->values()->map($mapMonk)->all();
         $nunGroup = $monks->where('type', 'nun')->values()->map($mapMonk)->all();
 
-        $totalMonks = Monk::where('status', 'active')->where('type', 'monk')->count();
-        $totalNovices = Monk::where('status', 'active')->where('type', 'novice')->count();
-        $totalNuns = Monk::where('status', 'active')->where('type', 'nun')->count();
+        if (! $type) {
+            $totalMonks = count($monkGroup);
+            $totalNovices = count($noviceGroup);
+            $totalNuns = count($nunGroup);
+        } else {
+            $counts = Monk::where('status', 'active')
+                ->selectRaw('type, count(*) as count')
+                ->groupBy('type')
+                ->pluck('count', 'type');
+            $totalMonks = (int) ($counts['monk'] ?? 0);
+            $totalNovices = (int) ($counts['novice'] ?? 0);
+            $totalNuns = (int) ($counts['nun'] ?? 0);
+        }
 
         return Inertia::render('Public/Monks/Index', compact('monkGroup', 'noviceGroup', 'nunGroup', 'totalMonks', 'totalNovices', 'totalNuns', 'type'));
     }

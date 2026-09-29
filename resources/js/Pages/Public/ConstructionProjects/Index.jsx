@@ -144,6 +144,8 @@ export default function ConstructionProjectsPublicIndex({ status, projects, stat
                                     {project.image_url ? (
                                         <div className="relative overflow-hidden">
                                             <img src={project.image_url} alt={project.name}
+                                                loading="lazy"
+                                                decoding="async"
                                                 className="w-full aspect-[16/10] object-cover transition-transform duration-300 group-hover:scale-105" />
                                             <span className={`absolute top-3 left-3 inline-flex px-2 py-0.5 rounded-lg text-[11px] font-semibold backdrop-blur-sm ${statusPillOverlayClasses[project.status] || 'bg-white/90 text-gray-600'}`}>
                                                 {statuses[project.status] || project.status}

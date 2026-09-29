@@ -39,27 +39,35 @@ class ChantCategory extends Model
         return $ids;
     }
 
+    protected static function booted(): void
+    {
+        static::saved(fn () => \Illuminate\Support\Facades\Cache::forget('chant_categories_tree'));
+        static::deleted(fn () => \Illuminate\Support\Facades\Cache::forget('chant_categories_tree'));
+    }
+
     /**
      * All categories flattened depth-first, each with a `depth` attribute,
      * so parent/child order is preserved for indented dropdowns and lists.
      */
     public static function tree(): Collection
     {
-        $all = static::withCount('chants')->orderBy('name')->get();
-        $byParent = $all->groupBy(fn (ChantCategory $c) => $c->parent_id ?? 0);
+        return \Illuminate\Support\Facades\Cache::rememberForever('chant_categories_tree', function () {
+            $all = static::withCount('chants')->orderBy('name')->get();
+            $byParent = $all->groupBy(fn (ChantCategory $c) => $c->parent_id ?? 0);
 
-        $flatten = function ($parentId, $depth) use (&$flatten, $byParent) {
-            $result = collect();
+            $flatten = function ($parentId, $depth) use (&$flatten, $byParent) {
+                $result = collect();
 
-            foreach ($byParent->get($parentId, collect()) as $category) {
-                $category->depth = $depth;
-                $result->push($category);
-                $result = $result->merge($flatten($category->id, $depth + 1));
-            }
+                foreach ($byParent->get($parentId, collect()) as $category) {
+                    $category->depth = $depth;
+                    $result->push($category);
+                    $result = $result->merge($flatten($category->id, $depth + 1));
+                }
 
-            return $result;
-        };
+                return $result;
+            };
 
-        return $flatten(0, 0);
+            return $flatten(0, 0);
+        });
     }
 }

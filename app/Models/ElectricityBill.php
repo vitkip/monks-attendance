@@ -18,6 +18,18 @@ class ElectricityBill extends Model
         ];
     }
 
+    protected static function booted(): void
+    {
+        static::saved(function () {
+            \Illuminate\Support\Facades\Cache::forget('electricity_bills:available_years');
+            \Illuminate\Support\Facades\Cache::forget('electricity_bills:total_all_time');
+        });
+        static::deleted(function () {
+            \Illuminate\Support\Facades\Cache::forget('electricity_bills:available_years');
+            \Illuminate\Support\Facades\Cache::forget('electricity_bills:total_all_time');
+        });
+    }
+
     public function recordedBy()
     {
         return $this->belongsTo(User::class, 'user_id');

@@ -51,14 +51,19 @@ class MonkController extends Controller
                 'absences_sum_fine_amount' => (float) ($monk->absences_sum_fine_amount ?? 0),
             ]);
 
+        $typeCounts = Monk::where('status', 'active')
+            ->selectRaw('type, count(*) as count')
+            ->groupBy('type')
+            ->pluck('count', 'type');
+
         return Inertia::render('Monks/Index', [
             'filters' => ['search' => $search, 'type' => $filterType, 'status' => $filterStatus],
             'monks' => $monks,
             'statuses' => Monk::statuses(),
-            'totalCount' => Monk::where('status', 'active')->count(),
-            'monkCount' => Monk::where('status', 'active')->where('type', 'monk')->count(),
-            'noviceCount' => Monk::where('status', 'active')->where('type', 'novice')->count(),
-            'nunCount' => Monk::where('status', 'active')->where('type', 'nun')->count(),
+            'totalCount' => (int) $typeCounts->sum(),
+            'monkCount' => (int) ($typeCounts['monk'] ?? 0),
+            'noviceCount' => (int) ($typeCounts['novice'] ?? 0),
+            'nunCount' => (int) ($typeCounts['nun'] ?? 0),
         ]);
     }
 

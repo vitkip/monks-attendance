@@ -20,17 +20,20 @@ class PublicNewsController extends Controller
     {
         $categorySlug = $request->query('category');
 
-        $heroSlides = HeroSlide::active()->ordered()->get()->map(fn (HeroSlide $slide) => [
-            'id' => $slide->id,
-            'title' => $slide->title,
-            'subtitle' => $slide->subtitle,
-            'image_url' => $slide->image_url,
-            'link_url' => $slide->link_url,
-            'button_text' => $slide->button_text,
-        ]);
+        $heroSlides = \Illuminate\Support\Facades\Cache::remember('public:hero_slides', 3600, function () {
+            return HeroSlide::active()->ordered()->get()->map(fn (HeroSlide $slide) => [
+                'id' => $slide->id,
+                'title' => $slide->title,
+                'subtitle' => $slide->subtitle,
+                'image_url' => $slide->image_url,
+                'link_url' => $slide->link_url,
+                'button_text' => $slide->button_text,
+            ])->all();
+        });
+        $heroSlides = collect($heroSlides);
 
-        $featured = (!$categorySlug && $heroSlides->isEmpty())
-            ? News::published()->with(['author', 'category'])->latest('published_at')->latest()->first()
+        $featured = (! $categorySlug && $heroSlides->isEmpty())
+            ? News::published()->with(['author:id,name', 'category:id,name,slug'])->latest('published_at')->latest()->first()
             : null;
 
         $news = News::published()
@@ -38,18 +41,22 @@ class PublicNewsController extends Controller
             ->when($categorySlug, fn ($q) =>
                 $q->whereHas('category', fn ($c) => $c->where('slug', $categorySlug))
             )
-            ->with(['author', 'category'])
+            ->with(['author:id,name', 'category:id,name,slug'])
+            ->select(['id', 'title', 'slug', 'excerpt', 'content', 'image', 'user_id', 'category_id', 'published_at', 'created_at'])
             ->latest('published_at')
             ->latest()
             ->paginate(9)
             ->withQueryString()
             ->through(fn (News $item) => $this->transformCard($item));
 
-        $categories = NewsCategory::orderBy('name')->get(['id', 'name', 'slug']);
+        $categories = \Illuminate\Support\Facades\Cache::remember('public:news_categories', 3600, function () {
+            return NewsCategory::orderBy('name')->get(['id', 'name', 'slug']);
+        });
 
         $latestNews = News::published()
             ->when($featured, fn ($q) => $q->where('id', '!=', $featured->id))
-            ->with('category')
+            ->with('category:id,name')
+            ->select(['id', 'title', 'slug', 'category_id', 'published_at', 'created_at'])
             ->latest('published_at')
             ->latest()
             ->limit(5)

@@ -14,14 +14,15 @@ class PublicChantController extends Controller
     public function index(Request $request): Response
     {
         $categorySlug = $request->query('category');
-        $category = $categorySlug ? ChantCategory::where('slug', $categorySlug)->first() : null;
+        $category = $categorySlug ? ChantCategory::where('slug', $categorySlug)->first(['id', 'name', 'slug', 'parent_id']) : null;
 
         $chants = Chant::query()
             ->when($category, function ($q) use ($category) {
                 $ids = array_merge([$category->id], $category->descendantIds());
                 $q->whereIn('category_id', $ids);
             })
-            ->with('category')
+            ->with('category:id,name,slug')
+            ->select(['id', 'title', 'slug', 'content', 'category_id'])
             ->orderBy('title')
             ->paginate(12)
             ->withQueryString()

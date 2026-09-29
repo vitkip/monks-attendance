@@ -19,6 +19,12 @@ class HeroSlide extends Model
         ];
     }
 
+    protected static function booted(): void
+    {
+        static::saved(fn () => \Illuminate\Support\Facades\Cache::forget('public:hero_slides'));
+        static::deleted(fn () => \Illuminate\Support\Facades\Cache::forget('public:hero_slides'));
+    }
+
     public function scopeActive(Builder $query): Builder
     {
         return $query->where('status', 1);

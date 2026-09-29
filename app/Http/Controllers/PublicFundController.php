@@ -16,7 +16,7 @@ class PublicFundController extends Controller
 
         $transactions = FundTransaction::query()
             ->when(in_array($filterType, ['income', 'expense'], true), fn ($q) => $q->where('type', $filterType))
-            ->with('monk')
+            ->with(['monk:id,name,surname,type,photo'])
             ->latest('transaction_date')
             ->latest()
             ->paginate(15)
@@ -37,8 +37,12 @@ class PublicFundController extends Controller
                 'description' => $tx->description,
             ]);
 
-        $totalIncomeAll = (float) FundTransaction::where('type', 'income')->sum('amount');
-        $totalExpenseAll = (float) FundTransaction::where('type', 'expense')->sum('amount');
+        $totals = FundTransaction::selectRaw("
+            SUM(CASE WHEN type = 'income' THEN amount ELSE 0 END) as total_income,
+            SUM(CASE WHEN type = 'expense' THEN amount ELSE 0 END) as total_expense
+        ")->first();
+        $totalIncomeAll = (float) ($totals->total_income ?? 0);
+        $totalExpenseAll = (float) ($totals->total_expense ?? 0);
 
         return Inertia::render('Public/Fund/Index', [
             'type' => $filterType,

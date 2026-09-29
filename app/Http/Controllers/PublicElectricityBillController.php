@@ -11,14 +11,19 @@ class PublicElectricityBillController extends Controller
 {
     public function index(Request $request): Response
     {
-        $availableYears = ElectricityBill::selectRaw('YEAR(bill_month) as year')
-            ->distinct()
-            ->orderByDesc('year')
-            ->pluck('year');
+        $availableYears = \Illuminate\Support\Facades\Cache::remember('electricity_bills:available_years', 3600, function () {
+            return ElectricityBill::selectRaw('YEAR(bill_month) as year')
+                ->distinct()
+                ->orderByDesc('year')
+                ->pluck('year')
+                ->all();
+        });
+        $availableYears = collect($availableYears);
 
         $year = (int) ($request->query('year') ?: $availableYears->first() ?: now()->year);
 
         $bills = ElectricityBill::whereYear('bill_month', $year)
+            ->select(['id', 'account_number', 'province', 'customer_name', 'bill_month', 'amount', 'image'])
             ->orderByDesc('bill_month')
             ->orderByDesc('id')
             ->get();
@@ -53,7 +58,9 @@ class PublicElectricityBillController extends Controller
 
         $totalYear = $monthly->sum();
         $countYear = $bills->count();
-        $totalAllTime = (float) ElectricityBill::sum('amount');
+        $totalAllTime = (float) \Illuminate\Support\Facades\Cache::remember('electricity_bills:total_all_time', 3600, function () {
+            return ElectricityBill::sum('amount');
+        });
 
         return Inertia::render('Public/ElectricityBills/Index', [
             'billsByMonth' => $billsByMonth,
