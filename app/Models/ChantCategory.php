@@ -51,23 +51,34 @@ class ChantCategory extends Model
      */
     public static function tree(): Collection
     {
-        return \Illuminate\Support\Facades\Cache::rememberForever('chant_categories_tree', function () {
-            $all = static::withCount('chants')->orderBy('name')->get();
-            $byParent = $all->groupBy(fn (ChantCategory $c) => $c->parent_id ?? 0);
+        $cached = \Illuminate\Support\Facades\Cache::get('chant_categories_tree');
+        if ($cached instanceof Collection) {
+            return $cached;
+        }
 
-            $flatten = function ($parentId, $depth) use (&$flatten, $byParent) {
-                $result = collect();
+        $all = static::withCount('chants')->orderBy('name')->get();
+        $byParent = $all->groupBy(fn (ChantCategory $c) => $c->parent_id ?? 0);
 
-                foreach ($byParent->get($parentId, collect()) as $category) {
-                    $category->depth = $depth;
-                    $result->push($category);
-                    $result = $result->merge($flatten($category->id, $depth + 1));
-                }
+        $flatten = function ($parentId, $depth) use (&$flatten, $byParent) {
+            $result = collect();
 
-                return $result;
-            };
+            foreach ($byParent->get($parentId, collect()) as $category) {
+                $category->depth = $depth;
+                $result->push($category);
+                $result = $result->merge($flatten($category->id, $depth + 1));
+            }
 
-            return $flatten(0, 0);
-        });
+            return $result;
+        };
+
+        $tree = $flatten(0, 0);
+
+        try {
+            \Illuminate\Support\Facades\Cache::forever('chant_categories_tree', $tree);
+        } catch (\Throwable) {
+            // cache store issue shouldn't block the request
+        }
+
+        return $tree;
     }
 }

@@ -12,6 +12,7 @@ class DatabaseSeeder extends Seeder
             AdminUserSeeder::class,
             FineRateSeeder::class,
             MonkDutySeeder::class,
+            CbfolCommitteeSeeder::class,
         ]);
     }
 }

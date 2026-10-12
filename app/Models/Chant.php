@@ -15,4 +15,10 @@ class Chant extends Model
     {
         return $this->belongsTo(ChantCategory::class, 'category_id');
     }
+
+    protected static function booted(): void
+    {
+        static::saved(fn () => \Illuminate\Support\Facades\Cache::forget('chant_categories_tree'));
+        static::deleted(fn () => \Illuminate\Support\Facades\Cache::forget('chant_categories_tree'));
+    }
 }

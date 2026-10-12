@@ -9,7 +9,9 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        DB::statement("ALTER TABLE monks MODIFY COLUMN type ENUM('monk', 'novice', 'nun') NOT NULL DEFAULT 'monk'");
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement("ALTER TABLE monks MODIFY COLUMN type ENUM('monk', 'novice', 'nun') NOT NULL DEFAULT 'monk'");
+        }
     }
 
     /**
@@ -17,6 +19,8 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        DB::statement("ALTER TABLE monks MODIFY COLUMN type ENUM('monk', 'novice') NOT NULL DEFAULT 'monk'");
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement("ALTER TABLE monks MODIFY COLUMN type ENUM('monk', 'novice') NOT NULL DEFAULT 'monk'");
+        }
     }
 };

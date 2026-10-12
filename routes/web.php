@@ -40,6 +40,9 @@ Route::prefix('info')->group(function () {
 
     // Public fund ledger transparency / ລາຍຮັບ-ລາຍຈ່າຍກອງທຶນ (no login required)
     Route::get('/fund', [\App\Http\Controllers\PublicFundController::class, 'index'])->name('fund.public.index');
+
+    // Public CBFOL Central Committee / ຄະນະກຳມະການສູນກາງ ອພສ (no login required)
+    Route::get('/cbfol-committees', [\App\Http\Controllers\PublicCbfolCommitteeController::class, 'index'])->name('cbfol-committees.public.index');
 });
 
 // Authenticated users
@@ -115,6 +118,13 @@ Route::middleware('auth')->group(function () {
         Route::post('/monks', [\App\Http\Controllers\MonkController::class, 'store'])->name('monks.store');
         Route::post('/monks/{monk}/update', [\App\Http\Controllers\MonkController::class, 'update'])->name('monks.update');
         Route::delete('/monks/{monk}', [\App\Http\Controllers\MonkController::class, 'destroy'])->name('monks.destroy');
+
+        // CBFOL Central Committee Management / ຈັດການຄະນະກຳມະການສູນກາງ ອພສ
+        Route::get('/cbfol-committees', [\App\Http\Controllers\CbfolCommitteeController::class, 'index'])->name('cbfol-committees.index');
+        Route::post('/cbfol-committees', [\App\Http\Controllers\CbfolCommitteeController::class, 'store'])->name('cbfol-committees.store');
+        Route::post('/cbfol-committees/{cbfolCommittee}/update', [\App\Http\Controllers\CbfolCommitteeController::class, 'update'])->name('cbfol-committees.update');
+        Route::delete('/cbfol-committees/{cbfolCommittee}', [\App\Http\Controllers\CbfolCommitteeController::class, 'destroy'])->name('cbfol-committees.destroy');
+
         Route::get('/fine-rates', [\App\Http\Controllers\FineRateController::class, 'index'])->name('fine-rates.index');
         Route::post('/fine-rates', [\App\Http\Controllers\FineRateController::class, 'store'])->name('fine-rates.store');
         Route::put('/fine-rates/{fineRate}', [\App\Http\Controllers\FineRateController::class, 'update'])->name('fine-rates.update');

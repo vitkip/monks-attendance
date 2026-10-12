@@ -3,6 +3,7 @@ import { Link, usePage } from '@inertiajs/react';
 const NAV = [
     ['news.public.index', 'ຂ່າວສານ', '/news'],
     ['monks.public.index', 'ພຣະສົງ', '/info/monks'],
+    ['cbfol-committees.public.index', 'ຄະນະສູນກາງ ອພສ', '/info/cbfol-committees'],
     ['chants.public.index', 'ບົດສູດມົນ', '/info/chants'],
     ['electricity-bills.public.index', 'ລາຍການຄ່າໄຟຟ້າ', '/info/electricity-bills'],
     ['construction-projects.public.index', 'ໂຄງການກໍ່ສ້າງ', '/info/construction-projects'],
@@ -21,7 +22,7 @@ export default function PublicLayout({ children }) {
 
     return (
         <div className="bg-[#faf8f2] font-sans text-slate-700 min-h-screen flex flex-col">
-            <header className="bg-brand-green-dark text-white sticky top-0 z-20">
+            <header className="bg-brand-green-dark text-white sticky top-0 z-40">
                 <div className="max-w-6xl mx-auto px-5 sm:px-8 h-16 flex items-center justify-between gap-4">
                     <Link href={route('news.public.index')} className="flex items-center gap-3 group shrink-0">
                         {appLogo ? (
@@ -84,6 +85,7 @@ export default function PublicLayout({ children }) {
                     <nav className="flex items-center gap-5 text-xs font-semibold text-slate-500">
                         <Link href={route('news.public.index')} className="hover:text-brand-green transition-colors">ຂ່າວສານ</Link>
                         <Link href={route('monks.public.index')} className="hover:text-brand-green transition-colors">ພຣະສົງ</Link>
+                        <Link href={route('cbfol-committees.public.index')} className="hover:text-brand-green transition-colors">ຄະນະສູນກາງ ອພສ</Link>
                         <Link href={route('chants.public.index')} className="hover:text-brand-green transition-colors">ບົດສູດມົນ</Link>
                         <Link href={route('electricity-bills.public.index')} className="hover:text-brand-green transition-colors">ຄ່າໄຟຟ້າ</Link>
                         <Link href={route('construction-projects.public.index')} className="hover:text-brand-green transition-colors">ກໍ່ສ້າງ</Link>
